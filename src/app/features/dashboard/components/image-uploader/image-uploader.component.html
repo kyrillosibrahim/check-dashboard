@@ -1,0 +1,54 @@
+<div class="uploader-section">
+  <label class="form-label fw-semibold">{{ label }}</label>
+
+  <!-- Drop Zone -->
+  <div class="drop-zone" [class.drag-over]="isDragOver"
+       (dragover)="onDragOver($event)"
+       (dragleave)="onDragLeave()"
+       (drop)="onDrop($event)"
+       (click)="openFilePicker()">
+    <input #fileInput type="file" accept="image/*" multiple
+           (change)="onFileSelect($event)" hidden>
+    @if (isProcessing) {
+      <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+      <span class="mt-2 text-secondary">جاري المعالجة...</span>
+    } @else {
+      <i class="bi bi-cloud-arrow-up fs-1" style="color: var(--sz-accent);"></i>
+      <span class="mt-2 text-secondary">اسحب الصور هنا أو اضغط للاختيار</span>
+      <small class="text-secondary mt-1" style="font-size: 0.75rem;">
+        <i class="bi bi-lightning-charge"></i> WebP &bull; max 600px &bull; ~80KB
+      </small>
+    }
+  </div>
+
+  <!-- Compression Info -->
+  @if (lastCompressionInfo) {
+    <div class="compression-info mt-2">
+      <i class="bi bi-check-circle-fill text-success me-1"></i>
+      <small>{{ lastCompressionInfo }}</small>
+    </div>
+  }
+
+  <!-- Preview Grid -->
+  @if (images.length > 0) {
+    <div class="preview-grid mt-3">
+      @for (img of images; track img; let i = $index) {
+        <div class="preview-card">
+          <img [src]="img" alt="معاينة" class="preview-img">
+          <div class="preview-actions">
+            <button type="button" class="btn btn-sm btn-dark" (click)="moveImage(i, 1)" [disabled]="i === images.length - 1">
+              <i class="bi bi-arrow-left"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-danger" (click)="removeImage(i)">
+              <i class="bi bi-trash"></i>
+            </button>
+            <button type="button" class="btn btn-sm btn-dark" (click)="moveImage(i, -1)" [disabled]="i === 0">
+              <i class="bi bi-arrow-right"></i>
+            </button>
+          </div>
+          <span class="preview-index">{{ i + 1 }}</span>
+        </div>
+      }
+    </div>
+  }
+</div>

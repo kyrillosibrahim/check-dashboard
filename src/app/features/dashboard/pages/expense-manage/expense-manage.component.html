@@ -1,0 +1,184 @@
+<!-- Page Title -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="fw-bold mb-0">
+    <i class="bi bi-arrow-down-circle me-2" style="color: var(--sz-accent);"></i>
+    الخسائر والخصومات
+  </h4>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-4">
+    <div class="card border-0 shadow-sm stat-card">
+      <div class="card-body text-center py-3">
+        <i class="bi bi-calendar-month fs-3 mb-1 d-block text-danger"></i>
+        <h4 class="fw-bold mb-0">{{ monthTotal | egpCurrency }}</h4>
+        <small class="text-secondary">مصاريف الشهر</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="card border-0 shadow-sm stat-card">
+      <div class="card-body text-center py-3">
+        <i class="bi bi-cash-coin fs-3 mb-1 d-block text-warning"></i>
+        <h4 class="fw-bold mb-0">{{ allTotal | egpCurrency }}</h4>
+        <small class="text-secondary">إجمالي كل المصاريف</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="card border-0 shadow-sm stat-card">
+      <div class="card-body text-center py-3">
+        <i class="bi bi-list-ol fs-3 mb-1 d-block" style="color: var(--sz-accent);"></i>
+        <h4 class="fw-bold mb-0">{{ monthCount }}</h4>
+        <small class="text-secondary">عدد بنود الشهر</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add / Edit Form Card -->
+<div class="card border-0 shadow-sm mb-4" style="background-color: var(--sz-bg-card);">
+  <div class="card-body p-4">
+    <h6 class="fw-bold mb-3">
+      @if (editingExpense) {
+        <i class="bi bi-pencil me-2" style="color: var(--sz-accent);"></i>تعديل المصروف
+      } @else {
+        <i class="bi bi-plus-circle me-2" style="color: var(--sz-accent);"></i>إضافة مصروف جديد
+      }
+    </h6>
+    <form (ngSubmit)="onSave()">
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <label class="form-label">اسم المصروف *</label>
+          <input type="text" class="form-control" [(ngModel)]="expenseTitle" name="expenseTitle"
+                 placeholder="مثال: إعلانات فيسبوك">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">التصنيف</label>
+          <select class="form-select" [(ngModel)]="expenseCategory" name="expenseCategory">
+            @for (cat of categories; track cat) {
+              <option [value]="cat">{{ cat }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">المبلغ (ج.م) *</label>
+          <input type="number" class="form-control" [(ngModel)]="expenseAmount" name="expenseAmount"
+                 placeholder="0.00" min="0" step="0.01">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">الشهر</label>
+          <input type="month" class="form-control" [(ngModel)]="expenseMonth" name="expenseMonth">
+        </div>
+        <div class="col-md-8">
+          <label class="form-label">ملاحظات</label>
+          <input type="text" class="form-control" [(ngModel)]="expenseNotes" name="expenseNotes"
+                 placeholder="ملاحظات إضافية (اختياري)">
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary px-4"
+                [disabled]="!expenseTitle.trim() || !expenseAmount || expenseAmount <= 0 || isSaving">
+          @if (editingExpense) {
+            <i class="bi bi-check-lg me-1"></i>حفظ التعديل
+          } @else {
+            <i class="bi bi-plus-lg me-1"></i>إضافة
+          }
+        </button>
+        @if (editingExpense) {
+          <button type="button" class="btn btn-outline-secondary" (click)="onCancelEdit()">
+            إلغاء
+          </button>
+        }
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Month Filter -->
+@if (availableMonths.length > 0) {
+  <div class="month-filter mb-3">
+    <label class="form-label fw-bold mb-1">
+      <i class="bi bi-funnel me-1"></i> فلتر الشهر
+    </label>
+    <select class="form-select" [(ngModel)]="selectedMonth" style="max-width: 250px;">
+      @for (month of availableMonths; track month.value) {
+        <option [value]="month.value">{{ month.label }}</option>
+      }
+    </select>
+  </div>
+}
+
+<!-- Expenses Table -->
+@if (isLoading) {
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2 text-secondary">جاري تحميل المصاريف...</p>
+  </div>
+} @else if (error) {
+  <div class="alert alert-danger">
+    <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+    <button class="btn btn-sm btn-outline-danger ms-3" (click)="loadExpenses()">إعادة المحاولة</button>
+  </div>
+} @else {
+  <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle expense-table">
+          <thead>
+            <tr>
+              <th class="ps-3">#</th>
+              <th>المصروف</th>
+              <th>التصنيف</th>
+              <th>المبلغ</th>
+              <th>الشهر</th>
+              <th>ملاحظات</th>
+              <th class="text-start pe-3">إجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (expense of filteredExpenses; track expense.id; let idx = $index) {
+              <tr>
+                <td class="ps-3 text-muted">{{ idx + 1 }}</td>
+                <td class="fw-semibold">{{ expense.title }}</td>
+                <td>
+                  <span class="badge category-badge">{{ expense.category }}</span>
+                </td>
+                <td class="amount-cell text-danger fw-bold">{{ expense.amount | egpCurrency }}</td>
+                <td class="month-cell">{{ expense.month }}</td>
+                <td class="text-muted notes-cell">{{ expense.notes || '---' }}</td>
+                <td class="text-start pe-3">
+                  <div class="d-flex gap-2 justify-content-start">
+                    <button class="action-btn edit-btn" (click)="onEdit(expense)" title="تعديل">
+                      <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button class="action-btn delete-btn" (click)="onDelete(expense)" title="حذف">
+                      <i class="bi bi-trash-fill"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7" class="text-center py-4 text-secondary">
+                  <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                  لا توجد مصاريف لهذا الشهر
+                </td>
+              </tr>
+            }
+          </tbody>
+          @if (filteredExpenses.length > 0) {
+            <tfoot>
+              <tr class="total-row">
+                <td colspan="3" class="ps-3 fw-bold">الإجمالي</td>
+                <td class="amount-cell text-danger fw-bold">{{ monthTotal | egpCurrency }}</td>
+                <td colspan="3"></td>
+              </tr>
+            </tfoot>
+          }
+        </table>
+      </div>
+    </div>
+  </div>
+}

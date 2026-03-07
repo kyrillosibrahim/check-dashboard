@@ -1,0 +1,341 @@
+@if (order) {
+
+<!-- Action Buttons -->
+<div class="action-buttons mb-4">
+  <button class="action-btn profit-btn" (click)="showProfit()">
+    <i class="bi bi-graph-up-arrow me-2"></i>الربحية
+  </button>
+  <button class="action-btn view-btn" (click)="openInvoiceModal()">
+    <i class="bi bi-eye me-2"></i>عرض الفاتورة
+  </button>
+  <button class="action-btn print-btn" (dblclick)="printInvoice()">
+    <i class="bi bi-printer me-2"></i>انقر نقرتين للطباعة
+  </button>
+</div>
+
+<!-- Invoice Header -->
+<div class="invoice-header mb-4" id="invoice-section">
+  <div class="row align-items-center">
+    <div class="col-md-6">
+      <h4 class="fw-bold mb-1">
+        <i class="bi bi-receipt me-2" style="color: var(--sz-accent);"></i>
+        فاتورة بيع
+      </h4>
+    </div>
+    <div class="col-md-6 text-md-start">
+      <div class="header-info">
+        <div class="info-row">
+          <span class="info-label"># الفاتورة :</span>
+          <span class="info-value">{{ order.id }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">العميل :</span>
+          <span class="info-value">{{ order.customer.name || '---' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Products Table -->
+<div class="card border-0 shadow-sm mb-4" style="background-color: var(--sz-bg-card);">
+  <div class="table-responsive">
+    <table class="table mb-0 products-table">
+      <thead>
+        <tr>
+          <th>صورة المنتج</th>
+          <th>اسم المنتج</th>
+          <th>التاجر</th>
+          <th>الكمية</th>
+          <th>السعر</th>
+          <th>السعر الاجمالى</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of order.items; track item.productId) {
+          <tr>
+            <td>
+              @if (item.image) {
+                <img [src]="item.image" [alt]="item.title" class="product-img">
+              } @else {
+                <div class="no-img"><i class="bi bi-image"></i></div>
+              }
+            </td>
+            <td class="fw-semibold">{{ item.titleAr || item.title }}</td>
+            <td>{{ item.merchant || '---' }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.price | egpCurrency }}</td>
+            <td class="fw-bold">{{ item.total | egpCurrency }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Invoice Details: Two Columns -->
+<div class="row g-4 mb-4">
+
+  <!-- Right: Summary -->
+  <div class="col-lg-6">
+    <div class="detail-card">
+      <h6 class="detail-title">فاتورة</h6>
+
+      <div class="summary-row">
+        <span>عدد المنتجات :</span>
+        <span>( {{ itemsCount }} )</span>
+      </div>
+      <div class="summary-row">
+        <span>السعر الكلي للعناصر :</span>
+        <span>( {{ subtotal | egpCurrency }} )</span>
+      </div>
+      @if (order.discount) {
+        <div class="summary-row">
+          <span>التخفيضات :</span>
+          <span>( {{ order.discount | egpCurrency }} )</span>
+        </div>
+        <div class="summary-row">
+          <span>السعر الكلي بعد التخفيضات :</span>
+          <span>( {{ totalAfterDiscounts | egpCurrency }} )</span>
+        </div>
+      }
+
+      <hr>
+
+      <div class="summary-row">
+        <span>الشحن ومصاريف اخرى :</span>
+        <div class="d-flex align-items-center gap-2">
+          <input type="number" class="form-control form-control-sm summary-input"
+                 [(ngModel)]="order.shippingCost" min="0">
+        </div>
+      </div>
+
+      <div class="summary-row fw-bold fs-6">
+        <span>السعر الإجمالى :</span>
+        <span>( {{ grandTotal | egpCurrency }} )</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Left: Shipping & Notes -->
+  <div class="col-lg-6">
+    <div class="detail-card">
+      <h6 class="detail-title">بيانات الشحن</h6>
+
+      <div class="form-row">
+        <label>شركة الشحن :</label>
+        <span class="form-value fw-semibold">J&T Express</span>
+      </div>
+
+      <div class="form-row">
+        <label>عناوين العميل :</label>
+        <span class="form-value">{{ order.shippingAddress.fullName || '---' }}</span>
+      </div>
+
+      <div class="form-row">
+        <label>المدينة :</label>
+        <span class="form-value">{{ order.shippingAddress.governorate || '---' }}</span>
+      </div>
+
+      <div class="form-row">
+        <label>العنوان :</label>
+        <span class="form-value">{{ order.shippingAddress.address || '---' }}</span>
+      </div>
+
+      <div class="form-row">
+        <label>رقم الموبايل :</label>
+        <span class="form-value">{{ order.shippingAddress.phone || order.customer.phone || '---' }}</span>
+      </div>
+
+      <div class="form-row">
+        <label>قيمة الشحن :</label>
+        <span class="form-value">{{ order.shippingCost | egpCurrency }}</span>
+      </div>
+
+      <div class="form-row">
+        <label>ملاحظة على الفاتورة :</label>
+        <textarea class="form-control form-control-sm" rows="3"
+                  [(ngModel)]="order.notes" placeholder="هنا ملاحظة على الفاتورة"></textarea>
+      </div>
+
+      <div class="form-row">
+        <label>حالة السداد :</label>
+        <select class="form-select form-select-sm" [(ngModel)]="order.paymentStatus">
+          <option value="unpaid">لم يتم السداد</option>
+          <option value="paid">تم السداد</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <label>حالة الطلب :</label>
+        <select class="form-select form-select-sm" [(ngModel)]="order.status">
+          <option value="pending">قيد الانتظار</option>
+          <option value="processing">جاري التجهيز</option>
+          <option value="shipped">تم الشحن</option>
+          <option value="delivered">تم التوصيل</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Action Buttons -->
+<div class="d-flex gap-3 mb-4">
+  <button class="action-btn save-btn" (click)="saveInvoice()">
+    <i class="bi bi-check-lg me-2"></i>حفظ الفاتورة
+  </button>
+  <button class="action-btn delete-invoice-btn" (click)="deleteInvoice()">
+    <i class="bi bi-trash me-2"></i>حذف الفاتورة
+  </button>
+</div>
+
+<!-- ═══ Invoice View Modal ═══ -->
+@if (showModal) {
+  <div class="invoice-modal-overlay" (click)="closeInvoiceModal()">
+    <div class="invoice-modal" (click)="$event.stopPropagation()">
+      <!-- Modal Header -->
+      <div class="invoice-modal-header">
+        <h5 class="mb-0 fw-bold">تفاصيل الفاتورة</h5>
+        <button class="modal-close-btn" (click)="closeInvoiceModal()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Printable Invoice) -->
+      <div class="invoice-modal-body" id="invoice-print-area">
+        <div class="invoice-paper">
+
+          <!-- Invoice Top: Title + Logo -->
+          <div class="invoice-paper-header">
+            <div class="invoice-paper-title">
+              <div class="invoice-shield">
+                <i class="bi bi-shield-check"></i>
+              </div>
+              <h2>فاتورة بيع</h2>
+            </div>
+            <div class="invoice-logo">
+              <span class="logo-text">Check</span>
+            </div>
+          </div>
+
+          <!-- Invoice Info Grid -->
+          <div class="invoice-info-grid">
+            <div class="info-item">
+              <span class="info-label">رقم الفاتورة</span>
+              <span class="info-value">{{ order.id }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">التاريخ</span>
+              <span class="info-value">{{ order.date | date:'dd/MM/yyyy - hh:mm a' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">العميل</span>
+              <span class="info-value">{{ order.customer.name || '---' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">الموبايل</span>
+              <span class="info-value">{{ order.shippingAddress.phone || order.customer.phone || '---' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">المحافظة</span>
+              <span class="info-value">{{ order.shippingAddress.governorate || '---' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">العنوان</span>
+              <span class="info-value">{{ order.shippingAddress.address || '---' }}</span>
+            </div>
+          </div>
+
+          <!-- Invoice Products Table -->
+          <table class="invoice-products-table">
+            <thead>
+              <tr>
+                <th>صورة المنتج</th>
+                <th>إسم المنتج</th>
+                <th>التاجر</th>
+                <th>الكمية</th>
+                <th>السعر</th>
+                <th>السعر الإجمالي</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of order.items; track item.productId) {
+                <tr>
+                  <td>
+                    @if (item.image) {
+                      <img [src]="item.image" [alt]="item.title" class="invoice-item-img">
+                    } @else {
+                      <div class="invoice-no-img"><i class="bi bi-image"></i></div>
+                    }
+                  </td>
+                  <td class="product-name-cell">
+                    <div class="fw-semibold">{{ item.titleAr || item.title }}</div>
+                  </td>
+                  <td>{{ item.merchant || '---' }}</td>
+                  <td>{{ item.quantity }}</td>
+                  <td>{{ item.price | egpCurrency }}</td>
+                  <td class="fw-bold">{{ item.total | egpCurrency }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+
+          <!-- Invoice Summary + Shipping Info -->
+          <div class="invoice-bottom-row">
+            <div class="invoice-summary">
+              <div class="invoice-summary-row">
+                <span>عدد المنتجات :</span>
+                <span>{{ itemsCount }}</span>
+              </div>
+              <div class="invoice-summary-row">
+                <span>سعر المنتجات :</span>
+                <span>{{ subtotal | egpCurrency }}</span>
+              </div>
+              @if (order.discount) {
+                <div class="invoice-summary-row">
+                  <span>التخفيضات :</span>
+                  <span>{{ order.discount | egpCurrency }}</span>
+                </div>
+              }
+              <div class="invoice-summary-row">
+                <span>الشحن :</span>
+                <span>{{ order.shippingCost | egpCurrency }}</span>
+              </div>
+              <div class="invoice-summary-row fw-bold">
+                <span>السعر الإجمالي :</span>
+                <span>{{ grandTotal | egpCurrency }}</span>
+              </div>
+            </div>
+            <div class="invoice-shipping-info">
+              <div class="invoice-summary-row">
+                <span>شركة الشحن :</span>
+                <span class="fw-bold">J&T Express</span>
+              </div>
+              <div class="invoice-summary-row">
+                <span>حالة السداد :</span>
+                <span class="fw-bold">{{ getPaymentStatusLabel(order.paymentStatus) }}</span>
+              </div>
+              <div class="invoice-summary-row">
+                <span>حالة الطلب :</span>
+                <span class="fw-bold">{{ getStatusLabel(order.status) }}</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="invoice-modal-footer">
+        <button class="btn btn-outline-secondary px-4" (click)="closeInvoiceModal()">اغلاق</button>
+      </div>
+    </div>
+  </div>
+}
+
+} @else {
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2 text-secondary">جاري تحميل الفاتورة...</p>
+  </div>
+}

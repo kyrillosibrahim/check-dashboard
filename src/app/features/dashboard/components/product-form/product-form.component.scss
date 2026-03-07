@@ -1,0 +1,221 @@
+:host {
+  display: block;
+}
+
+/* ── Accordion panels ─────────────────────────── */
+.accordion-panel {
+  margin-bottom: 0.75rem;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.25rem;
+  background: linear-gradient(135deg, #1bbc9b, #17a689);
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+
+  &:hover {
+    background: linear-gradient(135deg, #17a689, #14947a);
+  }
+}
+
+.accordion-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1rem;
+
+  i {
+    font-size: 1.1rem;
+  }
+}
+
+.accordion-chevron {
+  font-size: 1.2rem;
+  transition: transform 0.3s ease;
+}
+
+.accordion-body {
+  padding: 1.5rem;
+  background-color: var(--sz-bg-card, #fff);
+  border: 1px solid var(--sz-border-color, #e9ecef);
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Language tabs (description section) ───────── */
+.lang-tabs {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.lang-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: var(--sz-bg-secondary, #f1f3f5);
+  color: var(--sz-text-secondary, #6c757d);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &.active {
+    background: #1bbc9b;
+    color: #fff;
+
+
+  }
+
+  &:not(.active):hover {
+    background: var(--sz-border-color, #dee2e6);
+  }
+
+  img {
+    border-radius: 2px;
+  }
+}
+
+/* ── Form controls ──────────────────────────── */
+.form-control,
+.form-select {
+  background-color: var(--sz-bg-secondary);
+  border-color: var(--sz-border-color);
+  color: var(--sz-text-primary);
+  font-size: 0.875rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:focus {
+    border-color: #1bbc9b;
+    box-shadow: 0 0 0 3px rgba(27, 188, 155, 0.15);
+  }
+}
+
+/* Remove green focus from Quill editor elements */
+:host ::ng-deep .ql-toolbar,
+:host ::ng-deep .ql-container,
+:host ::ng-deep .ql-editor {
+  &:focus, &:focus-within {
+    border-color: var(--sz-border-color) !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+}
+
+.form-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--sz-text-secondary);
+  margin-bottom: 0.35rem;
+}
+
+.input-group-text {
+  background-color: var(--sz-bg-secondary);
+  border-color: var(--sz-border-color);
+  color: var(--sz-text-secondary);
+  font-size: 0.8rem;
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 90px;
+}
+
+/* ── Slug field ─────────────────────────────── */
+.slug-field {
+  background-color: var(--sz-bg-secondary);
+  border: 1px dashed var(--sz-border-color);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+  color: var(--sz-text-secondary);
+  font-family: 'Courier New', monospace;
+  direction: ltr;
+  text-align: left;
+
+  i {
+    color: #1bbc9b;
+    margin-inline-end: 0.4rem;
+  }
+}
+
+/* ── Checkboxes ─────────────────────────────── */
+.form-check-input:checked {
+  background-color: #1bbc9b;
+  border-color: #1bbc9b;
+}
+
+.check-card {
+  background-color: var(--sz-bg-secondary);
+  border: 1px solid var(--sz-border-color);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  transition: border-color 0.2s;
+  cursor: pointer;
+
+  &:hover {
+    border-color: #1bbc9b;
+  }
+
+  label {
+    cursor: pointer;
+    font-size: 0.85rem;
+    margin: 0;
+  }
+}
+
+/* ── Actions bar ────────────────────────────── */
+.actions-bar {
+  display: flex;
+  gap: 0.75rem;
+  padding-top: 1rem;
+
+  .btn {
+    padding: 0.6rem 1.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border-radius: 8px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, #1bbc9b, #17a689);
+    border: none;
+
+    &:hover {
+      background: linear-gradient(135deg, #17a689, #14947a);
+    }
+
+    &:disabled {
+      background: #a0d4c8;
+      opacity: 0.7;
+    }
+  }
+}

@@ -1,0 +1,109 @@
+/* ==========================================================
+   Global Styles — KaroKan Dashboard
+   Uses Bootstrap 5.3 native dark mode via data-bs-theme
+   ========================================================== */
+
+/* ---------- Theme Variables ---------- */
+:root,
+[data-bs-theme="light"] {
+  --sz-bg-primary: #ffffff;
+  --sz-bg-secondary: #f1f3f5;
+  --sz-bg-card: #ffffff;
+  --sz-text-primary: #1a1a2e;
+  --sz-text-secondary: #495057;
+  --sz-text-muted: #6c757d;
+  --sz-border-color: #ced4da;
+  --sz-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  --sz-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.15);
+  --sz-accent: #0d6efd;
+  --sz-accent-hover: #0a58ca;
+}
+
+[data-bs-theme="dark"] {
+  --sz-bg-primary: #121212;
+  --sz-bg-secondary: #1e1e1e;
+  --sz-bg-card: #1e1e1e;
+  --sz-text-primary: #e0e0e0;
+  --sz-text-secondary: #a0a0a0;
+  --sz-text-muted: #666666;
+  --sz-border-color: #333333;
+  --sz-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  --sz-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --sz-accent: #4dabf7;
+  --sz-accent-hover: #339af0;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--sz-bg-primary);
+  color: var(--sz-text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--sz-bg-secondary); }
+::-webkit-scrollbar-thumb { background: var(--sz-text-muted); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--sz-text-secondary); }
+
+a {
+  color: var(--sz-accent);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  &:hover { color: var(--sz-accent-hover); }
+}
+
+/* ---------- Light Mode — Bootstrap Overrides ---------- */
+[data-bs-theme="light"] {
+  .text-secondary {
+    color: #495057 !important;
+  }
+
+  .text-muted {
+    color: #6c757d !important;
+  }
+
+  .form-control,
+  .form-select {
+    border-color: #ced4da;
+    color: #1a1a2e;
+
+    &::placeholder {
+      color: #6c757d;
+    }
+  }
+
+  .input-group-text {
+    color: #1a1a2e;
+  }
+
+  .btn-outline-secondary {
+    border-color: #adb5bd;
+    color: #495057;
+
+    &:hover {
+      background-color: #495057;
+      border-color: #495057;
+      color: #fff;
+    }
+  }
+
+  .card {
+    border-color: #ced4da;
+  }
+
+  .table {
+    color: #1a1a2e;
+    th { color: #343a40; }
+  }
+
+  small.text-secondary {
+    color: #495057 !important;
+  }
+}

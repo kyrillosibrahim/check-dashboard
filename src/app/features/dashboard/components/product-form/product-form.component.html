@@ -1,0 +1,276 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+  <!-- ═══ Accordion: Basic Info ═══ -->
+  <div class="accordion-panel" [class.open]="panels['basicInfo']">
+    <div class="accordion-header" (click)="togglePanel('basicInfo')">
+      <span class="accordion-title">
+        <i class="bi bi-info-circle"></i>
+        المعلومات الأساسية
+      </span>
+      <i class="bi accordion-chevron" [class.bi-chevron-down]="!panels['basicInfo']" [class.bi-chevron-up]="panels['basicInfo']"></i>
+    </div>
+
+    @if (panels['basicInfo']) {
+      <div class="accordion-body">
+        <div class="row g-3">
+          <!-- Title AR -->
+          <div class="col-md-6">
+            <label class="form-label">عنوان المنتج (عربــي)</label>
+            <input type="text" class="form-control" formControlName="titleAr">
+          </div>
+          <!-- Title EN -->
+          <div class="col-md-6">
+            <label class="form-label">عنوان المنتج * (EN)</label>
+            <input type="text" class="form-control" formControlName="title" dir="rtl"
+                   [class.is-invalid]="f['title'].touched && f['title'].invalid">
+            @if (f['title'].touched && f['title'].invalid) {
+              <div class="invalid-feedback">العنوان مطلوب (٣ أحرف كحد أدنى)</div>
+            }
+          </div>
+          <!-- Short Description AR -->
+          <div class="col-md-6">
+            <label class="form-label">ملخص قصير (عربــي)</label>
+            <textarea class="form-control" formControlName="descriptionAr" rows="2"></textarea>
+          </div>
+          <!-- Short Description EN -->
+          <div class="col-md-6">
+            <label class="form-label">ملخص قصير (EN)</label>
+            <textarea class="form-control" formControlName="description" rows="2" dir="rtl"></textarea>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- ═══ Accordion: Description (Rich Text) ═══ -->
+  <div class="accordion-panel" [class.open]="panels['description']">
+    <div class="accordion-header" (click)="togglePanel('description')">
+      <span class="accordion-title">
+        <i class="bi bi-file-earmark-richtext"></i>
+        وصف المنتج
+      </span>
+      <i class="bi accordion-chevron" [class.bi-chevron-down]="!panels['description']" [class.bi-chevron-up]="panels['description']"></i>
+    </div>
+
+    @if (panels['description']) {
+      <div class="accordion-body">
+        <!-- Language Tabs -->
+        <div class="lang-tabs">
+          <button type="button" class="lang-tab" [class.active]="descLang === 'ar'" (click)="descLang = 'ar'">
+            <img src="https://flagcdn.com/w20/sa.png" alt="AR" width="20" height="14">
+            العربية
+          </button>
+          <button type="button" class="lang-tab" [class.active]="descLang === 'en'" (click)="descLang = 'en'">
+            <img src="https://flagcdn.com/w20/us.png" alt="EN" width="20" height="14">
+            الانجليزية
+          </button>
+        </div>
+
+        @if (descLang === 'ar') {
+          <app-rich-text-editor
+            label="وصف المنتج :"
+            placeholder="اكتب وصف المنتج بالعربية هنا..."
+            dir="rtl"
+            formControlName="descriptionHtmlAr" />
+        } @else {
+          <app-rich-text-editor
+            label="Product Description :"
+            placeholder="Write product description in English..."
+            dir="ltr"
+            formControlName="descriptionHtml" />
+        }
+      </div>
+    }
+  </div>
+
+  <!-- ═══ Accordion: Pricing ═══ -->
+  <div class="accordion-panel" [class.open]="panels['pricing']">
+    <div class="accordion-header" (click)="togglePanel('pricing')">
+      <span class="accordion-title">
+        <i class="bi bi-calculator"></i>
+        التسعير
+      </span>
+      <i class="bi accordion-chevron" [class.bi-chevron-down]="!panels['pricing']" [class.bi-chevron-up]="panels['pricing']"></i>
+    </div>
+
+    @if (panels['pricing']) {
+      <div class="accordion-body">
+        <app-price-calculator [form]="form" />
+      </div>
+    }
+  </div>
+
+  <!-- ═══ Accordion: Images ═══ -->
+  <div class="accordion-panel" [class.open]="panels['images']">
+    <div class="accordion-header" (click)="togglePanel('images')">
+      <span class="accordion-title">
+        <i class="bi bi-images"></i>
+        صور المنتج
+      </span>
+      <i class="bi accordion-chevron" [class.bi-chevron-down]="!panels['images']" [class.bi-chevron-up]="panels['images']"></i>
+    </div>
+
+    @if (panels['images']) {
+      <div class="accordion-body">
+        <div class="row g-4">
+          <div class="col-12">
+            <app-image-uploader
+              label="الصور الرئيسية"
+              [images]="mainImages"
+              (imagesChange)="mainImages = $event" />
+          </div>
+          <div class="col-12">
+            <app-image-uploader
+              label="صور السلايدر"
+              [images]="swiperImages"
+              (imagesChange)="swiperImages = $event" />
+          </div>
+          <div class="col-12">
+            <app-image-uploader
+              label="صور المنتج الحقيقية"
+              [images]="realImages"
+              (imagesChange)="realImages = $event" />
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- ═══ Accordion: Offers ═══ -->
+  <div class="accordion-panel" [class.open]="panels['offers']">
+    <div class="accordion-header" (click)="togglePanel('offers')">
+      <span class="accordion-title">
+        <i class="bi bi-tag"></i>
+        العروض الخاصة
+      </span>
+      <i class="bi accordion-chevron" [class.bi-chevron-down]="!panels['offers']" [class.bi-chevron-up]="panels['offers']"></i>
+    </div>
+
+    @if (panels['offers']) {
+      <div class="accordion-body">
+        <app-offers-editor
+          [offers]="offers"
+          (offersChange)="offers = $event" />
+      </div>
+    }
+  </div>
+
+  <!-- ═══ Accordion: FAQ ═══ -->
+  <div class="accordion-panel" [class.open]="panels['faq']">
+    <div class="accordion-header" (click)="togglePanel('faq')">
+      <span class="accordion-title">
+        <i class="bi bi-question-circle"></i>
+        الاسئلة الشائعة للمنتج
+      </span>
+      <i class="bi accordion-chevron" [class.bi-chevron-down]="!panels['faq']" [class.bi-chevron-up]="panels['faq']"></i>
+    </div>
+
+    @if (panels['faq']) {
+      <div class="accordion-body">
+        <app-faq-editor
+          [faqs]="faqs"
+          (faqsChange)="faqs = $event" />
+      </div>
+    }
+  </div>
+
+  <!-- ═══ Accordion: Details ═══ -->
+  <div class="accordion-panel" [class.open]="panels['details']">
+    <div class="accordion-header" (click)="togglePanel('details')">
+      <span class="accordion-title">
+        <i class="bi bi-gear"></i>
+        تفاصيل المنتج
+      </span>
+      <i class="bi accordion-chevron" [class.bi-chevron-down]="!panels['details']" [class.bi-chevron-up]="panels['details']"></i>
+    </div>
+
+    @if (panels['details']) {
+      <div class="accordion-body">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">القسم *</label>
+            <select class="form-select" formControlName="category"
+                    [class.is-invalid]="f['category'].touched && f['category'].invalid">
+              <option value="">اختر القسم</option>
+              @for (cat of categories; track cat.id) {
+                <option [value]="cat.slug">{{ cat.name }}</option>
+              }
+            </select>
+            @if (f['category'].touched && f['category'].invalid) {
+              <div class="invalid-feedback">القسم مطلوب</div>
+            }
+          </div>
+          @if (filteredSubcategories.length > 0) {
+            <div class="col-md-4">
+              <label class="form-label">القسم الفرعى</label>
+              <select class="form-select" formControlName="subcategory">
+                <option value="">اختر القسم الفرعى</option>
+                @for (sub of filteredSubcategories; track sub.id) {
+                  <option [value]="sub.slug">{{ sub.name }}</option>
+                }
+              </select>
+            </div>
+          }
+          <div class="col-md-4">
+            <label class="form-label">العلامة التجارية *</label>
+            <select class="form-select" formControlName="brand"
+                    [class.is-invalid]="f['brand'].touched && f['brand'].invalid">
+              <option value="">اختر العلامة التجارية</option>
+              @for (b of filteredBrands; track b.id) {
+                <option [value]="b.name">{{ b.name }}</option>
+              }
+            </select>
+            @if (f['brand'].touched && f['brand'].invalid) {
+              <div class="invalid-feedback">العلامة التجارية مطلوبة</div>
+            }
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">التاجر / المورد</label>
+            <select class="form-select" formControlName="merchant">
+              <option value="">اختر التاجر</option>
+              @for (m of merchants; track m.id) {
+                <option [value]="m.name">{{ m.name }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">المخزون *</label>
+            <input type="number" class="form-control" formControlName="stock" min="0"
+                   [class.is-invalid]="f['stock'].touched && f['stock'].invalid">
+            @if (f['stock'].touched && f['stock'].invalid) {
+              <div class="invalid-feedback">المخزون مطلوب</div>
+            }
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">التقييم (0-5)</label>
+            <input type="number" class="form-control" formControlName="rating" min="0" max="5" step="0.1">
+          </div>
+          <div class="col-md-4 d-flex align-items-end">
+            <div class="check-card">
+              <input type="checkbox" class="form-check-input" formControlName="isFeatured" id="isFeatured">
+              <label for="isFeatured">منتج مميز</label>
+            </div>
+          </div>
+          <div class="col-md-4 d-flex align-items-end">
+            <div class="check-card">
+              <input type="checkbox" class="form-check-input" formControlName="comingSoon" id="comingSoon">
+              <label for="comingSoon">قريبًا</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- ═══ Actions ═══ -->
+  <div class="actions-bar">
+    <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+      <i class="bi bi-check-lg me-1"></i>
+      {{ isEdit ? 'تحديث المنتج' : 'إضافة المنتج' }}
+    </button>
+    <button type="button" class="btn btn-outline-secondary" (click)="cancel.emit()">
+      إلغاء
+    </button>
+  </div>
+
+</form>

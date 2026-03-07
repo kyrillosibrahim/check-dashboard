@@ -1,0 +1,136 @@
+/* ── Stats Cards ──────────────────────── */
+.stat-card {
+  background-color: var(--sz-bg-card);
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  h4 {
+    color: var(--sz-text-primary);
+  }
+}
+
+/* ── Month Filter ────────────────────── */
+.month-filter {
+  .form-select {
+    background-color: var(--sz-bg-card, #fff);
+    color: var(--sz-text-primary);
+    border-color: var(--sz-border-color, #dee2e6);
+    border-radius: 8px;
+    font-size: 0.88rem;
+
+    &:focus {
+      border-color: #1bbc9b;
+      box-shadow: 0 0 0 0.2rem rgba(27, 188, 155, 0.15);
+    }
+  }
+}
+
+/* ── Expense Table ───────────────────── */
+.expense-table {
+  th {
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--sz-text-secondary);
+    white-space: nowrap;
+    border-bottom: 2px solid var(--sz-border-color);
+  }
+
+  td {
+    font-size: 0.875rem;
+    border-color: var(--sz-border-color, #e9ecef);
+  }
+
+  tbody tr {
+    transition: background 0.15s;
+
+    &:hover {
+      background: rgba(27, 188, 155, 0.04);
+    }
+  }
+}
+
+.amount-cell {
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.month-cell {
+  white-space: nowrap;
+  font-size: 0.85rem;
+}
+
+.notes-cell {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.category-badge {
+  background: rgba(27, 188, 155, 0.12);
+  color: #1bbc9b;
+  font-size: 0.78rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+/* ── Total Row ───────────────────────── */
+.total-row {
+  background: var(--sz-bg-secondary, #f8f9fa);
+
+  td {
+    border-top: 2px solid var(--sz-border-color, #dee2e6);
+    font-size: 0.9rem;
+  }
+}
+
+/* ── Action Buttons ──────────────────── */
+.action-btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--sz-text-secondary);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  padding: 0;
+
+  &.edit-btn:hover {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+  }
+
+  &.delete-btn:hover {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+  }
+}
+
+/* ── Responsive ──────────────────────── */
+@media (max-width: 768px) {
+  .stat-card .card-body {
+    padding: 0.75rem 0.5rem;
+
+    h4 {
+      font-size: 1rem;
+    }
+
+    i {
+      font-size: 1.3rem !important;
+    }
+
+    small {
+      font-size: 0.72rem;
+    }
+  }
+}

@@ -1,0 +1,67 @@
+<!-- Language Tabs -->
+<div class="lang-tabs">
+  <button type="button" class="lang-tab" [class.active]="lang === 'ar'" (click)="lang = 'ar'">
+    <img src="https://flagcdn.com/w20/sa.png" alt="AR" width="20" height="14">
+    العربية
+  </button>
+  <button type="button" class="lang-tab" [class.active]="lang === 'en'" (click)="lang = 'en'">
+    <img src="https://flagcdn.com/w20/us.png" alt="EN" width="20" height="14">
+    الانجليزية
+  </button>
+</div>
+
+<!-- Toggle -->
+<div class="faq-toggle">
+  <label class="toggle-switch" (click)="onToggle()">
+    <span class="toggle-track" [class.active]="faqEnabled">
+      <span class="toggle-thumb"></span>
+    </span>
+  </label>
+  <span class="toggle-label">تفعيل الاسئلة الشائعة للمنتج ؟</span>
+</div>
+
+<!-- FAQ Items -->
+@if (faqEnabled) {
+  @for (item of faqs; track $index; let i = $index) {
+    <div class="faq-item">
+      @if (lang === 'ar') {
+        <div class="faq-field">
+          <label class="faq-field-label">السؤال {{ i + 1 }}</label>
+          <input type="text" class="form-control" [(ngModel)]="item.qAr"
+                 (ngModelChange)="onFieldChange()" placeholder="اكتب السؤال بالعربية...">
+        </div>
+        <div class="faq-field">
+          <div class="faq-field-header">
+            <label class="faq-field-label">الاجابة {{ i + 1 }}</label>
+            <button type="button" class="btn-remove" (click)="removeFaq(i)" title="حذف">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <textarea class="form-control" [(ngModel)]="item.aAr" rows="3"
+                    (ngModelChange)="onFieldChange()" placeholder="اكتب الاجابة بالعربية..."></textarea>
+        </div>
+      } @else {
+        <div class="faq-field">
+          <label class="faq-field-label">Question {{ i + 1 }}</label>
+          <input type="text" class="form-control" [(ngModel)]="item.q" dir="ltr"
+                 (ngModelChange)="onFieldChange()" placeholder="Write question in English...">
+        </div>
+        <div class="faq-field">
+          <div class="faq-field-header">
+            <label class="faq-field-label">Answer {{ i + 1 }}</label>
+            <button type="button" class="btn-remove" (click)="removeFaq(i)" title="Delete">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <textarea class="form-control" [(ngModel)]="item.a" rows="3" dir="ltr"
+                    (ngModelChange)="onFieldChange()" placeholder="Write answer in English..."></textarea>
+        </div>
+      }
+    </div>
+  }
+
+  <button type="button" class="btn-add-faq" (click)="addFaq()">
+    <i class="bi bi-plus-circle me-2"></i>
+    إضافة سؤال جديد
+  </button>
+}

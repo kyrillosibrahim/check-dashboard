@@ -1,0 +1,53 @@
+:host {
+  display: block;
+}
+
+th {
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--sz-text-secondary);
+  white-space: nowrap;
+}
+
+td {
+  font-size: 0.875rem;
+}
+
+// Fixed product thumbnail size
+.product-thumb {
+  width: 45px;
+  height: 45px;
+  min-width: 45px;
+  min-height: 45px;
+  max-width: 45px;
+  max-height: 45px;
+  object-fit: cover;
+}
+
+// Action buttons — icon-only style
+.action-btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--sz-text-secondary);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  padding: 0;
+
+  &.edit-btn:hover {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+  }
+
+  &.delete-btn:hover {
+    background: rgba(239, 68, 68, 0.15);
+    color: #ef4444;
+  }
+}

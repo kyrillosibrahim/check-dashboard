@@ -1,0 +1,282 @@
+<!-- Page Title -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="fw-bold mb-0">
+    <i class="bi bi-graph-up me-2" style="color: var(--sz-accent);"></i>
+    مقارنة اسعار التجار
+  </h4>
+  <button class="btn btn-primary" (click)="openAddForm()">
+    <i class="bi bi-plus-lg me-1"></i> إضافة منتج
+  </button>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-4">
+    <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
+      <div class="card-body text-center py-3">
+        <i class="bi bi-box-seam fs-3 mb-1 d-block" style="color: var(--sz-accent);"></i>
+        <h4 class="fw-bold mb-0">{{ comparisons.length }}</h4>
+        <small class="text-secondary">إجمالي المقارنات</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
+      <div class="card-body text-center py-3">
+        <i class="bi bi-shop fs-3 mb-1 d-block text-info"></i>
+        <h4 class="fw-bold mb-0">{{ merchants.length }}</h4>
+        <small class="text-secondary">التجار المسجلين</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
+      <div class="card-body text-center py-3">
+        <i class="bi bi-grid fs-3 mb-1 d-block text-warning"></i>
+        <h4 class="fw-bold mb-0">{{ categories.length }}</h4>
+        <small class="text-secondary">الأقسام</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ Add/Edit Form ═══ -->
+@if (showForm) {
+  <div class="card border-0 shadow-sm mb-4 form-card" style="background-color: var(--sz-bg-card);">
+    <div class="card-body p-4">
+      <h5 class="fw-bold mb-3">
+        <i class="bi bi-pencil-square me-2" style="color: var(--sz-accent);"></i>
+        {{ editingId ? 'تعديل مقارنة' : 'إضافة منتج للمقارنة' }}
+      </h5>
+
+      <!-- Category Select -->
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">القسم</label>
+          <select class="form-select" [(ngModel)]="selectedCategory" [disabled]="!!editingId">
+            <option value="">-- اختر القسم --</option>
+            @for (cat of categories; track cat.id) {
+              <option [value]="cat.slug">{{ cat.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">سعر البيع</label>
+          <input type="number" class="form-control" [(ngModel)]="sellingPrice" min="0" placeholder="سعر البيع النهائي">
+        </div>
+      </div>
+
+      <!-- Product Search -->
+      @if (selectedCategory && !editingId) {
+        <div class="mb-3 product-search-wrapper">
+          <label class="form-label fw-semibold">اختر المنتج</label>
+          @if (selectedProduct) {
+            <div class="selected-product-badge">
+              <span class="fw-bold">{{ selectedProduct.titleAr || selectedProduct.title }}</span>
+              <button class="btn btn-sm btn-link text-danger p-0 ms-2" (click)="selectedProduct = null">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+          } @else {
+            <input type="text" class="form-control" [(ngModel)]="productSearch"
+                   placeholder="ابحث عن المنتج..." (focus)="showProductDropdown = true" (blur)="onProductBlur()">
+            @if (showProductDropdown && filteredProducts.length > 0) {
+              <div class="product-dropdown">
+                @for (product of filteredProducts; track product.id) {
+                  <div class="product-option" (mousedown)="selectProduct(product)">
+                    <span class="fw-semibold">{{ product.titleAr || product.title }}</span>
+                    <small class="text-secondary ms-2">{{ product.price | egpCurrency }}</small>
+                  </div>
+                }
+              </div>
+            }
+            @if (showProductDropdown && filteredProducts.length === 0) {
+              <small class="text-secondary mt-1 d-block">لا توجد منتجات في هذا القسم</small>
+            }
+          }
+        </div>
+      }
+
+      @if (editingId) {
+        <div class="mb-3">
+          <label class="form-label fw-semibold">المنتج</label>
+          <div class="selected-product-badge">
+            <span class="fw-bold">{{ selectedProduct?.titleAr || selectedProduct?.title }}</span>
+          </div>
+        </div>
+      }
+
+      <!-- Merchant Rows -->
+      @if (selectedProduct || editingId) {
+        <div class="mb-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <label class="form-label fw-semibold mb-0">التجار والأسعار</label>
+            <button class="btn btn-sm btn-outline-success" (click)="addMerchantRow()">
+              <i class="bi bi-plus-lg me-1"></i> إضافة تاجر
+            </button>
+          </div>
+
+          @for (row of merchantRows; track $index; let i = $index) {
+            <div class="merchant-row">
+              <div class="row g-2 align-items-end">
+                <div class="col-md-3">
+                  <label class="form-label small">اسم التاجر</label>
+                  <select class="form-select form-select-sm" [(ngModel)]="row.merchantName">
+                    <option value="">-- اختر --</option>
+                    @for (m of merchants; track m.id) {
+                      <option [value]="m.name">{{ m.name }}</option>
+                    }
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small">السعر الأساسي</label>
+                  <input type="number" class="form-control form-control-sm" [(ngModel)]="row.originalPrice" min="0">
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label small">سعر الجملة</label>
+                  <input type="number" class="form-control form-control-sm" [(ngModel)]="row.wholesalePrice" min="0">
+                </div>
+                <div class="col-md-2">
+                  <label class="form-label small">الربح</label>
+                  <div class="profit-preview">
+                    {{ (sellingPrice - row.wholesalePrice) | egpCurrency }}
+                  </div>
+                </div>
+                <div class="col-md-1 text-center">
+                  @if (merchantRows.length > 1) {
+                    <button class="btn btn-sm btn-outline-danger" (click)="removeMerchantRow(i)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Save / Cancel -->
+        <div class="d-flex gap-2 mt-3">
+          <button class="btn btn-success px-4" (click)="saveComparison()" [disabled]="isSaving">
+            @if (isSaving) {
+              <span class="spinner-border spinner-border-sm me-1"></span>
+            }
+            <i class="bi bi-check-lg me-1"></i>
+            {{ editingId ? 'تحديث' : 'حفظ' }}
+          </button>
+          <button class="btn btn-outline-secondary px-4" (click)="cancelForm()">
+            إلغاء
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+}
+
+<!-- ═══ Filter Bar ═══ -->
+@if (!isLoading && comparisons.length > 0) {
+  <div class="card border-0 shadow-sm mb-3 p-3" style="background-color: var(--sz-bg-card);">
+    <div class="row g-2 align-items-center">
+      <div class="col-md-4">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text"><i class="bi bi-funnel"></i></span>
+          <select class="form-select" [(ngModel)]="filterCategory">
+            <option value="">كل الأقسام</option>
+            @for (cat of categories; track cat.id) {
+              <option [value]="cat.slug">{{ cat.name }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input type="text" class="form-control" [(ngModel)]="filterSearch" placeholder="بحث باسم المنتج...">
+          @if (filterSearch) {
+            <button class="btn btn-outline-secondary" (click)="filterSearch = ''">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ═══ Comparison Table ═══ -->
+@if (isLoading) {
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2 text-secondary">جاري تحميل البيانات...</p>
+  </div>
+} @else if (comparisons.length === 0) {
+  <div class="text-center py-5">
+    <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary"></i>
+    <p class="text-secondary">لا توجد مقارنات حتى الآن. اضغط "إضافة منتج" للبدء.</p>
+  </div>
+} @else {
+  <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 compare-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>المنتج</th>
+            <th>القسم</th>
+            <th>السعر الأساسي</th>
+            <th>الجملة</th>
+            <th>البيع</th>
+            <th>التاجر الأفضل</th>
+            <th>الربح</th>
+            <th>الربح %</th>
+            <th>إجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (comp of filteredComparisons; track comp.id; let idx = $index) {
+            <tr>
+              <td class="row-num">{{ idx + 1 }}</td>
+              <td class="product-name-col">{{ comp.productName }}</td>
+              <td>
+                <span class="category-badge">{{ getCategoryName(comp.categorySlug) }}</span>
+              </td>
+              <td>
+                @if (comp.merchants.length > 0) {
+                  {{ comp.merchants[0].originalPrice | egpCurrency }}
+                }
+              </td>
+              <td class="fw-bold wholesale-col">{{ comp.bestWholesalePrice | egpCurrency }}</td>
+              <td>{{ comp.sellingPrice | egpCurrency }}</td>
+              <td>
+                <span class="best-merchant-badge">
+                  <i class="bi bi-trophy-fill me-1"></i>{{ comp.bestMerchant }}
+                </span>
+              </td>
+              <td class="fw-bold profit-col">{{ comp.profit | egpCurrency }}</td>
+              <td>
+                <span class="profit-percent" [class.profit-high]="comp.profitPercent >= 20" [class.profit-low]="comp.profitPercent < 10">
+                  {{ comp.profitPercent }}%
+                </span>
+              </td>
+              <td class="actions-col">
+                <button class="btn btn-sm btn-outline-primary me-1" (click)="openEditForm(comp)" title="تعديل">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="deleteComparison(comp)" title="حذف">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  @if (filterSearch && filteredComparisons.length === 0) {
+    <div class="text-center py-3">
+      <small class="text-secondary">
+        <i class="bi bi-emoji-frown me-1"></i> لا توجد نتائج للبحث "{{ filterSearch }}"
+      </small>
+    </div>
+  }
+}

@@ -1,0 +1,173 @@
+/* ── Language tabs ────────────────────────── */
+.lang-tabs {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.lang-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  background: var(--sz-bg-secondary, #f1f3f5);
+  color: var(--sz-text-secondary, #6c757d);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &.active {
+    background: #1bbc9b;
+    color: #fff;
+  }
+
+  &:not(.active):hover {
+    background: var(--sz-border-color, #dee2e6);
+  }
+
+  img {
+    border-radius: 2px;
+  }
+}
+
+/* ── Toggle switch ───────────────────────── */
+.faq-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.toggle-switch {
+  cursor: pointer;
+  display: inline-block;
+}
+
+.toggle-track {
+  display: flex;
+  align-items: center;
+  width: 48px;
+  height: 26px;
+  border-radius: 13px;
+  background: #ccc;
+  padding: 2px;
+  transition: background 0.3s;
+
+  &.active {
+    background: #1bbc9b;
+
+    .toggle-thumb {
+      transform: translateX(22px);
+    }
+  }
+}
+
+.toggle-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s;
+}
+
+.toggle-label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--sz-text-primary, #212529);
+}
+
+/* ── FAQ items ───────────────────────────── */
+.faq-item {
+  background: var(--sz-bg-secondary, #f8f9fa);
+  border: 1px solid var(--sz-border-color, #e9ecef);
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.faq-field {
+  margin-bottom: 0.75rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.faq-field-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--sz-text-secondary, #6c757d);
+  margin-bottom: 0.35rem;
+  text-align: right;
+}
+
+.faq-field-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+
+.btn-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #e74c3c;
+  color: #fff;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #c0392b;
+    transform: scale(1.1);
+  }
+}
+
+.form-control {
+  background-color: var(--sz-bg-card, #fff);
+  border-color: var(--sz-border-color, #dee2e6);
+  color: var(--sz-text-primary, #212529);
+  font-size: 0.875rem;
+
+  &:focus {
+    border-color: #1bbc9b;
+    box-shadow: 0 0 0 3px rgba(27, 188, 155, 0.15);
+  }
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* ── Add button ──────────────────────────── */
+.btn-add-faq {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px dashed #1bbc9b;
+  border-radius: 10px;
+  background: transparent;
+  color: #1bbc9b;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    background: rgba(27, 188, 155, 0.08);
+  }
+}

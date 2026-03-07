@@ -1,0 +1,167 @@
+/* ── Form Card ──────────────────────── */
+.form-card {
+  border-right: 4px solid #1bbc9b;
+}
+
+/* ── Product Search ────────────────── */
+.product-search-wrapper {
+  position: relative;
+}
+
+.product-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: var(--sz-bg-card, #fff);
+  border: 1px solid var(--sz-border-color, #dee2e6);
+  border-radius: 8px;
+  max-height: 250px;
+  overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.product-option {
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--sz-border-color, #f0f0f0);
+  transition: background 0.15s;
+
+  &:hover {
+    background: rgba(27, 188, 155, 0.08);
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.selected-product-badge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(27, 188, 155, 0.1);
+  border: 1px solid #1bbc9b;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  color: var(--sz-text-primary);
+}
+
+/* ── Merchant Rows ─────────────────── */
+.merchant-row {
+  background: var(--sz-bg-secondary, #f8f9fa);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--sz-border-color, #e9ecef);
+}
+
+.profit-preview {
+  background: rgba(27, 188, 155, 0.1);
+  border-radius: 6px;
+  padding: 0.35rem 0.5rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #1bbc9b;
+  text-align: center;
+}
+
+/* ── Comparison Table ──────────────── */
+.compare-table {
+  th {
+    background: linear-gradient(135deg, #1bbc9b, #17a689);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.75rem 1rem;
+    white-space: nowrap;
+    border: none;
+  }
+
+  td {
+    padding: 0.75rem 1rem;
+    vertical-align: middle;
+    border-color: var(--sz-border-color, #e9ecef);
+    font-size: 0.85rem;
+  }
+
+  tbody tr {
+    transition: background 0.15s;
+
+    &:hover {
+      background: rgba(27, 188, 155, 0.04);
+    }
+  }
+}
+
+.row-num {
+  font-weight: 700;
+  color: var(--sz-text-secondary, #6c757d);
+  font-size: 0.82rem;
+  text-align: center;
+  width: 50px;
+}
+
+.product-name-col {
+  font-weight: 700;
+  color: var(--sz-text-primary);
+  min-width: 180px;
+}
+
+.category-badge {
+  display: inline-block;
+  background: rgba(27, 188, 155, 0.1);
+  color: #1bbc9b;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.wholesale-col {
+  color: #d97706;
+}
+
+.profit-col {
+  color: #1bbc9b;
+}
+
+.best-merchant-badge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(27, 188, 155, 0.1);
+  color: #1bbc9b;
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+
+  i {
+    color: #f59e0b;
+    font-size: 0.75rem;
+  }
+}
+
+.profit-percent {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.profit-high {
+  background: rgba(27, 188, 155, 0.15);
+  color: #059669;
+}
+
+.profit-low {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+}
+
+.actions-col {
+  white-space: nowrap;
+}

@@ -1,0 +1,112 @@
+<!-- Page Title -->
+<h4 class="fw-bold mb-4">
+  <i class="bi bi-shop me-2" style="color: var(--sz-accent);"></i>إدارة التجار
+</h4>
+
+<!-- Add / Edit Form Card -->
+<div class="card border-0 shadow-sm mb-4" style="background-color: var(--sz-bg-card);">
+  <div class="card-body p-4">
+    <h6 class="fw-bold mb-3">
+      @if (editingMerchant) {
+        <i class="bi bi-pencil me-2" style="color: var(--sz-accent);"></i>تعديل بيانات التاجر
+      } @else {
+        <i class="bi bi-plus-circle me-2" style="color: var(--sz-accent);"></i>إضافة تاجر جديد
+      }
+    </h6>
+    <form (ngSubmit)="onSave()">
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label class="form-label">اسم التاجر *</label>
+          <input type="text" class="form-control" [(ngModel)]="merchantName" name="merchantName"
+                 placeholder="أدخل اسم التاجر">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">رقم الموبايل</label>
+          <input type="text" class="form-control" [(ngModel)]="merchantPhone" name="merchantPhone"
+                 placeholder="أدخل رقم الموبايل" dir="rtl">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">العنوان</label>
+          <input type="text" class="form-control" [(ngModel)]="merchantAddress" name="merchantAddress"
+                 placeholder="أدخل العنوان">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label">ملاحظات</label>
+          <input type="text" class="form-control" [(ngModel)]="merchantNotes" name="merchantNotes"
+                 placeholder="ملاحظات إضافية">
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary px-4" [disabled]="!merchantName.trim() || isSaving">
+          @if (editingMerchant) {
+            <i class="bi bi-check-lg me-1"></i>حفظ التعديل
+          } @else {
+            <i class="bi bi-plus-lg me-1"></i>إضافة
+          }
+        </button>
+        @if (editingMerchant) {
+          <button type="button" class="btn btn-outline-secondary" (click)="onCancelEdit()">
+            إلغاء
+          </button>
+        }
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Merchants List -->
+@if (isLoading) {
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2 text-secondary">جاري تحميل التجار...</p>
+  </div>
+} @else if (error) {
+  <div class="alert alert-danger">
+    <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+    <button class="btn btn-sm btn-outline-danger ms-3" (click)="loadMerchants()">إعادة المحاولة</button>
+  </div>
+} @else {
+  <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--sz-border-color);">
+              <th class="ps-3">#</th>
+              <th>الاسم</th>
+              <th>الموبايل</th>
+              <th>العنوان</th>
+              <th>ملاحظات</th>
+              <th class="text-start pe-3">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (merchant of merchants; track merchant.id) {
+              <tr>
+                <td class="ps-3 text-muted">{{ merchant.id }}</td>
+                <td class="fw-semibold">{{ merchant.name }}</td>
+                <td dir="rtl">{{ merchant.phone || '---' }}</td>
+                <td>{{ merchant.address || '---' }}</td>
+                <td class="text-muted">{{ merchant.notes || '---' }}</td>
+                <td class="text-start pe-3">
+                  <div class="d-flex gap-2 justify-content-start">
+                    <button class="action-btn edit-btn" (click)="onEdit(merchant)" title="تعديل">
+                      <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button class="action-btn delete-btn" (click)="onDelete(merchant)" title="حذف">
+                      <i class="bi bi-trash-fill"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6" class="text-center py-4 text-secondary">لا يوجد تجار بعد</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+}

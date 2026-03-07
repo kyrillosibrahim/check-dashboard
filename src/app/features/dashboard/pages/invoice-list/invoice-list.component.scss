@@ -1,0 +1,248 @@
+/* ── Search bar ──────────────────────── */
+.search-wrapper {
+  .input-group {
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--sz-border-color, #dee2e6);
+    transition: border-color 0.2s;
+
+    &:focus-within {
+      border-color: #1bbc9b;
+    }
+  }
+
+  .search-icon {
+    background: var(--sz-bg-secondary, #f8f9fa);
+    border: none;
+    color: var(--sz-text-secondary, #6c757d);
+    padding-inline: 0.75rem;
+  }
+
+  .search-input {
+    border: none;
+    background: var(--sz-bg-secondary, #f8f9fa);
+    color: var(--sz-text-primary);
+    font-size: 0.88rem;
+    padding: 0.6rem 0.75rem;
+
+    &:focus {
+      box-shadow: none;
+      background: var(--sz-bg-secondary, #f8f9fa);
+    }
+
+    &::placeholder {
+      color: var(--sz-text-secondary, #999);
+    }
+  }
+
+  .btn-outline-secondary {
+    border: none;
+    background: var(--sz-bg-secondary, #f8f9fa);
+    color: var(--sz-text-secondary);
+
+    &:hover {
+      color: var(--sz-text-primary);
+    }
+  }
+}
+
+.no-results {
+  font-size: 0.85rem;
+  color: var(--sz-text-secondary, #6c757d);
+}
+
+/* ── Row number column ───────────────── */
+.row-num-col {
+  font-weight: 700;
+  color: var(--sz-text-secondary, #6c757d);
+  font-size: 0.82rem;
+  text-align: center;
+  width: 50px;
+}
+
+.invoice-table {
+  th {
+    background: linear-gradient(135deg, #1bbc9b, #17a689);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.75rem 1rem;
+    white-space: nowrap;
+    border: none;
+  }
+
+  td {
+    padding: 0.85rem 1rem;
+    vertical-align: middle;
+    border-color: var(--sz-border-color, #e9ecef);
+    font-size: 0.85rem;
+  }
+
+  tbody tr {
+    transition: background 0.15s;
+
+    &:hover {
+      background: rgba(27, 188, 155, 0.04);
+    }
+
+    &.row-completed {
+      background: rgba(239, 68, 68, 0.15) !important;
+
+      td {
+        background: transparent !important;
+      }
+
+      &:hover {
+        background: rgba(239, 68, 68, 0.22) !important;
+      }
+    }
+  }
+}
+
+/* ── Order column ────────────────────── */
+.order-col {
+  white-space: nowrap;
+}
+
+.order-link {
+  color: #1bbc9b;
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+    color: #14947a;
+  }
+}
+
+/* ── Customer column ─────────────────── */
+.customer-col {
+  min-width: 140px;
+}
+
+.customer-name {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--sz-text-primary);
+  margin-bottom: 0.15rem;
+}
+
+.customer-phone {
+  font-size: 0.78rem;
+  color: var(--sz-text-secondary, #6c757d);
+  direction: ltr;
+  text-align: right;
+}
+
+/* ── Images column ───────────────────── */
+.images-col {
+  min-width: 120px;
+}
+
+.product-thumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.thumb-img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--sz-border-color, #dee2e6);
+}
+
+.thumb-more {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--sz-text-secondary);
+  background: var(--sz-bg-secondary, #f1f3f5);
+  border-radius: 6px;
+  padding: 0.25rem 0.5rem;
+}
+
+/* ── Quantity column ─────────────────── */
+.quantity-col {
+  white-space: nowrap;
+
+  .badge {
+    font-size: 0.78rem;
+    padding: 0.3rem 0.6rem;
+  }
+}
+
+/* ── Price column ────────────────────── */
+.price-col {
+  white-space: nowrap;
+}
+
+.price-total {
+  font-weight: 700;
+  color: #1bbc9b;
+  font-size: 0.9rem;
+}
+
+.price-shipping {
+  font-size: 0.75rem;
+  color: var(--sz-text-secondary, #6c757d);
+  margin-top: 0.15rem;
+}
+
+/* ── Date column ─────────────────────── */
+.date-col {
+  white-space: nowrap;
+}
+
+.date-main {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--sz-text-primary);
+}
+
+.date-time {
+  font-size: 0.78rem;
+  color: var(--sz-text-secondary, #6c757d);
+  direction: ltr;
+  text-align: right;
+}
+
+.date-ago {
+  font-size: 0.72rem;
+  color: var(--sz-text-secondary, #999);
+  margin-top: 0.1rem;
+}
+
+/* ── Status column ───────────────────── */
+.status-col {
+  white-space: nowrap;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-processing {
+  background: #cce5ff;
+  color: #004085;
+}
+
+.status-shipped {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-delivered {
+  background: #d1ecf1;
+  color: #0c5460;
+}

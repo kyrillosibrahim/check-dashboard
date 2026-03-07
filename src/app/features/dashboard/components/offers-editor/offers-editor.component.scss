@@ -1,0 +1,124 @@
+.empty-hint {
+  font-size: 0.78rem;
+  color: var(--sz-text-secondary);
+}
+
+.add-btn {
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--sz-text-secondary);
+
+  i {
+    display: block;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.4;
+  }
+
+  small {
+    font-size: 0.8rem;
+  }
+}
+
+.offer-card {
+  background-color: var(--sz-bg-secondary);
+  border: 1px solid var(--sz-border-color);
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  transition: border-color 0.2s;
+
+  &:hover {
+    border-color: var(--sz-accent);
+  }
+}
+
+.offer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.offer-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  background-color: rgba(13, 110, 253, 0.1);
+  color: var(--sz-accent);
+}
+
+.btn-icon {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.form-control {
+  background-color: var(--sz-bg-card);
+  border-color: var(--sz-border-color);
+  color: var(--sz-text-primary);
+  font-size: 0.825rem;
+}
+
+.form-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--sz-text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+/* ── Image upload zone ──────────────── */
+.upload-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 2px dashed var(--sz-border-color);
+  border-radius: 8px;
+  background-color: var(--sz-bg-card);
+  color: var(--sz-text-secondary);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+
+  i {
+    font-size: 1.2rem;
+  }
+
+  span {
+    font-size: 0.8rem;
+  }
+
+  &:hover {
+    border-color: var(--sz-accent);
+    color: var(--sz-accent);
+  }
+}
+
+/* ── Image preview ──────────────────── */
+.image-preview-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.offer-preview-img {
+  max-width: 240px;
+  max-height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--sz-border-color);
+}

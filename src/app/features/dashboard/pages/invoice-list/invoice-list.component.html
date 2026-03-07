@@ -1,0 +1,166 @@
+<!-- Page Title -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="fw-bold mb-0">
+    <i class="bi bi-receipt me-2" style="color: var(--sz-accent);"></i>
+    الفواتير
+  </h4>
+</div>
+
+<!-- Stats Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-4">
+    <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
+      <div class="card-body text-center py-3">
+        <i class="bi bi-receipt fs-3 mb-1 d-block" style="color: var(--sz-accent);"></i>
+        <h4 class="fw-bold mb-0">{{ orders.length }}</h4>
+        <small class="text-secondary">إجمالي الفواتير</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
+      <div class="card-body text-center py-3">
+        <i class="bi bi-hourglass-split fs-3 mb-1 d-block text-warning"></i>
+        <h4 class="fw-bold mb-0">{{ pendingCount }}</h4>
+        <small class="text-secondary">قيد الانتظار</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-4">
+    <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
+      <div class="card-body text-center py-3">
+        <i class="bi bi-cash-stack fs-3 mb-1 d-block text-success"></i>
+        <h4 class="fw-bold mb-0">{{ totalRevenue | egpCurrency }}</h4>
+        <small class="text-secondary">إجمالي المبيعات</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Search Bar -->
+@if (!isLoading && !error && orders.length > 0) {
+  <div class="search-wrapper mb-3">
+    <div class="input-group">
+      <span class="input-group-text search-icon">
+        <i class="bi bi-search"></i>
+      </span>
+      <input
+        type="text"
+        class="form-control search-input"
+        placeholder="بحث برقم الفاتورة أو اسم العميل أو رقم الهاتف..."
+        [(ngModel)]="searchTerm"
+      />
+      @if (searchTerm) {
+        <button class="btn btn-outline-secondary" (click)="searchTerm = ''">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      }
+    </div>
+    @if (searchTerm && filteredOrders.length === 0) {
+      <div class="no-results mt-2">
+        <i class="bi bi-emoji-frown me-1"></i> لا توجد نتائج للبحث "{{ searchTerm }}"
+      </div>
+    } @else if (searchTerm) {
+      <small class="text-secondary mt-1 d-block">تم العثور على {{ filteredOrders.length }} نتيجة</small>
+    }
+  </div>
+}
+
+<!-- Invoice Table -->
+@if (isLoading) {
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2 text-secondary">جاري تحميل الفواتير...</p>
+  </div>
+} @else if (error) {
+  <div class="alert alert-danger">
+    <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+    <button class="btn btn-sm btn-outline-danger ms-3" (click)="loadOrders()">إعادة المحاولة</button>
+  </div>
+} @else if (orders.length === 0) {
+  <div class="text-center py-5">
+    <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary"></i>
+    <p class="text-secondary">لا توجد فواتير حتى الآن</p>
+  </div>
+} @else {
+  <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0 invoice-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>الطلب</th>
+            <th>العميل</th>
+            <th>المنتجات</th>
+            <th>الكمية</th>
+            <th>السعر</th>
+            <th>التاريخ</th>
+            <th>الحالة</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (order of filteredOrders; track order.id; let idx = $index) {
+            <tr [class.row-completed]="order.status === 'delivered' || order.paymentStatus === 'paid'">
+              <!-- Row Number -->
+              <td class="row-num-col">{{ idx + 1 }}</td>
+
+              <!-- Order Column -->
+              <td class="order-col">
+                <a [routerLink]="['/invoices', order.id]" class="order-link">
+                  #{{ order.id }}
+                </a>
+              </td>
+
+              <!-- Customer Column -->
+              <td class="customer-col">
+                <div class="customer-name">{{ order.customer.name || '---' }}</div>
+                <div class="customer-phone">{{ order.customer.phone || '' }}</div>
+              </td>
+
+              <!-- Products Column -->
+              <td class="images-col">
+                <div class="product-thumbs">
+                  @for (item of order.items; track item.productId; let i = $index) {
+                    @if (i < 3 && item.image) {
+                      <img [src]="item.image" [alt]="item.title" class="thumb-img">
+                    }
+                  }
+                  @if (order.items.length > 3) {
+                    <span class="thumb-more">+{{ order.items.length - 3 }}</span>
+                  }
+                </div>
+              </td>
+
+              <!-- Quantity Column -->
+              <td class="quantity-col">
+                <span class="badge bg-success">{{ getItemsCount(order) }} قطعة</span>
+              </td>
+
+              <!-- Price Column -->
+              <td class="price-col">
+                <div class="price-total">{{ order.total | egpCurrency }}</div>
+                @if (order.shippingCost) {
+                  <div class="price-shipping">شحن: {{ order.shippingCost | egpCurrency }}</div>
+                }
+              </td>
+
+              <!-- Date Column -->
+              <td class="date-col">
+                <div class="date-main">{{ order.date | date:'yyyy/M/d' }}</div>
+                <div class="date-time">{{ order.date | date:'h:mm a' }}</div>
+                <div class="date-ago">{{ getTimeAgo(order.date) }}</div>
+              </td>
+
+              <!-- Status Column -->
+              <td class="status-col">
+                <span class="status-badge" [class]="'status-' + order.status">
+                  {{ getStatusLabel(order.status) }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

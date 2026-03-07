@@ -1,0 +1,86 @@
+<div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table mb-0 align-middle">
+        <thead>
+          <tr style="border-bottom: 2px solid var(--sz-border-color);">
+            <th class="ps-3">الصورة</th>
+            <th>العنوان</th>
+            <th>سعر الجملة</th>
+            <th>السعر الأصلي</th>
+            <th>بعد الخصم</th>
+            <th>نسبة الخصم</th>
+            <th>نسبة الربح</th>
+            <th>المخزون</th>
+            <th class="text-start pe-3">الإجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (product of products; track product.id || product.slug) {
+            <tr>
+              <td class="ps-3">
+                <img [src]="getImageUrl(product)" [alt]="product.title" class="rounded product-thumb">
+              </td>
+              <td>
+                <div class="fw-semibold text-truncate" style="max-width: 200px;">{{ product.title }}</div>
+                <small class="text-secondary">{{ product.brand }}</small>
+              </td>
+              <td>
+                @if (product.wholesalePrice) {
+                  <span class="fw-semibold">{{ product.wholesalePrice | egpCurrency }}</span>
+                } @else {
+                  <span class="text-secondary">&mdash;</span>
+                }
+              </td>
+              <td class="fw-semibold">{{ (product.originalPrice || product.price) | egpCurrency }}</td>
+              <td>
+                @if (product.discountedPrice) {
+                  <span class="fw-semibold" style="color: var(--sz-accent);">{{ product.discountedPrice | egpCurrency }}</span>
+                } @else {
+                  <span class="text-secondary">&mdash;</span>
+                }
+              </td>
+              <td>
+                @if (getDiscountPercent(product) > 0) {
+                  <span class="badge bg-success">{{ getDiscountPercent(product) }}%</span>
+                } @else {
+                  <span class="text-secondary">&mdash;</span>
+                }
+              </td>
+              <td>
+                @if (product.wholesalePrice) {
+                  <span class="badge" [class.bg-success]="getProfitPercent(product) > 0" [class.bg-danger]="getProfitPercent(product) <= 0">
+                    {{ getProfitPercent(product) }}%
+                  </span>
+                } @else {
+                  <span class="text-secondary">&mdash;</span>
+                }
+              </td>
+              <td>
+                @if (product.stock < 10) {
+                  <span class="badge bg-danger">{{ product.stock }}</span>
+                } @else {
+                  <span class="badge bg-success">{{ product.stock }}</span>
+                }
+              </td>
+              <td class="text-start pe-3">
+                <div class="d-flex gap-2 justify-content-start">
+                  <button class="action-btn edit-btn" (click)="edit.emit(product)" title="تعديل">
+                    <i class="bi bi-pencil-fill"></i>
+                  </button>
+                  <button class="action-btn delete-btn" (click)="delete.emit(product)" title="حذف">
+                    <i class="bi bi-trash-fill"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="9" class="text-center py-4 text-secondary">لا توجد منتجات</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

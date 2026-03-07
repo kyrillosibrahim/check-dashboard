@@ -1,0 +1,287 @@
+<!-- Page Title -->
+<h4 class="fw-bold mb-4">
+  <i class="bi bi-gear me-2" style="color: var(--sz-accent);"></i>إعدادات الموقع
+</h4>
+
+@if (isLoading) {
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2 text-secondary">جاري تحميل الإعدادات...</p>
+  </div>
+} @else if (error) {
+  <div class="alert alert-danger">
+    <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+    <button class="btn btn-sm btn-outline-danger ms-3" (click)="loadAll()">إعادة المحاولة</button>
+  </div>
+} @else {
+
+  <!-- ═══════ Cart & Favorites Counts ═══════ -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
+        <div class="card-body text-center py-3">
+          <i class="bi bi-cart3 fs-3 mb-1 d-block text-primary"></i>
+          <h4 class="fw-bold mb-0">{{ settings.cartCount ?? 0 }}</h4>
+          <small class="text-secondary">عناصر السلة</small>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
+        <div class="card-body text-center py-3">
+          <i class="bi bi-heart-fill fs-3 mb-1 d-block text-danger"></i>
+          <h4 class="fw-bold mb-0">{{ settings.favoritesCount ?? 0 }}</h4>
+          <small class="text-secondary">عناصر المفضلة</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ Section 1: Logo ═══════ -->
+  <div class="settings-section">
+    <div class="section-header">
+      <i class="bi bi-image"></i>
+      <h6>لوجو الموقع</h6>
+    </div>
+    <div class="section-body">
+      <div class="logo-upload-area">
+        @if (logoPreview) {
+          <div class="logo-preview-box">
+            <img [src]="logoPreview" alt="Logo Preview">
+          </div>
+        } @else {
+          <div class="logo-placeholder">
+            <i class="bi bi-cloud-arrow-up"></i>
+            <span>لم يتم رفع لوجو بعد</span>
+          </div>
+        }
+        <div class="mt-3">
+          <label class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-upload me-1"></i>رفع لوجو جديد
+            <input type="file" accept="image/*" hidden (change)="onLogoSelected($event)">
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ Section 2: Colors ═══════ -->
+  <div class="settings-section">
+    <div class="section-header">
+      <i class="bi bi-palette"></i>
+      <h6>الألوان الأساسية</h6>
+    </div>
+    <div class="section-body">
+      <div class="color-grid">
+        <div class="color-item">
+          <label class="form-label">اللون الأساسى - فاتح</label>
+          <div class="color-input-wrap">
+            <input type="color" [(ngModel)]="settings.colors.primaryLight" name="primaryLight" class="color-picker">
+            <input type="text" [(ngModel)]="settings.colors.primaryLight" name="primaryLightText" class="form-control form-control-sm color-text" dir="ltr">
+          </div>
+          <div class="color-swatch" [style.background]="settings.colors.primaryLight"></div>
+        </div>
+        <div class="color-item">
+          <label class="form-label">اللون الأساسى - غامق</label>
+          <div class="color-input-wrap">
+            <input type="color" [(ngModel)]="settings.colors.primaryDark" name="primaryDark" class="color-picker">
+            <input type="text" [(ngModel)]="settings.colors.primaryDark" name="primaryDarkText" class="form-control form-control-sm color-text" dir="ltr">
+          </div>
+          <div class="color-swatch" [style.background]="settings.colors.primaryDark"></div>
+        </div>
+        <div class="color-item">
+          <label class="form-label">اللون الثانوى - فاتح</label>
+          <div class="color-input-wrap">
+            <input type="color" [(ngModel)]="settings.colors.secondaryLight" name="secondaryLight" class="color-picker">
+            <input type="text" [(ngModel)]="settings.colors.secondaryLight" name="secondaryLightText" class="form-control form-control-sm color-text" dir="ltr">
+          </div>
+          <div class="color-swatch" [style.background]="settings.colors.secondaryLight"></div>
+        </div>
+        <div class="color-item">
+          <label class="form-label">اللون الثانوى - غامق</label>
+          <div class="color-input-wrap">
+            <input type="color" [(ngModel)]="settings.colors.secondaryDark" name="secondaryDark" class="color-picker">
+            <input type="text" [(ngModel)]="settings.colors.secondaryDark" name="secondaryDarkText" class="form-control form-control-sm color-text" dir="ltr">
+          </div>
+          <div class="color-swatch" [style.background]="settings.colors.secondaryDark"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ Section 3: Social Links ═══════ -->
+  <div class="settings-section">
+    <div class="section-header">
+      <i class="bi bi-share"></i>
+      <h6>لينكات التواصل الاجتماعى</h6>
+    </div>
+    <div class="section-body">
+      <div class="social-grid">
+        <div class="social-item">
+          <label class="form-label"><i class="bi bi-facebook me-1 text-primary"></i>فيسبوك</label>
+          <input type="url" class="form-control" [(ngModel)]="settings.social.facebook" name="facebook"
+                 placeholder="https://facebook.com/..." dir="ltr">
+        </div>
+        <div class="social-item">
+          <label class="form-label"><i class="bi bi-instagram me-1" style="color: #e1306c;"></i>انستجرام</label>
+          <input type="url" class="form-control" [(ngModel)]="settings.social.instagram" name="instagram"
+                 placeholder="https://instagram.com/..." dir="ltr">
+        </div>
+        <div class="social-item">
+          <label class="form-label"><i class="bi bi-whatsapp me-1 text-success"></i>واتساب</label>
+          <input type="text" class="form-control" [(ngModel)]="settings.social.whatsapp" name="whatsapp"
+                 placeholder="201XXXXXXXXX" dir="ltr">
+        </div>
+        <div class="social-item">
+          <label class="form-label"><i class="bi bi-telephone me-1" style="color: var(--sz-accent);"></i>رقم التليفون</label>
+          <input type="text" class="form-control" [(ngModel)]="settings.social.phone" name="phone"
+                 placeholder="01XXXXXXXXX" dir="ltr">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ Section 4: Best Selling Products ═══════ -->
+  <div class="settings-section">
+    <div class="section-header">
+      <i class="bi bi-star"></i>
+      <h6>المنتجات الأكثر مبيعاً</h6>
+    </div>
+    <div class="section-body">
+      <!-- Category filter + Search to add -->
+      <div class="row g-2 mb-3">
+        <div class="col-md-4">
+          <select class="form-select" [(ngModel)]="productCategoryFilter" name="productCategoryFilter">
+            <option value="">-- اختر القسم أولاً --</option>
+            @for (cat of categories; track cat.id) {
+              <option [value]="cat.slug">{{ cat.name }}</option>
+            }
+          </select>
+        </div>
+        <div class="col-md-8">
+          <div class="search-dropdown-wrap">
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+              <input type="text" class="form-control" [(ngModel)]="productSearch" name="productSearch"
+                     placeholder="ابحث عن منتج لإضافته..."
+                     [disabled]="!productCategoryFilter"
+                     (focus)="showProductDropdown = true"
+                     (blur)="onProductBlur()">
+            </div>
+            @if (showProductDropdown && productCategoryFilter && filteredProducts.length > 0) {
+              <div class="search-dropdown">
+                @for (product of filteredProducts; track product.id) {
+                  <div class="dropdown-item-custom" (mousedown)="addProduct(product)">
+                    @if (getProductImage(product)) {
+                      <img [src]="getProductImage(product)" [alt]="product.title" class="dropdown-thumb">
+                    } @else {
+                      <div class="dropdown-thumb-placeholder"><i class="bi bi-box"></i></div>
+                    }
+                    <div class="dropdown-info">
+                      <span class="dropdown-title">{{ product.titleAr || product.title }}</span>
+                      <span class="dropdown-sub">{{ product.price }} ج.م</span>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected products -->
+      @if (selectedProducts.length > 0) {
+        <div class="selected-items-grid">
+          @for (product of selectedProducts; track product.id) {
+            <div class="selected-card">
+              @if (getProductImage(product)) {
+                <img [src]="getProductImage(product)" [alt]="product.title" class="selected-card-img">
+              } @else {
+                <div class="selected-card-img-placeholder"><i class="bi bi-box"></i></div>
+              }
+              <div class="selected-card-info">
+                <span class="selected-card-title">{{ product.titleAr || product.title }}</span>
+                <span class="selected-card-sub">{{ product.price }} ج.م</span>
+              </div>
+              <button class="remove-btn" (click)="removeProduct(product)" title="إزالة">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="text-muted text-center py-3">لم يتم اختيار منتجات بعد</p>
+      }
+    </div>
+  </div>
+
+  <!-- ═══════ Section 5: Best Selling Brands ═══════ -->
+  <div class="settings-section">
+    <div class="section-header">
+      <i class="bi bi-award"></i>
+      <h6>العلامات التجارية الأكثر مبيعاً</h6>
+    </div>
+    <div class="section-body">
+      <!-- Search to add -->
+      <div class="search-dropdown-wrap">
+        <div class="input-group mb-3">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input type="text" class="form-control" [(ngModel)]="brandSearch" name="brandSearch"
+                 placeholder="ابحث عن علامة تجارية لإضافتها..."
+                 (focus)="showBrandDropdown = true"
+                 (blur)="onBrandBlur()">
+        </div>
+        @if (showBrandDropdown && filteredBrands.length > 0) {
+          <div class="search-dropdown">
+            @for (brand of filteredBrands; track brand.id) {
+              <div class="dropdown-item-custom" (mousedown)="addBrand(brand)">
+                @if (getBrandImage(brand)) {
+                  <img [src]="getBrandImage(brand)" [alt]="brand.name" class="dropdown-thumb">
+                } @else {
+                  <div class="dropdown-thumb-placeholder"><i class="bi bi-award"></i></div>
+                }
+                <div class="dropdown-info">
+                  <span class="dropdown-title">{{ brand.name }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Selected brands -->
+      @if (selectedBrands.length > 0) {
+        <div class="selected-items-grid">
+          @for (brand of selectedBrands; track brand.id) {
+            <div class="selected-card">
+              @if (getBrandImage(brand)) {
+                <img [src]="getBrandImage(brand)" [alt]="brand.name" class="selected-card-img">
+              } @else {
+                <div class="selected-card-img-placeholder"><i class="bi bi-award"></i></div>
+              }
+              <div class="selected-card-info">
+                <span class="selected-card-title">{{ brand.name }}</span>
+              </div>
+              <button class="remove-btn" (click)="removeBrand(brand)" title="إزالة">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="text-muted text-center py-3">لم يتم اختيار علامات تجارية بعد</p>
+      }
+    </div>
+  </div>
+
+  <!-- ═══════ Save Button ═══════ -->
+  <div class="save-area">
+    <button class="btn btn-primary btn-lg px-5" (click)="onSave()" [disabled]="isSaving">
+      @if (isSaving) {
+        <span class="spinner-border spinner-border-sm me-2"></span>جاري الحفظ...
+      } @else {
+        <i class="bi bi-check-lg me-2"></i>حفظ الإعدادات
+      }
+    </button>
+  </div>
+}

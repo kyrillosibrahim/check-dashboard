@@ -1,0 +1,49 @@
+<div class="section-header">
+  <i class="bi bi-calculator"></i>
+  <h6>التسعير</h6>
+</div>
+
+<div class="row g-3" [formGroup]="form">
+  <!-- Wholesale Price -->
+  <div class="col-md-4">
+    <label class="form-label">سعر الجملة</label>
+    <div class="input-group">
+      <input type="number" class="form-control" formControlName="wholesalePrice" min="0" step="0.01">
+      <span class="input-group-text">ج.م</span>
+    </div>
+  </div>
+
+  <!-- Original Price -->
+  <div class="col-md-4">
+    <label class="form-label">السعر الأصلي</label>
+    <div class="input-group">
+      <input type="number" class="form-control" formControlName="originalPrice" min="0" step="0.01"
+             [class.is-invalid]="form.get('originalPrice')?.touched && form.get('originalPrice')?.invalid">
+      <span class="input-group-text">ج.م</span>
+    </div>
+  </div>
+
+  <!-- Discounted Price -->
+  <div class="col-md-4">
+    <label class="form-label">السعر بعد الخصم</label>
+    <div class="input-group">
+      <input type="number" class="form-control" formControlName="discountedPrice" min="0" step="0.01"
+             [class.is-invalid]="form.get('discountedPrice')?.touched && form.get('discountedPrice')?.invalid">
+      <span class="input-group-text">ج.م</span>
+    </div>
+  </div>
+</div>
+
+<!-- Live Calculations -->
+<div class="d-flex flex-wrap gap-3 mt-3">
+  <div class="calc-badge" [class.positive]="discountPercent > 0" [class.negative]="discountPercent < 0">
+    <i class="bi bi-percent me-1"></i>
+    <span class="calc-label">نسبة الخصم:</span>
+    <span class="calc-value">{{ discountPercent }}%</span>
+  </div>
+  <div class="calc-badge" [class.positive]="profitPercent > 0" [class.negative]="profitPercent < 0">
+    <i class="bi bi-graph-up-arrow me-1"></i>
+    <span class="calc-label">نسبة ربح التاجر:</span>
+    <span class="calc-value">{{ profitPercent }}%</span>
+  </div>
+</div>

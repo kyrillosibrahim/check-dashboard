@@ -1,0 +1,108 @@
+<!-- Page Title -->
+<h4 class="fw-bold mb-4">
+  <i class="bi bi-award me-2" style="color: var(--sz-accent);"></i>إدارة العلامات التجارية
+</h4>
+
+<!-- Add / Edit Form Card -->
+<div class="card border-0 shadow-sm mb-4" style="background-color: var(--sz-bg-card);">
+  <div class="card-body p-4">
+    <h6 class="fw-bold mb-3">
+      @if (editingBrand) {
+        <i class="bi bi-pencil me-2" style="color: var(--sz-accent);"></i>تعديل العلامة التجارية
+      } @else {
+        <i class="bi bi-plus-circle me-2" style="color: var(--sz-accent);"></i>إضافة علامة تجارية جديدة
+      }
+    </h6>
+    <form (ngSubmit)="onSave()" class="d-flex gap-3 align-items-end flex-wrap">
+      <div class="flex-grow-1" style="min-width: 200px;">
+        <label class="form-label">اسم العلامة التجارية *</label>
+        <input type="text" class="form-control" [(ngModel)]="brandName" name="brandName"
+               placeholder="أدخل اسم العلامة التجارية">
+      </div>
+      <div style="min-width: 200px;">
+        <label class="form-label">صورة الشعار</label>
+        <input type="file" class="form-control" accept="image/*" (change)="onFileSelected($event)">
+      </div>
+      @if (imagePreview) {
+        <div class="brand-preview">
+          <img [src]="imagePreview" alt="Preview" class="rounded">
+        </div>
+      }
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary px-4" [disabled]="!brandName.trim() || isSaving">
+          @if (editingBrand) {
+            <i class="bi bi-check-lg me-1"></i>حفظ التعديل
+          } @else {
+            <i class="bi bi-plus-lg me-1"></i>إضافة
+          }
+        </button>
+        @if (editingBrand) {
+          <button type="button" class="btn btn-outline-secondary" (click)="onCancelEdit()">
+            إلغاء
+          </button>
+        }
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Brands List -->
+@if (isLoading) {
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2 text-secondary">جاري تحميل العلامات التجارية...</p>
+  </div>
+} @else if (error) {
+  <div class="alert alert-danger">
+    <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+    <button class="btn btn-sm btn-outline-danger ms-3" (click)="loadBrands()">إعادة المحاولة</button>
+  </div>
+} @else {
+  <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--sz-border-color);">
+              <th class="ps-3">الشعار</th>
+              <th>الاسم</th>
+              <th>الرابط</th>
+              <th class="text-start pe-3">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (brand of brands; track brand.id) {
+              <tr>
+                <td class="ps-3">
+                  @if (getImageUrl(brand)) {
+                    <img [src]="getImageUrl(brand)" [alt]="brand.name" class="brand-thumb rounded">
+                  } @else {
+                    <div class="brand-thumb-placeholder rounded d-flex align-items-center justify-content-center">
+                      <i class="bi bi-image text-secondary"></i>
+                    </div>
+                  }
+                </td>
+                <td class="fw-semibold">{{ brand.name }}</td>
+                <td class="text-muted" dir="ltr">{{ brand.slug }}</td>
+                <td class="text-start pe-3">
+                  <div class="d-flex gap-2 justify-content-start">
+                    <button class="action-btn edit-btn" (click)="onEdit(brand)" title="تعديل">
+                      <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button class="action-btn delete-btn" (click)="onDelete(brand)" title="حذف">
+                      <i class="bi bi-trash-fill"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4" class="text-center py-4 text-secondary">لا توجد علامات تجارية بعد</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+}

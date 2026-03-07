@@ -1,0 +1,13 @@
+<h3 class="fw-bold mb-4">
+  <i class="bi bi-pencil-square me-2" style="color: var(--sz-accent);"></i>تعديل المنتج
+</h3>
+
+@if (product) {
+  <app-product-form
+    [product]="product"
+    [categories]="categories"
+    [brands]="brands"
+    [merchants]="merchants"
+    (save)="onSave($event)"
+    (cancel)="onCancel()" />
+}

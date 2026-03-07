@@ -1,0 +1,290 @@
+<!-- Page Title -->
+<h4 class="fw-bold mb-4">
+  <i class="bi bi-grid me-2" style="color: var(--sz-accent);"></i>إدارة الأقسام
+</h4>
+
+<!-- Add / Edit Form Card -->
+<div class="card border-0 shadow-sm mb-4" style="background-color: var(--sz-bg-card);">
+  <div class="card-body p-4">
+    <h6 class="fw-bold mb-3">
+      @if (editingCategory) {
+        <i class="bi bi-pencil me-2" style="color: var(--sz-accent);"></i>تعديل القسم
+      } @else {
+        <i class="bi bi-plus-circle me-2" style="color: var(--sz-accent);"></i>إضافة قسم جديد
+      }
+    </h6>
+    <form (ngSubmit)="onSave()">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-5">
+          <label class="form-label">اسم القسم *</label>
+          <input type="text" class="form-control" [(ngModel)]="categoryName" name="categoryName"
+                 placeholder="أدخل اسم القسم">
+        </div>
+        <div class="col-md-5">
+          <label class="form-label">صورة القسم</label>
+          <div class="image-upload-area">
+            @if (imagePreview) {
+              <div class="image-preview-wrapper">
+                <img [src]="imagePreview" alt="معاينة" class="image-preview">
+                <button type="button" class="remove-image-btn" (click)="removeImage()">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+            } @else {
+              <label class="upload-placeholder" for="catImage">
+                <i class="bi bi-cloud-arrow-up fs-4"></i>
+                <span>اختر صورة</span>
+              </label>
+            }
+            <input type="file" id="catImage" class="d-none" accept="image/*" (change)="onImageSelected($event)">
+          </div>
+        </div>
+        <div class="col-md-2">
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary px-4 w-100" [disabled]="!categoryName.trim() || isSaving">
+              @if (editingCategory) {
+                <i class="bi bi-check-lg me-1"></i>حفظ
+              } @else {
+                <i class="bi bi-plus-lg me-1"></i>إضافة
+              }
+            </button>
+          </div>
+          @if (editingCategory) {
+            <button type="button" class="btn btn-outline-secondary w-100 mt-2" (click)="onCancelEdit()">
+              إلغاء
+            </button>
+          }
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Categories List -->
+@if (isLoading) {
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2 text-secondary">جاري تحميل الأقسام...</p>
+  </div>
+} @else if (error) {
+  <div class="alert alert-danger">
+    <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+    <button class="btn btn-sm btn-outline-danger ms-3" (click)="loadAll()">إعادة المحاولة</button>
+  </div>
+} @else {
+  <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--sz-border-color);">
+              <th class="ps-3">#</th>
+              <th>الصورة</th>
+              <th>اسم القسم</th>
+              <th>الأقسام الفرعية</th>
+              <th>أشهر الماركات</th>
+              <th class="text-start pe-3">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (cat of categories; track cat.id; let i = $index) {
+              <tr [class.expanded-row]="expandedCategoryId === cat.id">
+                <td class="ps-3">{{ i + 1 }}</td>
+                <td>
+                  @if (cat.image) {
+                    <img [src]="getImageUrl(cat.image)" [alt]="cat.name" class="cat-thumb">
+                  } @else {
+                    <div class="cat-thumb-placeholder">
+                      <i class="bi bi-image"></i>
+                    </div>
+                  }
+                </td>
+                <td class="fw-semibold">{{ cat.name }}</td>
+                <td>
+                  <span class="badge bg-info clickable-badge" (click)="toggleExpand(cat)">
+                    <i class="bi bi-diagram-3 me-1"></i>{{ (cat.subcategories || []).length }}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge bg-warning text-dark clickable-badge" (click)="toggleExpand(cat)">
+                    <i class="bi bi-award me-1"></i>{{ (cat.famousBrands || []).length }}
+                  </span>
+                </td>
+                <td class="text-start pe-3">
+                  <div class="d-flex gap-2 justify-content-start">
+                    <button class="action-btn expand-btn" (click)="toggleExpand(cat)"
+                            [class.active]="expandedCategoryId === cat.id" title="تفاصيل">
+                      <i class="bi" [class.bi-chevron-down]="expandedCategoryId !== cat.id"
+                         [class.bi-chevron-up]="expandedCategoryId === cat.id"></i>
+                    </button>
+                    <button class="action-btn edit-btn" (click)="onEdit(cat)" title="تعديل">
+                      <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button class="action-btn delete-btn" (click)="onDelete(cat)" title="حذف">
+                      <i class="bi bi-trash-fill"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- ═══ Expanded Detail Panel ═══ -->
+              @if (expandedCategoryId === cat.id) {
+                <tr>
+                  <td colspan="6" class="p-0">
+                    <div class="detail-panel">
+
+                      <!-- ─── Subcategories Section ─── -->
+                      <div class="detail-section">
+                        <h6 class="detail-section-title">
+                          <i class="bi bi-diagram-3 me-2"></i>الأقسام الفرعية
+                        </h6>
+
+                        <!-- Add/Edit subcategory form -->
+                        <div class="sub-form mb-3">
+                          <div class="row g-2 align-items-end">
+                            <div class="col-md-4">
+                              <label class="form-label small">اسم القسم الفرعى *</label>
+                              <input type="text" class="form-control form-control-sm"
+                                     [(ngModel)]="subName" name="subName"
+                                     placeholder="مثال: مكياج الشفاه">
+                            </div>
+                            <div class="col-md-4">
+                              <label class="form-label small">صورة القسم الفرعى</label>
+                              <div class="image-upload-area small-upload">
+                                @if (subImagePreview) {
+                                  <div class="image-preview-wrapper">
+                                    <img [src]="subImagePreview" alt="معاينة" class="image-preview small-preview">
+                                    <button type="button" class="remove-image-btn" (click)="removeSubImage()">
+                                      <i class="bi bi-x-lg"></i>
+                                    </button>
+                                  </div>
+                                } @else {
+                                  <label class="upload-placeholder small-placeholder" [attr.for]="'subImage-' + cat.id">
+                                    <i class="bi bi-cloud-arrow-up"></i>
+                                    <span>اختر صورة</span>
+                                  </label>
+                                }
+                                <input type="file" [id]="'subImage-' + cat.id" class="d-none"
+                                       accept="image/*" (change)="onSubImageSelected($event)">
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-primary px-3"
+                                        (click)="onSaveSub()"
+                                        [disabled]="!subName.trim() || isSavingSub">
+                                  @if (editingSub) {
+                                    <i class="bi bi-check-lg me-1"></i>حفظ
+                                  } @else {
+                                    <i class="bi bi-plus-lg me-1"></i>إضافة
+                                  }
+                                </button>
+                                @if (editingSub) {
+                                  <button class="btn btn-sm btn-outline-secondary" (click)="onCancelSubEdit()">
+                                    إلغاء
+                                  </button>
+                                }
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Subcategories grid -->
+                        @if ((cat.subcategories || []).length > 0) {
+                          <div class="sub-grid">
+                            @for (sub of cat.subcategories; track sub.id) {
+                              <div class="sub-card">
+                                @if (sub.image) {
+                                  <img [src]="getImageUrl(sub.image)" [alt]="sub.name" class="sub-card-img">
+                                } @else {
+                                  <div class="sub-card-img-placeholder">
+                                    <i class="bi bi-image"></i>
+                                  </div>
+                                }
+                                <div class="sub-card-info">
+                                  <span class="sub-card-name">{{ sub.name }}</span>
+                                </div>
+                                <div class="sub-card-actions">
+                                  <button class="action-btn edit-btn" (click)="onEditSub(sub)" title="تعديل">
+                                    <i class="bi bi-pencil-fill"></i>
+                                  </button>
+                                  <button class="action-btn delete-btn" (click)="onDeleteSub(sub)" title="حذف">
+                                    <i class="bi bi-trash-fill"></i>
+                                  </button>
+                                </div>
+                              </div>
+                            }
+                          </div>
+                        } @else {
+                          <p class="text-muted text-center py-2 mb-0">لا توجد أقسام فرعية بعد</p>
+                        }
+                      </div>
+
+                      <!-- ─── Famous Brands Section ─── -->
+                      <div class="detail-section">
+                        <h6 class="detail-section-title">
+                          <i class="bi bi-award me-2"></i>أشهر الماركات
+                        </h6>
+
+                        <!-- Brand search to add -->
+                        <div class="search-dropdown-wrap mb-3">
+                          <div class="input-group input-group-sm">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control" [(ngModel)]="brandSearch" name="brandSearch"
+                                   placeholder="ابحث عن ماركة لإضافتها..."
+                                   (focus)="showBrandDropdown = true"
+                                   (blur)="onBrandBlur()">
+                          </div>
+                          @if (showBrandDropdown && getAvailableBrands(cat).length > 0) {
+                            <div class="search-dropdown">
+                              @for (brand of getAvailableBrands(cat); track brand.id) {
+                                <div class="dropdown-item-custom" (mousedown)="addBrandToCategory(cat, brand)">
+                                  @if (getBrandImageUrl(brand)) {
+                                    <img [src]="getBrandImageUrl(brand)" [alt]="brand.name" class="dropdown-thumb">
+                                  } @else {
+                                    <div class="dropdown-thumb-placeholder"><i class="bi bi-award"></i></div>
+                                  }
+                                  <span class="dropdown-title">{{ brand.name }}</span>
+                                </div>
+                              }
+                            </div>
+                          }
+                        </div>
+
+                        <!-- Selected brands grid -->
+                        @if (getSelectedBrands(cat).length > 0) {
+                          <div class="brand-grid">
+                            @for (brand of getSelectedBrands(cat); track brand.id) {
+                              <div class="brand-card">
+                                @if (getBrandImageUrl(brand)) {
+                                  <img [src]="getBrandImageUrl(brand)" [alt]="brand.name" class="brand-card-img">
+                                } @else {
+                                  <div class="brand-card-img-placeholder"><i class="bi bi-award"></i></div>
+                                }
+                                <span class="brand-card-name">{{ brand.name }}</span>
+                                <button class="remove-brand-btn" (click)="removeBrandFromCategory(cat, brand)" title="إزالة">
+                                  <i class="bi bi-x-lg"></i>
+                                </button>
+                              </div>
+                            }
+                          </div>
+                        } @else {
+                          <p class="text-muted text-center py-2 mb-0">لم يتم اختيار ماركات بعد</p>
+                        }
+                      </div>
+
+                    </div>
+                  </td>
+                </tr>
+              }
+            } @empty {
+              <tr>
+                <td colspan="6" class="text-center py-4 text-secondary">لا توجد أقسام بعد</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+}
