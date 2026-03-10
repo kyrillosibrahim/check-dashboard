@@ -257,6 +257,26 @@
               <label for="comingSoon">قريبًا</label>
             </div>
           </div>
+
+          <!-- Filter Tags -->
+          @if (filteredFilterTags.length > 0) {
+            <div class="col-12">
+              <label class="form-label"><i class="bi bi-funnel me-1"></i>كلمات الفلتر</label>
+              <div class="d-flex flex-wrap gap-2">
+                @for (tag of filteredFilterTags; track tag) {
+                  <button type="button"
+                          class="btn btn-sm"
+                          [class.btn-primary]="selectedFilterTags.includes(tag)"
+                          [class.btn-outline-secondary]="!selectedFilterTags.includes(tag)"
+                          (click)="toggleFilterTag(tag)">
+                    <i class="bi me-1" [class.bi-check-lg]="selectedFilterTags.includes(tag)"
+                       [class.bi-funnel]="!selectedFilterTags.includes(tag)"></i>
+                    {{ tag }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
         </div>
       </div>
     }

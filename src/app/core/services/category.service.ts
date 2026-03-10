@@ -23,11 +23,12 @@ export class CategoryService {
     return this.http.post<ICategory>(API_CONFIG.categoriesUrl, fd);
   }
 
-  update(id: number, name: string, image?: File, famousBrands?: number[]): Observable<ICategory> {
+  update(id: number, name: string, image?: File, famousBrands?: number[], filterTags?: string[]): Observable<ICategory> {
     const fd = new FormData();
     fd.append('name', name);
     if (image) fd.append('image', image);
     if (famousBrands) fd.append('famousBrands', JSON.stringify(famousBrands));
+    if (filterTags) fd.append('filterTags', JSON.stringify(filterTags));
     return this.http.put<ICategory>(`${API_CONFIG.categoriesUrl}/${id}`, fd);
   }
 

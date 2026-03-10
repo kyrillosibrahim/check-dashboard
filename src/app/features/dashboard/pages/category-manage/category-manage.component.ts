@@ -1,22 +1,25 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CategoryService } from '../../../../core/services/category.service';
 import { BrandService } from '../../../../core/services/brand.service';
 import { ICategory, ISubcategory } from '../../../../core/models/category.model';
 import { IBrand } from '../../../../core/models/brand.model';
 import { API_CONFIG } from '../../../../core/config/api.config';
+import { BackupService } from '../../../../core/services/backup.service';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-category-manage',
   imports: [FormsModule],
   templateUrl: './category-manage.component.html',
-  styleUrl: './category-manage.component.scss'
+  styleUrl: './category-manage.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CategoryManageComponent implements OnInit {
   private categoryService = inject(CategoryService);
   private brandService = inject(BrandService);
   private cdr = inject(ChangeDetectorRef);
+  private backupService = inject(BackupService);
 
   categories: ICategory[] = [];
   allBrands: IBrand[] = [];
@@ -43,6 +46,9 @@ export class CategoryManageComponent implements OnInit {
   // ─── Famous brands selection ───
   brandSearch = '';
   showBrandDropdown = false;
+
+  // ─── Filter tags ───
+  newFilterTag = '';
 
   ngOnInit(): void {
     this.loadAll();
@@ -332,17 +338,22 @@ export class CategoryManageComponent implements OnInit {
 
   // ─── Famous Brands ───
 
+  private normalizeBrandId(entry: any): number {
+    return typeof entry === 'object' && entry !== null ? entry.id : entry;
+  }
+
   getSelectedBrands(cat: ICategory): IBrand[] {
-    // From detailed API, famousBrandsData has populated brand objects
+    if (this.allBrands.length > 0 && cat.famousBrands?.length) {
+      return (cat.famousBrands)
+        .map(entry => this.allBrands.find(b => b.id === this.normalizeBrandId(entry)))
+        .filter((b): b is IBrand => !!b);
+    }
     if (cat.famousBrandsData?.length) return cat.famousBrandsData;
-    // Fallback: resolve from IDs
-    return (cat.famousBrands || [])
-      .map(id => this.allBrands.find(b => b.id === id))
-      .filter((b): b is IBrand => !!b);
+    return [];
   }
 
   getAvailableBrands(cat: ICategory): IBrand[] {
-    const selectedIds = (cat.famousBrands || []);
+    const selectedIds = (cat.famousBrands || []).map(entry => this.normalizeBrandId(entry));
     return this.allBrands
       .filter(b => !selectedIds.includes(b.id))
       .filter(b => {
@@ -353,19 +364,23 @@ export class CategoryManageComponent implements OnInit {
 
   addBrandToCategory(cat: ICategory, brand: IBrand): void {
     if (!cat.famousBrands) cat.famousBrands = [];
+    if (!cat.famousBrandsData) cat.famousBrandsData = [];
     cat.famousBrands.push(brand.id);
+    cat.famousBrandsData.push(brand);
     this.brandSearch = '';
     this.showBrandDropdown = false;
     this.saveBrands(cat);
   }
 
   removeBrandFromCategory(cat: ICategory, brand: IBrand): void {
-    cat.famousBrands = (cat.famousBrands || []).filter(id => id !== brand.id);
+    cat.famousBrands = (cat.famousBrands || []).filter(entry => this.normalizeBrandId(entry) !== brand.id);
+    cat.famousBrandsData = (cat.famousBrandsData || []).filter(b => b.id !== brand.id);
     this.saveBrands(cat);
   }
 
   private saveBrands(cat: ICategory): void {
-    this.categoryService.update(cat.id, cat.name, undefined, cat.famousBrands).subscribe({
+    const brandIds = (cat.famousBrands || []).map(entry => this.normalizeBrandId(entry));
+    this.categoryService.update(cat.id, cat.name, undefined, brandIds).subscribe({
       next: () => {
         this.cdr.markForCheck();
       },
@@ -375,10 +390,160 @@ export class CategoryManageComponent implements OnInit {
     });
   }
 
+  // ─── Filter Tags ───
+
+  addFilterTag(cat: ICategory): void {
+    const tag = this.newFilterTag.trim();
+    if (!tag) return;
+    if (!cat.filterTags) cat.filterTags = [];
+    if (cat.filterTags.includes(tag)) {
+      Swal.fire('تنبيه', 'هذه الكلمة موجودة بالفعل!', 'warning');
+      return;
+    }
+    cat.filterTags.push(tag);
+    this.newFilterTag = '';
+    this.saveFilterTags(cat);
+  }
+
+  removeFilterTag(cat: ICategory, tag: string): void {
+    cat.filterTags = (cat.filterTags || []).filter(t => t !== tag);
+    this.saveFilterTags(cat);
+  }
+
+  private saveFilterTags(cat: ICategory): void {
+    this.categoryService.update(cat.id, cat.name, undefined, undefined, cat.filterTags).subscribe({
+      next: () => {
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        Swal.fire('خطأ', 'فشل حفظ كلمات الفلتر', 'error');
+      }
+    });
+  }
+
   onBrandBlur(): void {
     setTimeout(() => {
       this.showBrandDropdown = false;
       this.cdr.markForCheck();
     }, 200);
+  }
+
+  // ─── Backup / Restore ───
+
+  async downloadBackup(): Promise<void> {
+    if (!this.categories.length) {
+      Swal.fire('تنبيه', 'لا توجد أقسام لتحميلها', 'warning');
+      return;
+    }
+
+    Swal.fire({ title: 'جاري تجهيز النسخة الاحتياطية...', html: '0 / ' + this.categories.length, allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+    const catsWithImages = [];
+    let imgOk = 0;
+    let imgTotal = 0;
+    for (let i = 0; i < this.categories.length; i++) {
+      const cat = this.categories[i];
+      const imageUrl = cat.image ? this.getImageUrl(cat.image) : '';
+      let imageBase64 = '';
+      if (imageUrl) {
+        imgTotal++;
+        imageBase64 = await this.backupService.imageToBase64(imageUrl);
+        if (imageBase64) imgOk++;
+      }
+
+      const subsWithImages = [];
+      for (const sub of (cat.subcategories || [])) {
+        const subImageUrl = sub.image ? this.getImageUrl(sub.image) : '';
+        let subImageBase64 = '';
+        if (subImageUrl) {
+          imgTotal++;
+          subImageBase64 = await this.backupService.imageToBase64(subImageUrl);
+          if (subImageBase64) imgOk++;
+        }
+        subsWithImages.push({ ...sub, imageBase64: subImageBase64 });
+      }
+
+      // Normalize famousBrands to IDs (API detailed returns full objects)
+      const brandIds = (cat.famousBrands || []).map((b: any) => typeof b === 'object' ? b.id : b);
+
+      catsWithImages.push({ ...cat, imageBase64, subcategories: subsWithImages, famousBrands: brandIds });
+      Swal.update({ html: `${i + 1} / ${this.categories.length}` });
+    }
+
+    this.backupService.downloadJson(catsWithImages, 'categories_backup');
+
+    if (imgTotal > 0 && imgOk < imgTotal) {
+      Swal.fire({ title: 'تم التحميل', html: `تم حفظ <b>${imgOk}</b> صورة من <b>${imgTotal}</b><br>بعض الصور لم يتم تحميلها`, icon: 'warning' });
+    } else {
+      Swal.fire({ title: 'تم تحميل النسخة الاحتياطية!', html: `تم حفظ <b>${imgOk}</b> صورة من <b>${imgTotal}</b>`, icon: 'success', timer: 2000, showConfirmButton: false });
+    }
+  }
+
+  async restoreBackup(): Promise<void> {
+    try {
+      const data = await this.backupService.restoreJson<(ICategory & { imageBase64?: string; subcategories?: (ISubcategory & { imageBase64?: string })[] })[]>();
+      if (!Array.isArray(data)) {
+        Swal.fire('خطأ', 'الملف لا يحتوى على بيانات أقسام صحيحة', 'error');
+        return;
+      }
+      const confirm = await Swal.fire({
+        title: 'استرجاع البيانات',
+        html: `سيتم رفع <b>${data.length}</b> قسم من الملف.<br>هل تريد المتابعة؟`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'نعم، استرجع',
+        cancelButtonText: 'إلغاء',
+      });
+      if (!confirm.isConfirmed) return;
+
+      Swal.fire({ title: 'جاري الاسترجاع...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+      let success = 0;
+      let failed = 0;
+      for (const cat of data) {
+        try {
+          const imageFile = cat.imageBase64 ? this.backupService.base64ToFile(cat.imageBase64, cat.name) : null;
+
+          // Normalize famousBrands to IDs (backup might have full objects)
+          const brandIds = (cat.famousBrands || []).map((b: any) => typeof b === 'object' ? b.id : b).filter((id: any) => id != null);
+
+          await new Promise<void>((resolve) => {
+            this.categoryService.update(cat.id, cat.name, imageFile || undefined, brandIds.length ? brandIds : undefined, cat.filterTags?.length ? cat.filterTags : undefined).subscribe({
+              next: () => { success++; resolve(); },
+              error: () => {
+                this.categoryService.create(cat.name, imageFile || undefined).subscribe({
+                  next: () => { success++; resolve(); },
+                  error: () => { failed++; resolve(); }
+                });
+              }
+            });
+          });
+
+          // Restore subcategories
+          for (const sub of (cat.subcategories || [])) {
+            const subFile = sub.imageBase64 ? this.backupService.base64ToFile(sub.imageBase64, sub.name) : null;
+            try {
+              await new Promise<void>((resolve) => {
+                this.categoryService.updateSubcategory(cat.id, sub.id, sub.name, subFile || undefined).subscribe({
+                  next: () => resolve(),
+                  error: () => {
+                    this.categoryService.addSubcategory(cat.id, sub.name, subFile || undefined).subscribe({
+                      next: () => resolve(),
+                      error: () => resolve()
+                    });
+                  }
+                });
+              });
+            } catch { /* skip */ }
+          }
+        } catch {
+          failed++;
+        }
+      }
+      await Swal.fire('تم الاسترجاع', `نجح: ${success} | فشل: ${failed}`, success > 0 ? 'success' : 'error');
+      this.loadAll();
+    } catch (err) {
+      if (err) Swal.fire('خطأ', String(err), 'error');
+    }
   }
 }

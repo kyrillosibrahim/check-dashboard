@@ -56,7 +56,7 @@
           <tr>
             <td>
               @if (item.image) {
-                <img [src]="item.image" [alt]="item.title" class="product-img">
+                <img [src]="item.image" [alt]="item.title" class="product-img" loading="lazy">
               } @else {
                 <div class="no-img"><i class="bi bi-image"></i></div>
               }
@@ -263,7 +263,7 @@
                 <tr>
                   <td>
                     @if (item.image) {
-                      <img [src]="item.image" [alt]="item.title" class="invoice-item-img">
+                      <img [src]="item.image" [alt]="item.title" class="invoice-item-img" loading="lazy">
                     } @else {
                       <div class="invoice-no-img"><i class="bi bi-image"></i></div>
                     }

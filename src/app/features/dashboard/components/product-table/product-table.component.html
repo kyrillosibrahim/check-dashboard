@@ -1,7 +1,7 @@
 <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
   <div class="card-body p-0">
     <div class="table-responsive">
-      <table class="table mb-0 align-middle">
+      <table class="table mb-0 align-middle pstyle">
         <thead>
           <tr style="border-bottom: 2px solid var(--sz-border-color);">
             <th class="ps-3">الصورة</th>
@@ -19,7 +19,7 @@
           @for (product of products; track product.id || product.slug) {
             <tr>
               <td class="ps-3">
-                <img [src]="getImageUrl(product)" [alt]="product.title" class="rounded product-thumb">
+                <img [src]="getImageUrl(product)" [alt]="product.title" class="rounded product-thumb" loading="lazy">
               </td>
               <td>
                 <div class="fw-semibold text-truncate" style="max-width: 200px;">{{ product.title }}</div>

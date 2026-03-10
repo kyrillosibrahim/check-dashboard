@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectorRef, HostListener } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
@@ -7,12 +7,14 @@ import { OrderService } from '../../../../core/services/order.service';
 import { IOrder } from '../../../../core/models/order.model';
 import { DatePipe } from '@angular/common';
 import { EgpCurrencyPipe } from '../../../../shared/pipes/egp-currency.pipe';
+import { API_CONFIG } from '../../../../core/config/api.config';
 
 @Component({
   selector: 'app-invoice-detail',
   imports: [FormsModule, EgpCurrencyPipe, DatePipe],
   templateUrl: './invoice-detail.component.html',
-  styleUrl: './invoice-detail.component.scss'
+  styleUrl: './invoice-detail.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InvoiceDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -27,7 +29,13 @@ export class InvoiceDetailComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.orderService.getById(id).subscribe({
       next: (order) => {
-        this.order = order;
+        this.order = {
+          ...order,
+          items: order.items.map(item => ({
+            ...item,
+            image: item.image ? item.image.replace(/https?:\/\/localhost:\d+/, API_CONFIG.baseUrl) : item.image
+          }))
+        };
         this.cdr.markForCheck();
       },
       error: () => {
@@ -41,7 +49,7 @@ export class InvoiceDetailComponent implements OnInit {
   }
 
   get subtotal(): number {
-    return this.order?.items.reduce((s, i) => s + i.total, 0) || 0;
+    return this.order?.subtotal || this.order?.items.reduce((s, i) => s + i.total, 0) || 0;
   }
 
   get totalAfterDiscounts(): number {

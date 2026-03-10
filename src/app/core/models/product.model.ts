@@ -20,6 +20,7 @@ export interface IProduct {
   merchant?: string;
   isFeatured: boolean;
   tags: string[];
+  filterTags?: string[];
   productForm?: {
     type: string;
     typeAr: string;

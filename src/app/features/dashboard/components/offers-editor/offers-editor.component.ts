@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ImageCompressionService } from '../../../../core/services/image-compression.service';
 
@@ -12,7 +12,8 @@ export interface IOffer {
   selector: 'app-offers-editor',
   imports: [FormsModule],
   templateUrl: './offers-editor.component.html',
-  styleUrl: './offers-editor.component.scss'
+  styleUrl: './offers-editor.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OffersEditorComponent {
   private imageCompression = inject(ImageCompressionService);

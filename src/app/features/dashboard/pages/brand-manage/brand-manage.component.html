@@ -1,10 +1,20 @@
 <!-- Page Title -->
-<h4 class="fw-bold mb-4">
-  <i class="bi bi-award me-2" style="color: var(--sz-accent);"></i>إدارة العلامات التجارية
-</h4>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="fw-bold mb-0">
+    <i class="bi bi-award me-2" style="color: var(--sz-accent);"></i>إدارة العلامات التجارية
+  </h4>
+  <div class="d-flex gap-2">
+    <button class="btn btn-outline-success btn-sm" (click)="downloadBackup()" title="تحميل نسخة احتياطية">
+      <i class="bi bi-download me-1"></i>استخراج البيانات
+    </button>
+    <button class="btn btn-outline-primary btn-sm" (click)="restoreBackup()" title="استرجاع من ملف">
+      <i class="bi bi-upload me-1"></i>تحميل البيانات
+    </button>
+  </div>
+</div>
 
 <!-- Add / Edit Form Card -->
-<div class="card border-0 shadow-sm mb-4" style="background-color: var(--sz-bg-card);">
+<div class="card border-0 shadow-sm mb-4 pstyle">
   <div class="card-body p-4">
     <h6 class="fw-bold mb-3">
       @if (editingBrand) {
@@ -18,6 +28,11 @@
         <label class="form-label">اسم العلامة التجارية *</label>
         <input type="text" class="form-control" [(ngModel)]="brandName" name="brandName"
                placeholder="أدخل اسم العلامة التجارية">
+      </div>
+      <div class="flex-grow-1" style="min-width: 200px;">
+        <label class="form-label">الرابط</label>
+        <input type="url" class="form-control" [(ngModel)]="brandLink" name="brandLink"
+               placeholder="https://example.com" dir="ltr">
       </div>
       <div style="min-width: 200px;">
         <label class="form-label">صورة الشعار</label>
@@ -61,7 +76,7 @@
   <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
     <div class="card-body p-0">
       <div class="table-responsive">
-        <table class="table mb-0 align-middle">
+        <table class="table mb-0 align-middle pstyle">
           <thead>
             <tr style="border-bottom: 2px solid var(--sz-border-color);">
               <th class="ps-3">الشعار</th>
@@ -75,7 +90,7 @@
               <tr>
                 <td class="ps-3">
                   @if (getImageUrl(brand)) {
-                    <img [src]="getImageUrl(brand)" [alt]="brand.name" class="brand-thumb rounded">
+                    <img [src]="getImageUrl(brand)" [alt]="brand.name" class="brand-thumb rounded" loading="lazy">
                   } @else {
                     <div class="brand-thumb-placeholder rounded d-flex align-items-center justify-content-center">
                       <i class="bi bi-image text-secondary"></i>
@@ -83,7 +98,15 @@
                   }
                 </td>
                 <td class="fw-semibold">{{ brand.name }}</td>
-                <td class="text-muted" dir="ltr">{{ brand.slug }}</td>
+                <td >
+                  @if (brand.link) {
+                    <a [href]="brand.link" target="_blank" class="text-primary text-decoration-none">
+                      <i class="bi bi-box-arrow-up-right me-1"></i>{{ brand.link }}
+                    </a>
+                  } @else {
+                    <span class="text-muted">—</span>
+                  }
+                </td>
                 <td class="text-start pe-3">
                   <div class="d-flex gap-2 justify-content-start">
                     <button class="action-btn edit-btn" (click)="onEdit(brand)" title="تعديل">

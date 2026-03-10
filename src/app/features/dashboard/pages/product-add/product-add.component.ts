@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ProductService } from '../../../../core/services/product.service';
@@ -16,7 +16,8 @@ import Swal from 'sweetalert2';
   selector: 'app-product-add',
   imports: [ProductFormComponent],
   templateUrl: './product-add.component.html',
-  styleUrl: './product-add.component.scss'
+  styleUrl: './product-add.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductAddComponent {
   private productService = inject(ProductService);

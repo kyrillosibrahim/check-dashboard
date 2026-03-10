@@ -79,7 +79,6 @@
   }
 
   td {
-    padding: 0.75rem 1rem;
     vertical-align: middle;
     border-color: var(--sz-border-color, #e9ecef);
     font-size: 0.85rem;
@@ -105,7 +104,8 @@
 .product-name-col {
   font-weight: 700;
   color: var(--sz-text-primary);
-  min-width: 180px;
+  max-width: 185px;
+  padding: 10px;
 }
 
 .category-badge {
@@ -164,4 +164,9 @@
 
 .actions-col {
   white-space: nowrap;
+}
+.pstyle{
+  border: 1px solid #00000030;
+  background-color: #0d6efd1f;
+  border-radius: 5px;
 }

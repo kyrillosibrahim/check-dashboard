@@ -16,6 +16,10 @@ export class OrderService {
     return this.http.get<IOrder>(`${API_CONFIG.ordersUrl}/${id}`);
   }
 
+  create(data: Partial<IOrder>): Observable<{ message: string; order: IOrder }> {
+    return this.http.post<{ message: string; order: IOrder }>(API_CONFIG.ordersUrl, data);
+  }
+
   update(id: string, data: Partial<IOrder>): Observable<{ message: string; order: IOrder }> {
     return this.http.put<{ message: string; order: IOrder }>(`${API_CONFIG.ordersUrl}/${id}`, data);
   }

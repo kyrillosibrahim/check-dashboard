@@ -1,13 +1,21 @@
 <div class="container-fluid py-4">
   <!-- Header -->
-  <div class="d-flex align-items-center justify-content-between mb-4">
+  <div class="d-flex align-items-center justify-content-between mb-4 pstyle">
     <div>
       <h4 class="fw-bold mb-1"><i class="bi bi-people me-2"></i>كافة العملاء</h4>
       <small class="text-secondary">إجمالي العملاء المسجلين: {{ customers.length }}</small>
     </div>
-    <button class="btn btn-outline-primary btn-sm" (click)="loadCustomers()" [disabled]="isLoading">
-      <i class="bi bi-arrow-clockwise me-1"></i> تحديث
-    </button>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-success btn-sm" (click)="downloadBackup()">
+        <i class="bi bi-download me-1"></i> تحميل البيانات
+      </button>
+      <button class="btn btn-outline-primary btn-sm" (click)="restoreBackup()">
+        <i class="bi bi-upload me-1"></i> استرجاع البيانات
+      </button>
+      <button class="btn btn-outline-primary btn-sm" (click)="loadCustomers()" [disabled]="isLoading">
+        <i class="bi bi-arrow-clockwise me-1"></i> تحديث
+      </button>
+    </div>
   </div>
 
   <!-- Search -->
@@ -49,7 +57,7 @@
     } @else {
       <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
         <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0 small">
+          <table class="table table-hover align-middle mb-0 small pstyle">
             <thead>
               <tr>
                 <th class="ps-3" style="width: 40px;">#</th>

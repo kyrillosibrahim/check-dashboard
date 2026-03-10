@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { IProduct } from '../../../../core/models/product.model';
 import { EgpCurrencyPipe } from '../../../../shared/pipes/egp-currency.pipe';
 import { API_CONFIG } from '../../../../core/config/api.config';
@@ -7,7 +7,8 @@ import { API_CONFIG } from '../../../../core/config/api.config';
   selector: 'app-product-table',
   imports: [EgpCurrencyPipe],
   templateUrl: './product-table.component.html',
-  styleUrl: './product-table.component.scss'
+  styleUrl: './product-table.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductTableComponent {
   @Input({ required: true }) products: IProduct[] = [];

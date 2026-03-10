@@ -4,16 +4,24 @@
     <i class="bi bi-graph-up me-2" style="color: var(--sz-accent);"></i>
     مقارنة اسعار التجار
   </h4>
-  <button class="btn btn-primary" (click)="openAddForm()">
-    <i class="bi bi-plus-lg me-1"></i> إضافة منتج
-  </button>
+  <div class="d-flex gap-2">
+    <button class="btn btn-outline-success btn-sm" (click)="downloadBackup()" title="تحميل نسخة احتياطية">
+      <i class="bi bi-download me-1"></i>استخراج البيانات
+    </button>
+    <button class="btn btn-outline-primary btn-sm" (click)="restoreBackup()" title="استرجاع من ملف">
+      <i class="bi bi-upload me-1"></i>تحميل البيانات
+    </button>
+    <button class="btn btn-primary" (click)="openAddForm()">
+      <i class="bi bi-plus-lg me-1"></i> إضافة منتج
+    </button>
+  </div>
 </div>
 
 <!-- Stats Cards -->
 <div class="row g-3 mb-4">
   <div class="col-6 col-md-4">
     <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
-      <div class="card-body text-center py-3">
+      <div class="card-body text-center py-3 pstyle">
         <i class="bi bi-box-seam fs-3 mb-1 d-block" style="color: var(--sz-accent);"></i>
         <h4 class="fw-bold mb-0">{{ comparisons.length }}</h4>
         <small class="text-secondary">إجمالي المقارنات</small>
@@ -22,7 +30,7 @@
   </div>
   <div class="col-6 col-md-4">
     <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
-      <div class="card-body text-center py-3">
+      <div class="card-body text-center py-3 pstyle">
         <i class="bi bi-shop fs-3 mb-1 d-block text-info"></i>
         <h4 class="fw-bold mb-0">{{ merchants.length }}</h4>
         <small class="text-secondary">التجار المسجلين</small>
@@ -31,7 +39,7 @@
   </div>
   <div class="col-6 col-md-4">
     <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
-      <div class="card-body text-center py-3">
+      <div class="card-body text-center py-3 pstyle">
         <i class="bi bi-grid fs-3 mb-1 d-block text-warning"></i>
         <h4 class="fw-bold mb-0">{{ categories.length }}</h4>
         <small class="text-secondary">الأقسام</small>
@@ -174,7 +182,7 @@
 
 <!-- ═══ Filter Bar ═══ -->
 @if (!isLoading && comparisons.length > 0) {
-  <div class="card border-0 shadow-sm mb-3 p-3" style="background-color: var(--sz-bg-card);">
+  <div class="card border-0 shadow-sm mb-3 p-3 pstyle" >
     <div class="row g-2 align-items-center">
       <div class="col-md-4">
         <div class="input-group input-group-sm">

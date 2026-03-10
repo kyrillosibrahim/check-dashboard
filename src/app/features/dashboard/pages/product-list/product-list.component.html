@@ -1,16 +1,24 @@
 <!-- Page Title -->
 <div class="d-flex justify-content-between align-items-center mb-4">
   <h4 class="fw-bold mb-0">جميع المنتجات</h4>
-  <a routerLink="/add" class="btn btn-primary">
-    <i class="bi bi-plus-lg me-1"></i> إضافة منتج
-  </a>
+  <div class="d-flex gap-2">
+    <button class="btn btn-outline-success btn-sm" (click)="downloadBackup()">
+      <i class="bi bi-download me-1"></i> تحميل البيانات
+    </button>
+    <button class="btn btn-outline-primary btn-sm" (click)="restoreBackup()">
+      <i class="bi bi-upload me-1"></i> استرجاع البيانات
+    </button>
+    <a routerLink="/add" class="btn btn-primary btn-sm">
+      <i class="bi bi-plus-lg me-1"></i> إضافة منتج
+    </a>
+  </div>
 </div>
 
 <!-- Stats Cards -->
 <div class="row g-3 mb-4">
   <div class="col-6 col-md-3">
     <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
-      <div class="card-body text-center py-3">
+      <div class="card-body text-center py-3 pstyle">
         <i class="bi bi-box-seam fs-3 mb-1 d-block" style="color: var(--sz-accent);"></i>
         <h4 class="fw-bold mb-0">{{ allProducts.length }}</h4>
         <small class="text-secondary">إجمالي المنتجات</small>
@@ -19,7 +27,7 @@
   </div>
   <div class="col-6 col-md-3">
     <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
-      <div class="card-body text-center py-3">
+      <div class="card-body text-center py-3 pstyle">
         <i class="bi bi-grid fs-3 mb-1 d-block" style="color: var(--sz-accent);"></i>
         <h4 class="fw-bold mb-0">{{ categories.length }}</h4>
         <small class="text-secondary">الأقسام</small>
@@ -28,7 +36,7 @@
   </div>
   <div class="col-6 col-md-3">
     <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
-      <div class="card-body text-center py-3">
+      <div class="card-body text-center py-3 pstyle">
         <i class="bi bi-star fs-3 mb-1 d-block text-warning"></i>
         <h4 class="fw-bold mb-0">{{ featuredCount }}</h4>
         <small class="text-secondary">مميزة</small>
@@ -37,7 +45,7 @@
   </div>
   <div class="col-6 col-md-3">
     <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
-      <div class="card-body text-center py-3">
+      <div class="card-body text-center py-3 pstyle">
         <i class="bi bi-exclamation-triangle fs-3 mb-1 d-block text-danger"></i>
         <h4 class="fw-bold mb-0">{{ lowStockCount }}</h4>
         <small class="text-secondary">مخزون منخفض</small>
@@ -47,7 +55,7 @@
 </div>
 
 <!-- Category Filter -->
-<div class="card border-0 shadow-sm mb-4 p-3" style="background-color: var(--sz-bg-card);">
+<div class="card border-0 shadow-sm mb-4 p-3 pstyle" >
   <div class="d-flex align-items-center gap-3 flex-wrap">
     <label class="fw-semibold mb-0" style="white-space: nowrap;">
       <i class="bi bi-funnel me-1" style="color: var(--sz-accent);"></i>فلترة حسب القسم:

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { SettingsService } from '../../../../core/services/settings.service';
 import { ProductService } from '../../../../core/services/product.service';
@@ -9,13 +9,15 @@ import { IProduct } from '../../../../core/models/product.model';
 import { IBrand } from '../../../../core/models/brand.model';
 import { ICategory } from '../../../../core/models/category.model';
 import { API_CONFIG } from '../../../../core/config/api.config';
+import { BackupService } from '../../../../core/services/backup.service';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-site-settings',
   imports: [FormsModule],
   templateUrl: './site-settings.component.html',
-  styleUrl: './site-settings.component.scss'
+  styleUrl: './site-settings.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SiteSettingsComponent implements OnInit {
   private settingsService = inject(SettingsService);
@@ -23,6 +25,7 @@ export class SiteSettingsComponent implements OnInit {
   private brandService = inject(BrandService);
   private categoryService = inject(CategoryService);
   private cdr = inject(ChangeDetectorRef);
+  private backupService = inject(BackupService);
 
   settings: ISiteSettings = {
     logo: '',
@@ -246,5 +249,49 @@ export class SiteSettingsComponent implements OnInit {
       this.showBrandDropdown = false;
       this.cdr.markForCheck();
     }, 200);
+  }
+
+  // ─── Backup / Restore ───
+
+  downloadBackup(): void {
+    this.backupService.downloadJson(this.settings, 'settings_backup');
+    Swal.fire({ title: 'تم تحميل النسخة الاحتياطية!', icon: 'success', timer: 1500, showConfirmButton: false });
+  }
+
+  async restoreBackup(): Promise<void> {
+    try {
+      const data = await this.backupService.restoreJson<ISiteSettings>();
+      if (!data || typeof data !== 'object' || Array.isArray(data)) {
+        Swal.fire('خطأ', 'الملف لا يحتوى على بيانات إعدادات صحيحة', 'error');
+        return;
+      }
+      const confirm = await Swal.fire({
+        title: 'استرجاع الإعدادات',
+        text: 'سيتم استبدال الإعدادات الحالية بالبيانات من الملف. هل تريد المتابعة؟',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'نعم، استرجع',
+        cancelButtonText: 'إلغاء',
+      });
+      if (!confirm.isConfirmed) return;
+
+      const fd = new FormData();
+      if (data.colors) fd.append('colors', JSON.stringify(data.colors));
+      if (data.social) fd.append('social', JSON.stringify(data.social));
+      if (data.bestSellingProducts) fd.append('bestSellingProducts', JSON.stringify(data.bestSellingProducts));
+      if (data.bestSellingBrands) fd.append('bestSellingBrands', JSON.stringify(data.bestSellingBrands));
+
+      this.settingsService.updateSettings(fd).subscribe({
+        next: () => {
+          Swal.fire('تم الاسترجاع', 'تم استرجاع الإعدادات بنجاح', 'success');
+          this.loadAll();
+        },
+        error: () => {
+          Swal.fire('خطأ', 'فشل استرجاع الإعدادات', 'error');
+        }
+      });
+    } catch (err) {
+      if (err) Swal.fire('خطأ', String(err), 'error');
+    }
   }
 }

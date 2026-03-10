@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 export interface IFaqItem {
@@ -12,7 +12,8 @@ export interface IFaqItem {
   selector: 'app-faq-editor',
   imports: [FormsModule],
   templateUrl: './faq-editor.component.html',
-  styleUrl: './faq-editor.component.scss'
+  styleUrl: './faq-editor.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FaqEditorComponent {
   @Input() faqs: IFaqItem[] = [];

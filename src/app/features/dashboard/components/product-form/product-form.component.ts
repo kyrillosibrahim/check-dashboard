@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IProduct } from '../../../../core/models/product.model';
 import { ICategory, ISubcategory } from '../../../../core/models/category.model';
@@ -15,7 +15,8 @@ import { FaqEditorComponent, IFaqItem } from '../faq-editor/faq-editor.component
   selector: 'app-product-form',
   imports: [ReactiveFormsModule, ImageUploaderComponent, PriceCalculatorComponent, OffersEditorComponent, RichTextEditorComponent, FaqEditorComponent],
   templateUrl: './product-form.component.html',
-  styleUrl: './product-form.component.scss'
+  styleUrl: './product-form.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductFormComponent implements OnInit {
   @Input() product: IProduct | null = null;
@@ -59,6 +60,10 @@ export class ProductFormComponent implements OnInit {
   filteredSubcategories: ISubcategory[] = [];
   /** Brands filtered by selected category's famousBrands */
   filteredBrands: IBrand[] = [];
+  /** Filter tags available from the selected category */
+  filteredFilterTags: string[] = [];
+  /** Filter tags selected for this product */
+  selectedFilterTags: string[] = [];
 
   get isEdit(): boolean {
     return !!this.product;
@@ -109,11 +114,13 @@ export class ProductFormComponent implements OnInit {
       }
     }
 
-    // Listen to category changes to update subcategories and brands
+    // Listen to category changes to update subcategories, brands, and filter tags
     this.form.get('category')!.valueChanges.subscribe(slug => {
       const cat = this.categories.find(c => c.slug === slug);
       this.filteredSubcategories = cat?.subcategories || [];
       this.filteredBrands = cat?.famousBrands?.length ? cat.famousBrands as unknown as IBrand[] : this.brands;
+      this.filteredFilterTags = cat?.filterTags || [];
+      this.selectedFilterTags = [];
       this.form.get('subcategory')!.setValue('');
       // Only reset brand if current value isn't in the new filtered list
       const currentBrand = this.form.get('brand')!.value;
@@ -122,13 +129,24 @@ export class ProductFormComponent implements OnInit {
       }
     });
 
-    // Populate subcategories and brands on edit/init
+    // Populate subcategories, brands, and filter tags on edit/init
     if (this.product?.category) {
       const cat = this.categories.find(c => c.slug === this.product!.category);
       this.filteredSubcategories = cat?.subcategories || [];
       this.filteredBrands = cat?.famousBrands?.length ? cat.famousBrands as unknown as IBrand[] : this.brands;
+      this.filteredFilterTags = cat?.filterTags || [];
+      this.selectedFilterTags = [...(this.product.filterTags || [])];
     } else {
       this.filteredBrands = this.brands;
+    }
+  }
+
+  toggleFilterTag(tag: string): void {
+    const idx = this.selectedFilterTags.indexOf(tag);
+    if (idx >= 0) {
+      this.selectedFilterTags.splice(idx, 1);
+    } else {
+      this.selectedFilterTags.push(tag);
     }
   }
 
@@ -175,6 +193,7 @@ export class ProductFormComponent implements OnInit {
       isFeatured: v.isFeatured,
       comingSoon: v.comingSoon,
       tags: this.product?.tags || [],
+      filterTags: this.selectedFilterTags,
       slug: this.generatedSlug,
       categoryFolder: this.product?.categoryFolder,
       wholesalePrice,

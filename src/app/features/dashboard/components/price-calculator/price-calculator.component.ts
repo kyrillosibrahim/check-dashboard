@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { Subscription, combineLatest, startWith } from 'rxjs';
 
@@ -6,7 +6,8 @@ import { Subscription, combineLatest, startWith } from 'rxjs';
   selector: 'app-price-calculator',
   imports: [ReactiveFormsModule],
   templateUrl: './price-calculator.component.html',
-  styleUrl: './price-calculator.component.scss'
+  styleUrl: './price-calculator.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PriceCalculatorComponent implements OnInit, OnDestroy {
   @Input({ required: true }) form!: FormGroup;

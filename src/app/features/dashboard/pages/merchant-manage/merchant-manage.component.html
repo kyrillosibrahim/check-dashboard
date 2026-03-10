@@ -1,10 +1,20 @@
 <!-- Page Title -->
-<h4 class="fw-bold mb-4">
-  <i class="bi bi-shop me-2" style="color: var(--sz-accent);"></i>إدارة التجار
-</h4>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="fw-bold mb-0">
+    <i class="bi bi-shop me-2" style="color: var(--sz-accent);"></i>إدارة التجار
+  </h4>
+  <div class="d-flex gap-2">
+    <button class="btn btn-outline-success btn-sm" (click)="downloadBackup()">
+      <i class="bi bi-download me-1"></i> تحميل البيانات
+    </button>
+    <button class="btn btn-outline-primary btn-sm" (click)="restoreBackup()">
+      <i class="bi bi-upload me-1"></i> استرجاع البيانات
+    </button>
+  </div>
+</div>
 
 <!-- Add / Edit Form Card -->
-<div class="card border-0 shadow-sm mb-4" style="background-color: var(--sz-bg-card);">
+<div class="card border-0 shadow-sm mb-4 pstyle">
   <div class="card-body p-4">
     <h6 class="fw-bold mb-3">
       @if (editingMerchant) {
@@ -68,7 +78,7 @@
 } @else {
   <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
     <div class="card-body p-0">
-      <div class="table-responsive">
+      <div class="table-responsive pstyle">
         <table class="table mb-0 align-middle">
           <thead>
             <tr style="border-bottom: 2px solid var(--sz-border-color);">

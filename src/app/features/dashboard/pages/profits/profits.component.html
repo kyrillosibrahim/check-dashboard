@@ -4,13 +4,21 @@
     <i class="bi bi-graph-up-arrow me-2" style="color: var(--sz-accent);"></i>
     الأرباح
   </h4>
+  <div class="d-flex gap-2">
+    <button class="btn btn-outline-success btn-sm" (click)="downloadBackup()" title="تحميل نسخة احتياطية">
+      <i class="bi bi-download me-1"></i>استخراج البيانات
+    </button>
+    <button class="btn btn-outline-primary btn-sm" (click)="restoreBackup()" title="استرجاع من ملف">
+      <i class="bi bi-upload me-1"></i>تحميل البيانات
+    </button>
+  </div>
 </div>
 
 <!-- Stats Cards -->
 <div class="row g-3 mb-4">
   <div class="col-6 col-md-3">
     <div class="card border-0 shadow-sm stat-card">
-      <div class="card-body text-center py-3">
+      <div class="card-body text-center py-3 pstyle">
         <i class="bi bi-cash-stack fs-3 mb-1 d-block" style="color: var(--sz-accent);"></i>
         <h4 class="fw-bold mb-0">{{ totalSales | egpCurrency }}</h4>
         <small class="text-secondary">إجمالي المبيعات</small>
@@ -19,7 +27,7 @@
   </div>
   <div class="col-6 col-md-3">
     <div class="card border-0 shadow-sm stat-card">
-      <div class="card-body text-center py-3">
+      <div class="card-body text-center py-3 pstyle">
         <i class="bi bi-wallet2 fs-3 mb-1 d-block text-success"></i>
         <h4 class="fw-bold mb-0">{{ totalProfit | egpCurrency }}</h4>
         <small class="text-secondary">صافي الأرباح الكلي</small>
@@ -27,17 +35,17 @@
     </div>
   </div>
   <div class="col-6 col-md-3">
-    <div class="card border-0 shadow-sm stat-card">
-      <div class="card-body text-center py-3">
+    <div class="card border-0 shadow-sm stat-card clickable-card" (click)="showMonthProfitDetails()">
+      <div class="card-body text-center py-3 pstyle">
         <i class="bi bi-calendar-check fs-3 mb-1 d-block text-info"></i>
         <h4 class="fw-bold mb-0">{{ monthProfit | egpCurrency }}</h4>
-        <small class="text-secondary">أرباح الشهر</small>
+        <small class="text-secondary">أرباح الشهر <i class="bi bi-info-circle"></i></small>
       </div>
     </div>
   </div>
   <div class="col-6 col-md-3">
     <div class="card border-0 shadow-sm stat-card">
-      <div class="card-body text-center py-3">
+      <div class="card-body text-center py-3 pstyle">
         <i class="bi bi-sun fs-3 mb-1 d-block text-warning"></i>
         <h4 class="fw-bold mb-0">{{ todayProfit | egpCurrency }}</h4>
         <small class="text-secondary">أرباح اليوم</small>
@@ -73,7 +81,7 @@
   }
 
   <!-- Daily Profits Table -->
-  <div class="card border-0 shadow-sm mb-4" style="background-color: var(--sz-bg-card);">
+  <div class="card border-0 shadow-sm mb-4" style="background-color: var(--sz-bg-card); border: 1px solid !important ;">
     <div class="card-header section-header">
       <i class="bi bi-calendar3 me-2"></i> الأرباح اليومية
       <span class="badge bg-light text-dark ms-2">{{ monthSales | egpCurrency }} مبيعات</span>
@@ -100,7 +108,7 @@
             @for (day of dailyProfits; track day.date; let idx = $index) {
               <tr>
                 <td class="row-num">{{ idx + 1 }}</td>
-                <td class="date-cell">{{ day.date | date:'EEEE, d MMMM yyyy' }}</td>
+                <td class="date-cell">{{ day.date | date:'yyyy/M/d' }}</td>
                 <td>
                   <span class="badge bg-primary">{{ day.orderCount }} طلب</span>
                 </td>
@@ -115,10 +123,10 @@
             <tr class="total-row">
               <td colspan="2" class="fw-bold">الإجمالي</td>
               <td>
-                <span class="badge bg-primary">{{ monthOrders.length }} طلب</span>
+                <span class="badge bg-primary">{{ paidMonthOrdersCount }} طلب</span>
               </td>
               <td class="amount-cell fw-bold">{{ monthSales | egpCurrency }}</td>
-              <td class="profit-cell fw-bold text-success">{{ monthProfit | egpCurrency }}</td>
+              <td class="profit-cell fw-bold text-success">{{ monthGrossProfit | egpCurrency }}</td>
             </tr>
           </tfoot>
         </table>
@@ -126,58 +134,52 @@
     }
   </div>
 
-  <!-- Merchant Profits Table -->
-  <div class="card border-0 shadow-sm mb-4" style="background-color: var(--sz-bg-card);">
-    <div class="card-header section-header">
-      <i class="bi bi-shop me-2"></i> أرباح التجار
-    </div>
-
-    @if (merchantProfits.length === 0) {
-      <div class="card-body text-center py-4">
-        <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary"></i>
-        <p class="text-secondary mb-0">لا توجد بيانات</p>
+  <!-- Returns / Losses Table -->
+  @if (returnedOrders.length > 0) {
+    <div class="card border-0 shadow-sm mb-4" style="background-color: var(--sz-bg-card); border: 1px solid !important;">
+      <div class="card-header section-header" style="background: linear-gradient(135deg, #dc3545, #c82333);">
+        <i class="bi bi-arrow-return-left me-2"></i> المرتجعات (خسائر الشحن)
+        <span class="badge bg-light text-danger ms-2">{{ returnedOrders.length }} فاتورة</span>
       </div>
-    } @else {
       <div class="table-responsive">
         <table class="table table-hover mb-0 profit-table">
           <thead>
             <tr>
               <th>#</th>
-              <th>التاجر</th>
-              <th>عدد القطع المباعة</th>
-              <th>إجمالي المبيعات</th>
-              <th>التكلفة</th>
-              <th>صافي الربح</th>
-              <th>نسبة الربح</th>
+              <th>رقم الفاتورة</th>
+              <th>العميل</th>
+              <th>التاريخ</th>
+              <th>قيمة الفاتورة</th>
+              <th>خسارة الشحن</th>
             </tr>
           </thead>
           <tbody>
-            @for (merchant of merchantProfits; track merchant.name; let idx = $index) {
-              <tr>
+            @for (ret of returnedOrders; track ret.id; let idx = $index) {
+              <tr class="return-row">
                 <td class="row-num">{{ idx + 1 }}</td>
-                <td class="merchant-name">{{ merchant.name }}</td>
                 <td>
-                  <span class="badge bg-success">{{ merchant.itemCount }} قطعة</span>
+                  <a [routerLink]="['/invoices', ret.id]" class="return-invoice-link">
+                    #{{ ret.id }}
+                  </a>
+                  <span class="return-tag">مرتجع</span>
                 </td>
-                <td class="amount-cell">{{ merchant.sales | egpCurrency }}</td>
-                <td class="amount-cell text-secondary">{{ merchant.cost | egpCurrency }}</td>
-                <td class="profit-cell" [class.text-success]="merchant.profit > 0" [class.text-danger]="merchant.profit < 0">
-                  {{ merchant.profit | egpCurrency }}
-                </td>
-                <td>
-                  @if (merchant.profitPercent > 0) {
-                    <span class="badge percent-badge bg-success-subtle text-success">
-                      {{ merchant.profitPercent }}%
-                    </span>
-                  } @else {
-                    <span class="badge percent-badge bg-secondary-subtle text-secondary">0%</span>
-                  }
-                </td>
+                <td>{{ ret.customerName }}</td>
+                <td class="date-cell">{{ ret.date | date:'yyyy/M/d' }}</td>
+                <td class="amount-cell">{{ ret.total | egpCurrency }}</td>
+                <td class="profit-cell text-danger">-{{ ret.shippingCost | egpCurrency }}</td>
               </tr>
             }
           </tbody>
+          <tfoot>
+            <tr class="total-row">
+              <td colspan="4" class="fw-bold">إجمالي خسائر الشحن</td>
+              <td></td>
+              <td class="profit-cell fw-bold text-danger">-{{ totalReturnsLoss | egpCurrency }}</td>
+            </tr>
+          </tfoot>
         </table>
       </div>
-    }
-  </div>
+    </div>
+  }
+
 }

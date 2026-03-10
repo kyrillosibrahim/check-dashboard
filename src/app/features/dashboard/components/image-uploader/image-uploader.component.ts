@@ -1,11 +1,12 @@
-import { Component, Input, Output, EventEmitter, inject, ElementRef, ViewChild } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, ElementRef, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { ImageCompressionService } from '../../../../core/services/image-compression.service';
 
 @Component({
   selector: 'app-image-uploader',
   imports: [],
   templateUrl: './image-uploader.component.html',
-  styleUrl: './image-uploader.component.scss'
+  styleUrl: './image-uploader.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ImageUploaderComponent {
   @Input() label = '';

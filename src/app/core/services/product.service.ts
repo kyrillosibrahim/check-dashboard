@@ -81,6 +81,7 @@ export class ProductService {
     fd.append('subcategory', product.subcategory || '');
 
     if (product.tags?.length) fd.append('tags', JSON.stringify(product.tags));
+    if (product.filterTags?.length) fd.append('filterTags', JSON.stringify(product.filterTags));
     if (product.productForm) fd.append('productForm', JSON.stringify(product.productForm));
     if (product.faq?.length) fd.append('faq', JSON.stringify(product.faq));
     if (product.offers?.length) fd.append('offers', JSON.stringify(product.offers));

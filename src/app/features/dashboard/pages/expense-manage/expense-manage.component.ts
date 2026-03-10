@@ -1,19 +1,22 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ExpenseService } from '../../../../core/services/expense.service';
 import { IExpense } from '../../../../core/models/expense.model';
 import { EgpCurrencyPipe } from '../../../../shared/pipes/egp-currency.pipe';
+import { BackupService } from '../../../../core/services/backup.service';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-expense-manage',
   imports: [FormsModule, EgpCurrencyPipe],
   templateUrl: './expense-manage.component.html',
-  styleUrl: './expense-manage.component.scss'
+  styleUrl: './expense-manage.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ExpenseManageComponent implements OnInit {
   private expenseService = inject(ExpenseService);
   private cdr = inject(ChangeDetectorRef);
+  private backupService = inject(BackupService);
 
   expenses: IExpense[] = [];
   isLoading = true;
@@ -195,5 +198,63 @@ export class ExpenseManageComponent implements OnInit {
     this.editingExpense = null;
     this.isSaving = false;
     this.cdr.markForCheck();
+  }
+
+  // ─── Backup / Restore ───
+
+  downloadBackup(): void {
+    if (!this.expenses.length) {
+      Swal.fire('تنبيه', 'لا توجد مصاريف لتحميلها', 'warning');
+      return;
+    }
+    this.backupService.downloadJson(this.expenses, 'expenses_backup');
+    Swal.fire({ title: 'تم تحميل النسخة الاحتياطية!', icon: 'success', timer: 1500, showConfirmButton: false });
+  }
+
+  async restoreBackup(): Promise<void> {
+    try {
+      const data = await this.backupService.restoreJson<IExpense[]>();
+      if (!Array.isArray(data)) {
+        Swal.fire('خطأ', 'الملف لا يحتوى على بيانات مصاريف صحيحة', 'error');
+        return;
+      }
+      const confirm = await Swal.fire({
+        title: 'استرجاع البيانات',
+        html: `سيتم رفع <b>${data.length}</b> مصروف من الملف.<br>هل تريد المتابعة؟`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'نعم، استرجع',
+        cancelButtonText: 'إلغاء',
+      });
+      if (!confirm.isConfirmed) return;
+
+      Swal.fire({ title: 'جاري الاسترجاع...', html: '0 / ' + data.length, allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+      let success = 0;
+      let failed = 0;
+      for (let i = 0; i < data.length; i++) {
+        const expense = data[i];
+        try {
+          await new Promise<void>((resolve) => {
+            this.expenseService.update(expense.id, expense).subscribe({
+              next: () => { success++; resolve(); },
+              error: () => {
+                this.expenseService.create(expense).subscribe({
+                  next: () => { success++; resolve(); },
+                  error: () => { failed++; resolve(); }
+                });
+              }
+            });
+          });
+        } catch {
+          failed++;
+        }
+        Swal.update({ html: `${i + 1} / ${data.length}` });
+      }
+      await Swal.fire('تم الاسترجاع', `نجح: ${success} | فشل: ${failed}`, success > 0 ? 'success' : 'error');
+      this.loadExpenses();
+    } catch (err) {
+      if (err) Swal.fire('خطأ', String(err), 'error');
+    }
   }
 }

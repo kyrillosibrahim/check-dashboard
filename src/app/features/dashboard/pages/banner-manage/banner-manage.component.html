@@ -1,10 +1,20 @@
 <!-- Page Title -->
-<h4 class="fw-bold mb-4">
-  <i class="bi bi-image me-2" style="color: var(--sz-accent);"></i>بنرات العروض والخصومات
-</h4>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="fw-bold mb-0">
+    <i class="bi bi-image me-2" style="color: var(--sz-accent);"></i>بنرات العروض والخصومات
+  </h4>
+  <div class="d-flex gap-2">
+    <button class="btn btn-outline-success btn-sm" (click)="downloadBackup()">
+      <i class="bi bi-download me-1"></i> تحميل البيانات
+    </button>
+    <button class="btn btn-outline-primary btn-sm" (click)="restoreBackup()">
+      <i class="bi bi-upload me-1"></i> استرجاع البيانات
+    </button>
+  </div>
+</div>
 
 <!-- Upload Form Card -->
-<div class="card border-0 shadow-sm mb-4" style="background-color: var(--sz-bg-card);">
+<div class="card border-0 shadow-sm mb-4 pstyle" >
   <div class="card-body p-4">
     <h6 class="fw-bold mb-3">
       <i class="bi bi-plus-circle me-2" style="color: var(--sz-accent);"></i>إضافة بنر جديد
@@ -18,6 +28,13 @@
             <i class="bi bi-check-circle me-1"></i>تم الضغط: {{ compressionInfo }}
           </small>
         }
+      </div>
+      <div style="min-width: 180px;">
+        <label class="form-label">مكان الظهور *</label>
+        <select class="form-select" [(ngModel)]="bannerPage" name="bannerPage">
+          <option value="home">الصفحة الرئيسية</option>
+          <option value="offers">صفحة العروض</option>
+        </select>
       </div>
       <div class="flex-grow-1" style="min-width: 200px;">
         <label class="form-label">رابط (اختياري)</label>
@@ -58,16 +75,21 @@
     @for (banner of banners; track banner.id) {
       <div class="col-12 col-md-6 col-lg-4">
         <div class="card border-0 shadow-sm overflow-hidden" style="background-color: var(--sz-bg-card);">
-          <img [src]="getImageUrl(banner)" [alt]="'بنر ' + banner.id" class="banner-card-img">
-          <div class="card-body py-2 px-3 d-flex justify-content-between align-items-center">
+          <img [src]="getImageUrl(banner)" [alt]="'بنر ' + banner.id" class="banner-card-img" loading="lazy">
+          <div class="card-body py-2 px-3">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="badge" [class]="banner.page === 'offers' ? 'bg-warning text-dark' : 'bg-info'">
+                <i class="bi me-1" [class]="banner.page === 'offers' ? 'bi-tags' : 'bi-house'"></i>{{ getPageLabel(banner.page) }}
+              </span>
+              <button class="action-btn delete-btn" (click)="onDelete(banner)" title="حذف">
+                <i class="bi bi-trash-fill"></i>
+              </button>
+            </div>
             @if (banner.link) {
               <small class="text-muted" dir="ltr">{{ banner.link }}</small>
             } @else {
               <small class="text-muted">بدون رابط</small>
             }
-            <button class="action-btn delete-btn" (click)="onDelete(banner)" title="حذف">
-              <i class="bi bi-trash-fill"></i>
-            </button>
           </div>
         </div>
       </div>

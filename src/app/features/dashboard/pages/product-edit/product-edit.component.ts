@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ProductService } from '../../../../core/services/product.service';
@@ -17,7 +17,8 @@ import Swal from 'sweetalert2';
   selector: 'app-product-edit',
   imports: [ProductFormComponent],
   templateUrl: './product-edit.component.html',
-  styleUrl: './product-edit.component.scss'
+  styleUrl: './product-edit.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProductEditComponent implements OnInit {
   private route = inject(ActivatedRoute);

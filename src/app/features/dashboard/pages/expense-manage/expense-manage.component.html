@@ -4,31 +4,39 @@
     <i class="bi bi-arrow-down-circle me-2" style="color: var(--sz-accent);"></i>
     الخسائر والخصومات
   </h4>
+  <div class="d-flex gap-2">
+    <button class="btn btn-outline-success btn-sm" (click)="downloadBackup()" title="تحميل نسخة احتياطية">
+      <i class="bi bi-download me-1"></i>تحميل البيانات
+    </button>
+    <button class="btn btn-outline-primary btn-sm" (click)="restoreBackup()" title="استرجاع من ملف">
+      <i class="bi bi-upload me-1"></i>استرجاع البيانات
+    </button>
+  </div>
 </div>
 
 <!-- Stats Cards -->
 <div class="row g-3 mb-4">
-  <div class="col-6 col-md-4">
+  <div class="col-6 col-md-4 ">
     <div class="card border-0 shadow-sm stat-card">
-      <div class="card-body text-center py-3">
+      <div class="card-body text-center py-3 pstyle">
         <i class="bi bi-calendar-month fs-3 mb-1 d-block text-danger"></i>
         <h4 class="fw-bold mb-0">{{ monthTotal | egpCurrency }}</h4>
         <small class="text-secondary">مصاريف الشهر</small>
       </div>
     </div>
   </div>
-  <div class="col-6 col-md-4">
+  <div class="col-6 col-md-4 ">
     <div class="card border-0 shadow-sm stat-card">
-      <div class="card-body text-center py-3">
+      <div class="card-body text-center py-3 pstyle">
         <i class="bi bi-cash-coin fs-3 mb-1 d-block text-warning"></i>
         <h4 class="fw-bold mb-0">{{ allTotal | egpCurrency }}</h4>
         <small class="text-secondary">إجمالي كل المصاريف</small>
       </div>
     </div>
   </div>
-  <div class="col-6 col-md-4">
+  <div class="col-6 col-md-4 ">
     <div class="card border-0 shadow-sm stat-card">
-      <div class="card-body text-center py-3">
+      <div class="card-body text-center py-3 pstyle">
         <i class="bi bi-list-ol fs-3 mb-1 d-block" style="color: var(--sz-accent);"></i>
         <h4 class="fw-bold mb-0">{{ monthCount }}</h4>
         <small class="text-secondary">عدد بنود الشهر</small>
@@ -39,7 +47,7 @@
 
 <!-- Add / Edit Form Card -->
 <div class="card border-0 shadow-sm mb-4" style="background-color: var(--sz-bg-card);">
-  <div class="card-body p-4">
+  <div class="card-body p-4 pstyle">
     <h6 class="fw-bold mb-3">
       @if (editingExpense) {
         <i class="bi bi-pencil me-2" style="color: var(--sz-accent);"></i>تعديل المصروف
@@ -98,7 +106,7 @@
 
 <!-- Month Filter -->
 @if (availableMonths.length > 0) {
-  <div class="month-filter mb-3">
+  <div class="month-filter mb-3 pstyle">
     <label class="form-label fw-bold mb-1">
       <i class="bi bi-funnel me-1"></i> فلتر الشهر
     </label>
@@ -125,7 +133,7 @@
   <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
     <div class="card-body p-0">
       <div class="table-responsive">
-        <table class="table mb-0 align-middle expense-table">
+        <table class="table mb-0 align-middle expense-table pstyle">
           <thead>
             <tr>
               <th class="ps-3">#</th>

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, forwardRef, HostBinding } from '@angular/core';
+import { Component, Input, OnInit, forwardRef, HostBinding, ChangeDetectionStrategy } from '@angular/core';
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { QuillModule } from 'ngx-quill';
 
@@ -128,7 +128,8 @@ import { QuillModule } from 'ngx-quill';
       useExisting: forwardRef(() => RichTextEditorComponent),
       multi: true
     }
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RichTextEditorComponent implements ControlValueAccessor, OnInit {
   @Input() label = '';

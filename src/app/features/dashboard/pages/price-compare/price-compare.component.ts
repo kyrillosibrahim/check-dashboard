@@ -1,10 +1,11 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { CategoryService } from '../../../../core/services/category.service';
 import { ProductService } from '../../../../core/services/product.service';
 import { MerchantService } from '../../../../core/services/merchant.service';
 import { PriceComparisonService } from '../../../../core/services/price-comparison.service';
+import { BackupService } from '../../../../core/services/backup.service';
 import { ICategory } from '../../../../core/models/category.model';
 import { IProduct } from '../../../../core/models/product.model';
 import { IMerchant } from '../../../../core/models/merchant.model';
@@ -16,13 +17,15 @@ import { firstValueFrom } from 'rxjs';
   selector: 'app-price-compare',
   imports: [FormsModule, EgpCurrencyPipe],
   templateUrl: './price-compare.component.html',
-  styleUrl: './price-compare.component.scss'
+  styleUrl: './price-compare.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PriceCompareComponent implements OnInit {
   private categoryService = inject(CategoryService);
   private productService = inject(ProductService);
   private merchantService = inject(MerchantService);
   private compareService = inject(PriceComparisonService);
+  private backupService = inject(BackupService);
   private cdr = inject(ChangeDetectorRef);
 
   // Data
@@ -242,5 +245,59 @@ export class PriceCompareComponent implements OnInit {
   getCategoryName(slug: string): string {
     const cat = this.categories.find(c => c.slug === slug);
     return cat?.name || slug;
+  }
+
+  // ─── Backup / Restore ───
+
+  downloadBackup(): void {
+    if (!this.comparisons.length) {
+      Swal.fire('تنبيه', 'لا توجد مقارنات لتحميلها', 'warning');
+      return;
+    }
+    this.backupService.downloadJson(this.comparisons, 'price_comparisons_backup');
+    Swal.fire({ title: 'تم تحميل النسخة الاحتياطية!', icon: 'success', timer: 1500, showConfirmButton: false });
+  }
+
+  async restoreBackup(): Promise<void> {
+    try {
+      const data = await this.backupService.restoreJson<IPriceComparison[]>();
+      if (!Array.isArray(data)) {
+        Swal.fire('خطأ', 'الملف لا يحتوى على بيانات مقارنات صحيحة', 'error');
+        return;
+      }
+      const confirm = await Swal.fire({
+        title: 'استرجاع البيانات',
+        html: `سيتم رفع <b>${data.length}</b> مقارنة من الملف.<br>هل تريد المتابعة؟`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'نعم، استرجع',
+        cancelButtonText: 'إلغاء',
+      });
+      if (!confirm.isConfirmed) return;
+
+      let success = 0;
+      let failed = 0;
+      for (const comp of data) {
+        try {
+          await new Promise<void>((resolve) => {
+            this.compareService.update(comp.id, comp).subscribe({
+              next: () => { success++; resolve(); },
+              error: () => {
+                this.compareService.create(comp).subscribe({
+                  next: () => { success++; resolve(); },
+                  error: () => { failed++; resolve(); }
+                });
+              }
+            });
+          });
+        } catch {
+          failed++;
+        }
+      }
+      await Swal.fire('تم الاسترجاع', `نجح: ${success} | فشل: ${failed}`, success > 0 ? 'success' : 'error');
+      this.loadData();
+    } catch (err) {
+      if (err) Swal.fire('خطأ', String(err), 'error');
+    }
   }
 }
