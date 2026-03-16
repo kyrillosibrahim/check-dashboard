@@ -117,7 +117,7 @@ export class BannerManageComponent implements OnInit {
   }
 
   getImageUrl(banner: IBanner): string {
-    return banner.image ? `${API_CONFIG.uploadsUrl}/${banner.image}` : '';
+    return banner.image ? (banner.image.startsWith('http') ? banner.image : `${API_CONFIG.uploadsUrl}/${banner.image}`) : '';
   }
 
   getPageLabel(page: string): string {

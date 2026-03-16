@@ -40,6 +40,7 @@ export class ProductFormComponent implements OnInit {
     images: false,
     offers: false,
     faq: false,
+    seo: false,
     details: false
   };
 
@@ -91,7 +92,10 @@ export class ProductFormComponent implements OnInit {
       stock: [this.product?.stock ?? 100, [Validators.required, Validators.min(0)]],
       rating: [this.product?.rating || 0, [Validators.min(0), Validators.max(5)]],
       isFeatured: [this.product?.isFeatured || false],
-      comingSoon: [this.product?.comingSoon || false]
+      comingSoon: [this.product?.comingSoon || false],
+      metaTitle: [this.product?.metaTitle || ''],
+      metaDescription: [this.product?.metaDescription || ''],
+      seoKeywords: [this.product?.seoKeywords?.join(', ') || '']
     });
 
     if (this.product) {
@@ -202,7 +206,10 @@ export class ProductFormComponent implements OnInit {
       merchantProfitPercent,
       productForm: this.product?.productForm,
       faq: this.faqs.filter(f => f.q || f.qAr),
-      offers: this.offers.filter(o => o.text || o.textAr || o.image)
+      offers: this.offers.filter(o => o.text || o.textAr || o.image),
+      metaTitle: v.metaTitle || undefined,
+      metaDescription: v.metaDescription || undefined,
+      seoKeywords: v.seoKeywords ? v.seoKeywords.split(',').map((k: string) => k.trim()).filter((k: string) => k) : undefined
     };
 
     this.save.emit(product);

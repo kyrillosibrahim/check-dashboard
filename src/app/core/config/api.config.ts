@@ -1,14 +1,19 @@
+import { environment } from '../../../environments/environment';
+
+const BASE = environment.baseUrl;
+
 export const API_CONFIG = {
-  baseUrl: 'https://check-ecommerce.onrender.com',
-  productsUrl: 'https://check-ecommerce.onrender.com/api/products',
-  categoriesUrl: 'https://check-ecommerce.onrender.com/api/categories',
-  brandsUrl: 'https://check-ecommerce.onrender.com/api/brands',
-  bannersUrl: 'https://check-ecommerce.onrender.com/api/banners',
-  uploadsUrl: 'https://check-ecommerce.onrender.com/uploads',
-  authUrl: 'https://check-ecommerce.onrender.com/api/auth',
-  ordersUrl: 'https://check-ecommerce.onrender.com/api/orders',
-  merchantsUrl: 'https://check-ecommerce.onrender.com/api/merchants',
-  settingsUrl: 'https://check-ecommerce.onrender.com/api/settings',
-  priceComparisonsUrl: 'https://check-ecommerce.onrender.com/api/price-comparisons',
-  expensesUrl: 'https://check-ecommerce.onrender.com/api/expenses',
+  baseUrl: BASE,
+  productsUrl: `${BASE}/api/products`,
+  categoriesUrl: `${BASE}/api/categories`,
+  brandsUrl: `${BASE}/api/brands`,
+  bannersUrl: `${BASE}/api/banners`,
+  uploadsUrl: `${BASE}/uploads`,
+  authUrl: `${BASE}/api/auth`,
+  ordersUrl: `${BASE}/api/orders`,
+  merchantsUrl: `${BASE}/api/merchants`,
+  settingsUrl: `${BASE}/api/settings`,
+  priceComparisonsUrl: `${BASE}/api/price-comparisons`,
+  expensesUrl: `${BASE}/api/expenses`,
+  governoratesUrl: `${BASE}/api/governorates`,
 };

@@ -1,0 +1,83 @@
+<!-- Page Title -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+  <h4 class="fw-bold mb-0">
+    <i class="bi bi-truck me-2" style="color: var(--sz-accent);"></i>إدارة الشحن
+  </h4>
+  @if (totalChanges > 0) {
+    <button class="btn btn-primary px-4" (click)="saveAll()" [disabled]="isSaving">
+      <i class="bi bi-check-all me-1"></i>حفظ الكل ({{ totalChanges }})
+    </button>
+  }
+</div>
+
+<!-- Company Name -->
+<div class="card border-0 shadow-sm mb-4 pstyle">
+  <div class="card-body p-4">
+    <h6 class="fw-bold mb-3">
+      <i class="bi bi-building me-2" style="color: var(--sz-accent);"></i>شركة الشحن
+    </h6>
+    <div class="row">
+      <div class="col-md-6">
+        <label class="form-label">اسم شركة الشحن</label>
+        <input type="text" class="form-control" [(ngModel)]="companyName"
+               (ngModelChange)="onCompanyNameChange()"
+               placeholder="أدخل اسم شركة الشحن">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Governorates List -->
+@if (isLoading) {
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2 text-secondary">جاري تحميل المحافظات...</p>
+  </div>
+} @else if (error) {
+  <div class="alert alert-danger">
+    <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+    <button class="btn btn-sm btn-outline-danger ms-3" (click)="loadGovernorates()">إعادة المحاولة</button>
+  </div>
+} @else {
+  <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle pstyle">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--sz-border-color);">
+              <th class="ps-3">#</th>
+              <th>المحافظة</th>
+              <th>سعر الشحن (ج.م)</th>
+              <th class="text-start pe-3">الإجراء</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (gov of governorates; track gov.id; let i = $index) {
+              <tr [class.table-warning]="hasChanges(gov)">
+                <td class="ps-3 text-secondary">{{ i + 1 }}</td>
+                <td class="fw-semibold">{{ gov.governorate_name_ar }}</td>
+                <td style="width: 200px;">
+                  <input type="number" class="form-control form-control-sm cost-input"
+                         [ngModel]="editedCosts.has(gov.id) ? editedCosts.get(gov.id) : gov.shippingCost"
+                         (ngModelChange)="onCostChange(gov, $event)"
+                         min="0" step="5" dir="ltr">
+                </td>
+                <td class="text-start pe-3">
+                  @if (hasChanges(gov)) {
+                    <button class="btn btn-sm btn-outline-success" (click)="saveSingle(gov)">
+                      <i class="bi bi-check-lg me-1"></i>حفظ
+                    </button>
+                  }
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4" class="text-center py-4 text-secondary">لا توجد محافظات</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+}

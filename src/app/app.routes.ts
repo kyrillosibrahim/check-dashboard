@@ -85,6 +85,12 @@ export const routes: Routes = [
     title: 'KaroKan - مقارنة اسعار التجار'
   },
   {
+    path: 'shipping',
+    loadComponent: () => import('./features/dashboard/pages/shipping-manage/shipping-manage.component')
+      .then(c => c.ShippingManageComponent),
+    title: 'KaroKan - إدارة الشحن'
+  },
+  {
     path: 'settings',
     loadComponent: () => import('./features/dashboard/pages/site-settings/site-settings.component')
       .then(c => c.SiteSettingsComponent),

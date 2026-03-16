@@ -72,7 +72,7 @@ export class SiteSettingsComponent implements OnInit {
       next: (s) => {
         this.settings = s;
         if (s.logo) {
-          this.logoPreview = `${API_CONFIG.uploadsUrl}/${s.logo}`;
+          this.logoPreview = s.logo.startsWith('http') ? s.logo : `${API_CONFIG.uploadsUrl}/${s.logo}`;
         }
         this.loadCategories();
         this.loadProducts();
@@ -101,7 +101,10 @@ export class SiteSettingsComponent implements OnInit {
     this.productService.getAll().subscribe({
       next: (products) => {
         this.allProducts = products;
-        this.selectedProducts = products.filter(p => this.settings.bestSellingProducts.includes(p.id));
+        const bestIds = (this.settings.bestSellingProducts as any[]).map(
+          item => typeof item === 'object' ? item.id : item
+        );
+        this.selectedProducts = products.filter(p => bestIds.includes(p.id));
         this.checkLoaded();
       },
       error: () => this.checkLoaded()
@@ -200,7 +203,7 @@ export class SiteSettingsComponent implements OnInit {
 
   getBrandImage(brand: IBrand): string {
     if (!brand.image) return '';
-    return `${API_CONFIG.uploadsUrl}/${brand.image}`;
+    return brand.image.startsWith('http') ? brand.image : `${API_CONFIG.uploadsUrl}/${brand.image}`;
   }
 
   // --- Save ---
@@ -218,15 +221,11 @@ export class SiteSettingsComponent implements OnInit {
     fd.append('bestSellingBrands', JSON.stringify(this.selectedBrands.map(b => b.id)));
 
     this.settingsService.updateSettings(fd).subscribe({
-      next: (updated) => {
-        this.settings = updated;
+      next: () => {
         this.logoFile = null;
-        if (updated.logo) {
-          this.logoPreview = `${API_CONFIG.uploadsUrl}/${updated.logo}`;
-        }
         this.isSaving = false;
         Swal.fire({ title: 'تم حفظ الإعدادات بنجاح!', icon: 'success', timer: 1500, showConfirmButton: false });
-        this.cdr.markForCheck();
+        this.loadAll();
       },
       error: () => {
         this.isSaving = false;

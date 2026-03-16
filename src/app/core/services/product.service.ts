@@ -85,6 +85,9 @@ export class ProductService {
     if (product.productForm) fd.append('productForm', JSON.stringify(product.productForm));
     if (product.faq?.length) fd.append('faq', JSON.stringify(product.faq));
     if (product.offers?.length) fd.append('offers', JSON.stringify(product.offers));
+    if (product.metaTitle) fd.append('metaTitle', product.metaTitle);
+    if (product.metaDescription) fd.append('metaDescription', product.metaDescription);
+    if (product.seoKeywords?.length) fd.append('seoKeywords', JSON.stringify(product.seoKeywords));
 
     await this.appendImages(fd, 'mainImages', product.images);
     await this.appendImages(fd, 'swiperImages', product.swiperImages);

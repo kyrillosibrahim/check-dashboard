@@ -112,7 +112,7 @@ export class BrandManageComponent implements OnInit {
     this.brandName = brand.name;
     this.brandLink = brand.link || '';
     this.selectedFile = null;
-    this.imagePreview = brand.image ? `${API_CONFIG.uploadsUrl}/${brand.image}` : null;
+    this.imagePreview = brand.image ? (brand.image.startsWith('http') ? brand.image : `${API_CONFIG.uploadsUrl}/${brand.image}`) : null;
     this.cdr.markForCheck();
   }
 
@@ -144,7 +144,7 @@ export class BrandManageComponent implements OnInit {
   }
 
   getImageUrl(brand: IBrand): string {
-    return brand.image ? `${API_CONFIG.uploadsUrl}/${brand.image}` : '';
+    return brand.image ? (brand.image.startsWith('http') ? brand.image : `${API_CONFIG.uploadsUrl}/${brand.image}`) : '';
   }
 
   private resetForm(): void {

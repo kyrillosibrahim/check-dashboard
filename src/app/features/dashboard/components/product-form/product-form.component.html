@@ -174,6 +174,42 @@
     }
   </div>
 
+  <!-- ═══ Accordion: SEO ═══ -->
+  <div class="accordion-panel" [class.open]="panels['seo']">
+    <div class="accordion-header" (click)="togglePanel('seo')">
+      <span class="accordion-title">
+        <i class="bi bi-search"></i>
+        تحسين محركات البحث (SEO)
+      </span>
+      <i class="bi accordion-chevron" [class.bi-chevron-down]="!panels['seo']" [class.bi-chevron-up]="panels['seo']"></i>
+    </div>
+
+    @if (panels['seo']) {
+      <div class="accordion-body">
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label">عنوان SEO (Meta Title)</label>
+            <input type="text" class="form-control" formControlName="metaTitle"
+                   placeholder="عنوان مخصص لمحركات البحث (اتركه فارغ لاستخدام عنوان المنتج)">
+            <small class="text-muted">يظهر كعنوان الصفحة فى نتائج جوجل (يفضل أقل من 60 حرف)</small>
+          </div>
+          <div class="col-12">
+            <label class="form-label">وصف SEO (Meta Description)</label>
+            <textarea class="form-control" formControlName="metaDescription" rows="3"
+                      placeholder="وصف مخصص لمحركات البحث (اتركه فارغ لاستخدام وصف المنتج)"></textarea>
+            <small class="text-muted">يظهر أسفل العنوان فى نتائج جوجل (يفضل أقل من 160 حرف)</small>
+          </div>
+          <div class="col-12">
+            <label class="form-label">الكلمات المفتاحية (SEO Keywords)</label>
+            <input type="text" class="form-control" formControlName="seoKeywords"
+                   placeholder="كلمة1, كلمة2, كلمة3 (افصل بين الكلمات بفاصلة)">
+            <small class="text-muted">كلمات مفتاحية تساعد محركات البحث فى تصنيف المنتج</small>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
   <!-- ═══ Accordion: Details ═══ -->
   <div class="accordion-panel" [class.open]="panels['details']">
     <div class="accordion-header" (click)="togglePanel('details')">

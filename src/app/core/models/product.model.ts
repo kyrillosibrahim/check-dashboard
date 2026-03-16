@@ -50,4 +50,9 @@ export interface IProduct {
 
   // Special offers
   offers?: { text: string; textAr?: string; image?: string }[];
+
+  // SEO fields
+  metaTitle?: string;
+  metaDescription?: string;
+  seoKeywords?: string[];
 }
