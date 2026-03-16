@@ -22,7 +22,7 @@ export class BannerManageComponent implements OnInit {
 
   banners: IBanner[] = [];
   bannerLink = '';
-  bannerPage: 'home' | 'offers' = 'home';
+  bannerPage: 'home' | 'offers' | 'home-below' = 'home';
   selectedFile: File | null = null;
   imagePreview: string | null = null;
   compressionInfo = '';
@@ -121,7 +121,9 @@ export class BannerManageComponent implements OnInit {
   }
 
   getPageLabel(page: string): string {
-    return page === 'offers' ? 'صفحة العروض' : 'الصفحة الرئيسية';
+    if (page === 'offers') return 'صفحة العروض';
+    if (page === 'home-below') return 'أسفل السلايدر';
+    return 'الصفحة الرئيسية';
   }
 
   private resetForm(): void {

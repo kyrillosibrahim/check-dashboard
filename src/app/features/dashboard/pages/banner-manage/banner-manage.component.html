@@ -33,6 +33,7 @@
         <label class="form-label">مكان الظهور *</label>
         <select class="form-select" [(ngModel)]="bannerPage" name="bannerPage">
           <option value="home">الصفحة الرئيسية</option>
+          <option value="home-below">أسفل السلايدر</option>
           <option value="offers">صفحة العروض</option>
         </select>
       </div>
@@ -78,8 +79,8 @@
           <img [src]="getImageUrl(banner)" [alt]="'بنر ' + banner.id" class="banner-card-img" loading="lazy">
           <div class="card-body py-2 px-3">
             <div class="d-flex justify-content-between align-items-center mb-1">
-              <span class="badge" [class]="banner.page === 'offers' ? 'bg-warning text-dark' : 'bg-info'">
-                <i class="bi me-1" [class]="banner.page === 'offers' ? 'bi-tags' : 'bi-house'"></i>{{ getPageLabel(banner.page) }}
+              <span class="badge" [class]="banner.page === 'offers' ? 'bg-warning text-dark' : banner.page === 'home-below' ? 'bg-success' : 'bg-info'">
+                <i class="bi me-1" [class]="banner.page === 'offers' ? 'bi-tags' : banner.page === 'home-below' ? 'bi-arrow-down-circle' : 'bi-house'"></i>{{ getPageLabel(banner.page) }}
               </span>
               <button class="action-btn delete-btn" (click)="onDelete(banner)" title="حذف">
                 <i class="bi bi-trash-fill"></i>
