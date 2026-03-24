@@ -16,17 +16,17 @@ export class CategoryService {
     return this.http.get<ICategory[]>(`${API_CONFIG.categoriesUrl}/detailed`);
   }
 
-  create(name: string, image?: File): Observable<ICategory> {
+  create(name: string, imageUrl?: string): Observable<ICategory> {
     const fd = new FormData();
     fd.append('name', name);
-    if (image) fd.append('image', image);
+    if (imageUrl) fd.append('imageUrl', imageUrl);
     return this.http.post<ICategory>(API_CONFIG.categoriesUrl, fd);
   }
 
-  update(id: number, name: string, image?: File, famousBrands?: number[], filterTags?: string[]): Observable<ICategory> {
+  update(id: number, name: string, imageUrl?: string, famousBrands?: number[], filterTags?: string[]): Observable<ICategory> {
     const fd = new FormData();
     fd.append('name', name);
-    if (image) fd.append('image', image);
+    if (imageUrl) fd.append('imageUrl', imageUrl);
     if (famousBrands) fd.append('famousBrands', JSON.stringify(famousBrands));
     if (filterTags) fd.append('filterTags', JSON.stringify(filterTags));
     return this.http.put<ICategory>(`${API_CONFIG.categoriesUrl}/${id}`, fd);
@@ -37,17 +37,17 @@ export class CategoryService {
   }
 
   // Subcategory CRUD
-  addSubcategory(categoryId: number, name: string, image?: File): Observable<ICategory> {
+  addSubcategory(categoryId: number, name: string, imageUrl?: string): Observable<ICategory> {
     const fd = new FormData();
     fd.append('name', name);
-    if (image) fd.append('image', image);
+    if (imageUrl) fd.append('imageUrl', imageUrl);
     return this.http.post<ICategory>(`${API_CONFIG.categoriesUrl}/${categoryId}/subcategories`, fd);
   }
 
-  updateSubcategory(categoryId: number, subId: number, name: string, image?: File): Observable<ICategory> {
+  updateSubcategory(categoryId: number, subId: number, name: string, imageUrl?: string): Observable<ICategory> {
     const fd = new FormData();
     fd.append('name', name);
-    if (image) fd.append('image', image);
+    if (imageUrl) fd.append('imageUrl', imageUrl);
     return this.http.put<ICategory>(`${API_CONFIG.categoriesUrl}/${categoryId}/subcategories/${subId}`, fd);
   }
 

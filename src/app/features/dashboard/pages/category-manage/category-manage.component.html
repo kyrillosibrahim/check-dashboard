@@ -33,7 +33,12 @@
         <div class="col-md-5">
           <label class="form-label">صورة القسم</label>
           <div class="image-upload-area">
-            @if (imagePreview) {
+            @if (isUploadingImage) {
+              <div class="upload-placeholder">
+                <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                <span>جاري الرفع...</span>
+              </div>
+            } @else if (imagePreview) {
               <div class="image-preview-wrapper">
                 <img [src]="imagePreview" alt="معاينة" class="image-preview">
                 <button type="button" class="remove-image-btn" (click)="removeImage()">
@@ -167,7 +172,12 @@
                             <div class="col-md-4">
                               <label class="form-label small">صورة القسم الفرعى</label>
                               <div class="image-upload-area small-upload">
-                                @if (subImagePreview) {
+                                @if (isUploadingSubImage) {
+                                  <div class="upload-placeholder small-placeholder">
+                                    <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                                    <span>جاري الرفع...</span>
+                                  </div>
+                                } @else if (subImagePreview) {
                                   <div class="image-preview-wrapper">
                                     <img [src]="subImagePreview" alt="معاينة" class="image-preview small-preview">
                                     <button type="button" class="remove-image-btn" (click)="removeSubImage()">

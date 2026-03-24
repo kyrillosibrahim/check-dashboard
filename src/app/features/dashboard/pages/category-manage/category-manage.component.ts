@@ -2,9 +2,9 @@ import { Component, inject, OnInit, ChangeDetectorRef, ChangeDetectionStrategy }
 import { FormsModule } from '@angular/forms';
 import { CategoryService } from '../../../../core/services/category.service';
 import { BrandService } from '../../../../core/services/brand.service';
+import { CloudinaryService } from '../../../../core/services/cloudinary.service';
 import { ICategory, ISubcategory } from '../../../../core/models/category.model';
 import { IBrand } from '../../../../core/models/brand.model';
-import { API_CONFIG } from '../../../../core/config/api.config';
 import { BackupService } from '../../../../core/services/backup.service';
 import Swal from 'sweetalert2';
 
@@ -18,6 +18,7 @@ import Swal from 'sweetalert2';
 export class CategoryManageComponent implements OnInit {
   private categoryService = inject(CategoryService);
   private brandService = inject(BrandService);
+  private cloudinaryService = inject(CloudinaryService);
   private cdr = inject(ChangeDetectorRef);
   private backupService = inject(BackupService);
 
@@ -28,8 +29,9 @@ export class CategoryManageComponent implements OnInit {
 
   // ─── Category form ───
   categoryName = '';
-  selectedImage: File | null = null;
   imagePreview: string | null = null;
+  selectedImageUrl: string | null = null;
+  isUploadingImage = false;
   editingCategory: ICategory | null = null;
   isSaving = false;
 
@@ -38,8 +40,9 @@ export class CategoryManageComponent implements OnInit {
 
   // ─── Subcategory form ───
   subName = '';
-  subImage: File | null = null;
   subImagePreview: string | null = null;
+  selectedSubImageUrl: string | null = null;
+  isUploadingSubImage = false;
   editingSub: ISubcategory | null = null;
   isSavingSub = false;
 
@@ -86,38 +89,52 @@ export class CategoryManageComponent implements OnInit {
 
   getImageUrl(image: string): string {
     if (!image) return '';
-    if (image.startsWith('http') || image.startsWith('data:')) return image;
-    const clean = image.startsWith('/') ? image.slice(1) : image;
-    if (clean.startsWith('uploads/')) return `${API_CONFIG.baseUrl}/${clean}`;
-    return `${API_CONFIG.uploadsUrl}/${clean}`;
+    return image;
   }
 
   getBrandImageUrl(brand: IBrand): string {
     if (!brand.image) return '';
-    if (brand.image.startsWith('http')) return brand.image;
-    return `${API_CONFIG.uploadsUrl}/${brand.image}`;
+    return brand.image;
   }
 
-  // ─── Category CRUD ───
+  // ─── Category image upload ───
 
-  onImageSelected(event: Event): void {
+  async onImageSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) return;
-    this.selectedImage = file;
+
+    // Show local preview immediately
     const reader = new FileReader();
     reader.onload = () => {
       this.imagePreview = reader.result as string;
       this.cdr.markForCheck();
     };
     reader.readAsDataURL(file);
+
+    // Upload to Cloudinary
+    this.isUploadingImage = true;
+    this.cdr.markForCheck();
+    try {
+      this.selectedImageUrl = await this.cloudinaryService.uploadImage(file, 'categories');
+      this.imagePreview = this.selectedImageUrl;
+    } catch {
+      Swal.fire('خطأ', 'فشل رفع الصورة على Cloudinary', 'error');
+      this.selectedImageUrl = null;
+      this.imagePreview = null;
+    } finally {
+      this.isUploadingImage = false;
+      this.cdr.markForCheck();
+    }
   }
 
   removeImage(): void {
-    this.selectedImage = null;
+    this.selectedImageUrl = null;
     this.imagePreview = null;
     this.cdr.markForCheck();
   }
+
+  // ─── Category CRUD ───
 
   onSave(): void {
     const name = this.categoryName.trim();
@@ -125,7 +142,7 @@ export class CategoryManageComponent implements OnInit {
     this.isSaving = true;
 
     if (this.editingCategory) {
-      this.categoryService.update(this.editingCategory.id, name, this.selectedImage || undefined).subscribe({
+      this.categoryService.update(this.editingCategory.id, name, this.selectedImageUrl || undefined).subscribe({
         next: () => {
           Swal.fire({ title: 'تم تحديث القسم!', icon: 'success', timer: 1500, showConfirmButton: false });
           this.resetForm();
@@ -138,7 +155,7 @@ export class CategoryManageComponent implements OnInit {
         }
       });
     } else {
-      this.categoryService.create(name, this.selectedImage || undefined).subscribe({
+      this.categoryService.create(name, this.selectedImageUrl || undefined).subscribe({
         next: () => {
           Swal.fire({ title: 'تم إضافة القسم!', icon: 'success', timer: 1500, showConfirmButton: false });
           this.resetForm();
@@ -160,9 +177,8 @@ export class CategoryManageComponent implements OnInit {
   onEdit(cat: ICategory): void {
     this.editingCategory = cat;
     this.categoryName = cat.name;
-    this.selectedImage = null;
-    this.imagePreview = cat.image ? this.getImageUrl(cat.image) : null;
-    // Also expand the detail panel to show subcategories & brands
+    this.selectedImageUrl = cat.image || null;
+    this.imagePreview = cat.image || null;
     this.expandedCategoryId = cat.id;
     this.resetSubForm();
     this.cdr.markForCheck();
@@ -198,7 +214,7 @@ export class CategoryManageComponent implements OnInit {
 
   private resetForm(): void {
     this.categoryName = '';
-    this.selectedImage = null;
+    this.selectedImageUrl = null;
     this.imagePreview = null;
     this.editingCategory = null;
     this.isSaving = false;
@@ -222,26 +238,44 @@ export class CategoryManageComponent implements OnInit {
     return this.categories.find(c => c.id === this.expandedCategoryId) || null;
   }
 
-  // ─── Subcategory CRUD ───
+  // ─── Subcategory image upload ───
 
-  onSubImageSelected(event: Event): void {
+  async onSubImageSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) return;
-    this.subImage = file;
+
+    // Show local preview immediately
     const reader = new FileReader();
     reader.onload = () => {
       this.subImagePreview = reader.result as string;
       this.cdr.markForCheck();
     };
     reader.readAsDataURL(file);
+
+    // Upload to Cloudinary
+    this.isUploadingSubImage = true;
+    this.cdr.markForCheck();
+    try {
+      this.selectedSubImageUrl = await this.cloudinaryService.uploadImage(file, 'categories/subcategories');
+      this.subImagePreview = this.selectedSubImageUrl;
+    } catch {
+      Swal.fire('خطأ', 'فشل رفع الصورة على Cloudinary', 'error');
+      this.selectedSubImageUrl = null;
+      this.subImagePreview = null;
+    } finally {
+      this.isUploadingSubImage = false;
+      this.cdr.markForCheck();
+    }
   }
 
   removeSubImage(): void {
-    this.subImage = null;
+    this.selectedSubImageUrl = null;
     this.subImagePreview = null;
     this.cdr.markForCheck();
   }
+
+  // ─── Subcategory CRUD ───
 
   onSaveSub(): void {
     const name = this.subName.trim();
@@ -250,7 +284,7 @@ export class CategoryManageComponent implements OnInit {
 
     if (this.editingSub) {
       this.categoryService.updateSubcategory(
-        this.expandedCategoryId, this.editingSub.id, name, this.subImage || undefined
+        this.expandedCategoryId, this.editingSub.id, name, this.selectedSubImageUrl || undefined
       ).subscribe({
         next: (updatedCat) => {
           this.updateCategoryInList(updatedCat);
@@ -265,7 +299,7 @@ export class CategoryManageComponent implements OnInit {
       });
     } else {
       this.categoryService.addSubcategory(
-        this.expandedCategoryId, name, this.subImage || undefined
+        this.expandedCategoryId, name, this.selectedSubImageUrl || undefined
       ).subscribe({
         next: (updatedCat) => {
           this.updateCategoryInList(updatedCat);
@@ -288,8 +322,8 @@ export class CategoryManageComponent implements OnInit {
   onEditSub(sub: ISubcategory): void {
     this.editingSub = sub;
     this.subName = sub.name;
-    this.subImage = null;
-    this.subImagePreview = sub.image ? this.getImageUrl(sub.image) : null;
+    this.selectedSubImageUrl = sub.image || null;
+    this.subImagePreview = sub.image || null;
     this.cdr.markForCheck();
   }
 
@@ -323,7 +357,7 @@ export class CategoryManageComponent implements OnInit {
 
   private resetSubForm(): void {
     this.subName = '';
-    this.subImage = null;
+    this.selectedSubImageUrl = null;
     this.subImagePreview = null;
     this.editingSub = null;
     this.isSavingSub = false;
@@ -383,12 +417,8 @@ export class CategoryManageComponent implements OnInit {
   private saveBrands(cat: ICategory): void {
     const brandIds = (cat.famousBrands || []).map(entry => this.normalizeBrandId(entry));
     this.categoryService.update(cat.id, cat.name, undefined, brandIds).subscribe({
-      next: () => {
-        this.cdr.markForCheck();
-      },
-      error: () => {
-        Swal.fire('خطأ', 'فشل حفظ العلامات التجارية', 'error');
-      }
+      next: () => { this.cdr.markForCheck(); },
+      error: () => { Swal.fire('خطأ', 'فشل حفظ العلامات التجارية', 'error'); }
     });
   }
 
@@ -414,12 +444,8 @@ export class CategoryManageComponent implements OnInit {
 
   private saveFilterTags(cat: ICategory): void {
     this.categoryService.update(cat.id, cat.name, undefined, undefined, cat.filterTags).subscribe({
-      next: () => {
-        this.cdr.markForCheck();
-      },
-      error: () => {
-        Swal.fire('خطأ', 'فشل حفظ كلمات الفلتر', 'error');
-      }
+      next: () => { this.cdr.markForCheck(); },
+      error: () => { Swal.fire('خطأ', 'فشل حفظ كلمات الفلتر', 'error'); }
     });
   }
 
@@ -437,48 +463,10 @@ export class CategoryManageComponent implements OnInit {
       Swal.fire('تنبيه', 'لا توجد أقسام لتحميلها', 'warning');
       return;
     }
-
-    Swal.fire({ title: 'جاري تجهيز النسخة الاحتياطية...', html: '0 / ' + this.categories.length, allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
-    const catsWithImages = [];
-    let imgOk = 0;
-    let imgTotal = 0;
-    for (let i = 0; i < this.categories.length; i++) {
-      const cat = this.categories[i];
-      const imageUrl = cat.image ? this.getImageUrl(cat.image) : '';
-      let imageBase64 = '';
-      if (imageUrl) {
-        imgTotal++;
-        imageBase64 = await this.backupService.imageToBase64(imageUrl);
-        if (imageBase64) imgOk++;
-      }
-
-      const subsWithImages = [];
-      for (const sub of (cat.subcategories || [])) {
-        const subImageUrl = sub.image ? this.getImageUrl(sub.image) : '';
-        let subImageBase64 = '';
-        if (subImageUrl) {
-          imgTotal++;
-          subImageBase64 = await this.backupService.imageToBase64(subImageUrl);
-          if (subImageBase64) imgOk++;
-        }
-        subsWithImages.push({ ...sub, imageBase64: subImageBase64 });
-      }
-
-      // Normalize famousBrands to IDs (API detailed returns full objects)
-      const brandIds = (cat.famousBrands || []).map((b: any) => typeof b === 'object' ? b.id : b);
-
-      catsWithImages.push({ ...cat, imageBase64, subcategories: subsWithImages, famousBrands: brandIds });
-      Swal.update({ html: `${i + 1} / ${this.categories.length}` });
-    }
-
-    this.backupService.downloadJson(catsWithImages, 'categories_backup');
-
-    if (imgTotal > 0 && imgOk < imgTotal) {
-      Swal.fire({ title: 'تم التحميل', html: `تم حفظ <b>${imgOk}</b> صورة من <b>${imgTotal}</b><br>بعض الصور لم يتم تحميلها`, icon: 'warning' });
-    } else {
-      Swal.fire({ title: 'تم تحميل النسخة الاحتياطية!', html: `تم حفظ <b>${imgOk}</b> صورة من <b>${imgTotal}</b>`, icon: 'success', timer: 2000, showConfirmButton: false });
-    }
+    const brandIds = (cat: ICategory) => (cat.famousBrands || []).map((b: any) => typeof b === 'object' ? b.id : b);
+    const data = this.categories.map(cat => ({ ...cat, famousBrands: brandIds(cat) }));
+    this.backupService.downloadJson(data, 'categories_backup');
+    Swal.fire({ title: 'تم تحميل النسخة الاحتياطية!', icon: 'success', timer: 1500, showConfirmButton: false });
   }
 
   async restoreBackup(): Promise<void> {
@@ -504,16 +492,20 @@ export class CategoryManageComponent implements OnInit {
       let failed = 0;
       for (const cat of data) {
         try {
-          const imageFile = cat.imageBase64 ? this.backupService.base64ToFile(cat.imageBase64, cat.name) : null;
+          // Upload category image to Cloudinary if base64
+          let catImageUrl = cat.image || undefined;
+          if (cat.imageBase64) {
+            const file = this.backupService.base64ToFile(cat.imageBase64, cat.name);
+            if (file) catImageUrl = await this.cloudinaryService.uploadImage(file, 'categories');
+          }
 
-          // Normalize famousBrands to IDs (backup might have full objects)
           const brandIds = (cat.famousBrands || []).map((b: any) => typeof b === 'object' ? b.id : b).filter((id: any) => id != null);
 
           await new Promise<void>((resolve) => {
-            this.categoryService.update(cat.id, cat.name, imageFile || undefined, brandIds.length ? brandIds : undefined, cat.filterTags?.length ? cat.filterTags : undefined).subscribe({
+            this.categoryService.update(cat.id, cat.name, catImageUrl, brandIds.length ? brandIds : undefined, cat.filterTags?.length ? cat.filterTags : undefined).subscribe({
               next: () => { success++; resolve(); },
               error: () => {
-                this.categoryService.create(cat.name, imageFile || undefined).subscribe({
+                this.categoryService.create(cat.name, catImageUrl).subscribe({
                   next: () => { success++; resolve(); },
                   error: () => { failed++; resolve(); }
                 });
@@ -523,13 +515,17 @@ export class CategoryManageComponent implements OnInit {
 
           // Restore subcategories
           for (const sub of (cat.subcategories || [])) {
-            const subFile = sub.imageBase64 ? this.backupService.base64ToFile(sub.imageBase64, sub.name) : null;
+            let subImageUrl = sub.image || undefined;
+            if (sub.imageBase64) {
+              const subFile = this.backupService.base64ToFile(sub.imageBase64, sub.name);
+              if (subFile) subImageUrl = await this.cloudinaryService.uploadImage(subFile, 'categories/subcategories');
+            }
             try {
               await new Promise<void>((resolve) => {
-                this.categoryService.updateSubcategory(cat.id, sub.id, sub.name, subFile || undefined).subscribe({
+                this.categoryService.updateSubcategory(cat.id, sub.id, sub.name, subImageUrl).subscribe({
                   next: () => resolve(),
                   error: () => {
-                    this.categoryService.addSubcategory(cat.id, sub.name, subFile || undefined).subscribe({
+                    this.categoryService.addSubcategory(cat.id, sub.name, subImageUrl).subscribe({
                       next: () => resolve(),
                       error: () => resolve()
                     });
