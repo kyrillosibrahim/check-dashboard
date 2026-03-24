@@ -86,8 +86,10 @@ export class CategoryManageComponent implements OnInit {
 
   getImageUrl(image: string): string {
     if (!image) return '';
-    if (image.startsWith('http')) return image;
-    return `${API_CONFIG.uploadsUrl}/${image}`;
+    if (image.startsWith('http') || image.startsWith('data:')) return image;
+    const clean = image.startsWith('/') ? image.slice(1) : image;
+    if (clean.startsWith('uploads/')) return `${API_CONFIG.baseUrl}/${clean}`;
+    return `${API_CONFIG.uploadsUrl}/${clean}`;
   }
 
   getBrandImageUrl(brand: IBrand): string {
