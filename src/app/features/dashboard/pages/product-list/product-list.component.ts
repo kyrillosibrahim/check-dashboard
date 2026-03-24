@@ -1,5 +1,6 @@
 import { Component, inject, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../../../core/services/product.service';
 import { CategoryService } from '../../../../core/services/category.service';
 import { IProduct } from '../../../../core/models/product.model';
@@ -11,7 +12,7 @@ import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-product-list',
-  imports: [ProductTableComponent, RouterLink],
+  imports: [ProductTableComponent, RouterLink, FormsModule],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -27,6 +28,7 @@ export class ProductListComponent implements OnInit {
   products: IProduct[] = [];
   categories: ICategory[] = [];
   selectedCategory = '';
+  searchQuery = '';
   isLoading = true;
   error = '';
 
@@ -44,9 +46,32 @@ export class ProductListComponent implements OnInit {
 
   filterByCategory(category: string): void {
     this.selectedCategory = category;
-    this.products = category
-      ? this.allProducts.filter(p => p.category === category)
+    this.applyFilters();
+  }
+
+  search(): void {
+    this.applyFilters();
+  }
+
+  clearSearch(): void {
+    this.searchQuery = '';
+    this.applyFilters();
+  }
+
+  private applyFilters(): void {
+    let filtered = this.selectedCategory
+      ? this.allProducts.filter(p => p.category === this.selectedCategory)
       : this.allProducts;
+
+    if (this.searchQuery.trim()) {
+      const q = this.searchQuery.trim().toLowerCase();
+      filtered = filtered.filter(p =>
+        (p.titleAr && p.titleAr.toLowerCase().includes(q)) ||
+        p.title.toLowerCase().includes(q)
+      );
+    }
+
+    this.products = filtered;
     this.cdr.markForCheck();
   }
 

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { IProduct } from '../../../../core/models/product.model';
 import { ICategory, ISubcategory } from '../../../../core/models/category.model';
@@ -18,7 +18,7 @@ import { FaqEditorComponent, IFaqItem } from '../faq-editor/faq-editor.component
   styleUrl: './product-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProductFormComponent implements OnInit {
+export class ProductFormComponent implements OnInit, OnChanges {
   @Input() product: IProduct | null = null;
   @Input() categories: ICategory[] = [];
   @Input() brands: IBrand[] = [];
@@ -28,6 +28,7 @@ export class ProductFormComponent implements OnInit {
 
   private fb = inject(FormBuilder);
   private productService = inject(ProductService);
+  private cdr = inject(ChangeDetectorRef);
 
   form!: FormGroup;
   generatedSlug = '';
@@ -49,6 +50,22 @@ export class ProductFormComponent implements OnInit {
 
   togglePanel(key: string): void {
     this.panels[key] = !this.panels[key];
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Re-populate category-dependent fields when categories arrive (async load)
+    if (changes['categories'] && this.categories.length && this.product?.category && this.form) {
+      const cat = this.categories.find(c => c.slug === this.product!.category);
+      this.filteredSubcategories = cat?.subcategories || [];
+      this.filteredBrands = cat?.famousBrands?.length ? cat.famousBrands as unknown as IBrand[] : this.brands;
+      this.filteredFilterTags = cat?.filterTags || [];
+      this.selectedFilterTags = [...(this.product!.filterTags || [])];
+      // Restore subcategory value without triggering valueChanges reset
+      if (this.product!.subcategory) {
+        this.form.get('subcategory')!.setValue(this.product!.subcategory, { emitEvent: false });
+      }
+      this.cdr.markForCheck();
+    }
   }
 
   mainImages: string[] = [];

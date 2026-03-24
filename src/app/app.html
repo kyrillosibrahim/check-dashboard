@@ -1,106 +1,119 @@
-<div class="dashboard-layout" [class.sidebar-open]="sidebarOpen">
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="sidebar-header">
-      <a routerLink="/" class="brand" (click)="closeSidebar()">
-        <img src="../assets/logobluewithoutbg.png" alt="Check" class="brand-logo">
-      </a>
+@if (authService.isLoggedIn()) {
+  <div class="dashboard-layout" [class.sidebar-open]="sidebarOpen">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a routerLink="/" class="brand" (click)="closeSidebar()">
+          <img src="../assets/logobluewithoutbg.png" alt="Check" class="brand-logo">
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item theme-toggle" (click)="toggleTheme()">
+          <i class="bi" [class.bi-moon-fill]="!themeService.isDark()" [class.bi-sun-fill]="themeService.isDark()"></i>
+          <span>{{ themeService.isDark() ? 'الوضع الفاتح' : 'الوضع الداكن' }}</span>
+        </button>
+        <a routerLink="/products" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+           class="nav-item" (click)="closeSidebar()">
+          <i class="bi bi-box-seam"></i>
+          <span>جميع المنتجات</span>
+        </a>
+        <a routerLink="/add" routerLinkActive="active"
+           class="nav-item" (click)="closeSidebar()">
+          <i class="bi bi-plus-circle"></i>
+          <span>إضافة منتج</span>
+        </a>
+        <a routerLink="/categories" routerLinkActive="active"
+           class="nav-item" (click)="closeSidebar()">
+          <i class="bi bi-grid"></i>
+          <span>إدارة الأقسام</span>
+        </a>
+        <a routerLink="/brands" routerLinkActive="active"
+           class="nav-item" (click)="closeSidebar()">
+          <i class="bi bi-award"></i>
+          <span>إدارة العلامات التجارية</span>
+        </a>
+        <a routerLink="/banners" routerLinkActive="active"
+           class="nav-item" (click)="closeSidebar()">
+          <i class="bi bi-image"></i>
+          <span>بنرات العروض</span>
+        </a>
+        <a routerLink="/customers" routerLinkActive="active"
+           class="nav-item" (click)="closeSidebar()">
+          <i class="bi bi-people"></i>
+          <span>كافة العملاء</span>
+        </a>
+        <a routerLink="/invoices" routerLinkActive="active"
+           class="nav-item" (click)="closeSidebar()">
+          <i class="bi bi-receipt"></i>
+          <span>الفواتير</span>
+        </a>
+        <a routerLink="/profits" routerLinkActive="active"
+           class="nav-item" (click)="closeSidebar()">
+          <i class="bi bi-graph-up-arrow"></i>
+          <span>الأرباح</span>
+        </a>
+        <a routerLink="/expenses" routerLinkActive="active"
+           class="nav-item" (click)="closeSidebar()">
+          <i class="bi bi-arrow-down-circle"></i>
+          <span>الخسائر</span>
+        </a>
+        <a routerLink="/merchants" routerLinkActive="active"
+           class="nav-item" (click)="closeSidebar()">
+          <i class="bi bi-shop"></i>
+          <span>التجار</span>
+        </a>
+        <a routerLink="/price-compare" routerLinkActive="active"
+           class="nav-item" (click)="closeSidebar()">
+          <i class="bi bi-graph-up"></i>
+          <span>مقارنة الاسعار</span>
+        </a>
+        <a routerLink="/shipping" routerLinkActive="active"
+           class="nav-item" (click)="closeSidebar()">
+          <i class="bi bi-truck"></i>
+          <span>الشحن</span>
+        </a>
+        <a routerLink="/settings" routerLinkActive="active"
+           class="nav-item" (click)="closeSidebar()">
+          <i class="bi bi-gear"></i>
+          <span>الإعدادات</span>
+        </a>
+
+        <!-- Logout Button -->
+        <button class="nav-item logout-btn" (click)="logout()">
+          <i class="bi bi-box-arrow-right"></i>
+          <span>تسجيل الخروج</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer"></div>
+    </aside>
+
+    <!-- Mobile Overlay -->
+    @if (sidebarOpen) {
+      <div class="sidebar-overlay d-lg-none" (click)="closeSidebar()"></div>
+    }
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Top Header Bar -->
+      <header class="top-header d-lg-none">
+        <button class="btn btn-link hamburger" (click)="toggleSidebar()">
+          <i class="bi bi-list fs-4"></i>
+        </button>
+        <span class="fw-bold" style="color: var(--sz-accent);">KaroKan</span>
+        <div class="flex-grow-1"></div>
+        <button class="btn btn-link logout-mobile" (click)="logout()" title="تسجيل الخروج">
+          <i class="bi bi-box-arrow-right fs-5"></i>
+        </button>
+      </header>
+
+      <!-- Page Content -->
+      <main class="page-content">
+        <router-outlet />
+      </main>
     </div>
-
-    <nav class="sidebar-nav">
-      <button class="nav-item theme-toggle" (click)="toggleTheme()">
-        <i class="bi" [class.bi-moon-fill]="!themeService.isDark()" [class.bi-sun-fill]="themeService.isDark()"></i>
-        <span>{{ themeService.isDark() ? 'الوضع الفاتح' : 'الوضع الداكن' }}</span>
-      </button>
-      <a routerLink="/products" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-         class="nav-item" (click)="closeSidebar()">
-        <i class="bi bi-box-seam"></i>
-        <span>جميع المنتجات</span>
-      </a>
-      <a routerLink="/add" routerLinkActive="active"
-         class="nav-item" (click)="closeSidebar()">
-        <i class="bi bi-plus-circle"></i>
-        <span>إضافة منتج</span>
-      </a>
-      <a routerLink="/categories" routerLinkActive="active"
-         class="nav-item" (click)="closeSidebar()">
-        <i class="bi bi-grid"></i>
-        <span>إدارة الأقسام</span>
-      </a>
-      <a routerLink="/brands" routerLinkActive="active"
-         class="nav-item" (click)="closeSidebar()">
-        <i class="bi bi-award"></i>
-        <span>إدارة العلامات التجارية</span>
-      </a>
-      <a routerLink="/banners" routerLinkActive="active"
-         class="nav-item" (click)="closeSidebar()">
-        <i class="bi bi-image"></i>
-        <span>بنرات العروض</span>
-      </a>
-      <a routerLink="/customers" routerLinkActive="active"
-         class="nav-item" (click)="closeSidebar()">
-        <i class="bi bi-people"></i>
-        <span>كافة العملاء</span>
-      </a>
-      <a routerLink="/invoices" routerLinkActive="active"
-         class="nav-item" (click)="closeSidebar()">
-        <i class="bi bi-receipt"></i>
-        <span>الفواتير</span>
-      </a>
-      <a routerLink="/profits" routerLinkActive="active"
-         class="nav-item" (click)="closeSidebar()">
-        <i class="bi bi-graph-up-arrow"></i>
-        <span>الأرباح</span>
-      </a>
-      <a routerLink="/expenses" routerLinkActive="active"
-         class="nav-item" (click)="closeSidebar()">
-        <i class="bi bi-arrow-down-circle"></i>
-        <span>الخسائر</span>
-      </a>
-      <a routerLink="/merchants" routerLinkActive="active"
-         class="nav-item" (click)="closeSidebar()">
-        <i class="bi bi-shop"></i>
-        <span>التجار</span>
-      </a>
-      <a routerLink="/price-compare" routerLinkActive="active"
-         class="nav-item" (click)="closeSidebar()">
-        <i class="bi bi-graph-up"></i>
-        <span>مقارنة الاسعار</span>
-      </a>
-      <a routerLink="/shipping" routerLinkActive="active"
-         class="nav-item" (click)="closeSidebar()">
-        <i class="bi bi-truck"></i>
-        <span>الشحن</span>
-      </a>
-      <a routerLink="/settings" routerLinkActive="active"
-         class="nav-item" (click)="closeSidebar()">
-        <i class="bi bi-gear"></i>
-        <span>الإعدادات</span>
-      </a>
-    </nav>
-
-    <div class="sidebar-footer"></div>
-  </aside>
-
-  <!-- Mobile Overlay -->
-  @if (sidebarOpen) {
-    <div class="sidebar-overlay d-lg-none" (click)="closeSidebar()"></div>
-  }
-
-  <!-- Main Content -->
-  <div class="main-content">
-    <!-- Top Header Bar -->
-    <header class="top-header d-lg-none">
-      <button class="btn btn-link hamburger" (click)="toggleSidebar()">
-        <i class="bi bi-list fs-4"></i>
-      </button>
-      <span class="fw-bold" style="color: var(--sz-accent);">KaroKan</span>
-      <div class="flex-grow-1"></div>
-    </header>
-
-    <!-- Page Content -->
-    <main class="page-content">
-      <router-outlet />
-    </main>
   </div>
-</div>
+} @else {
+  <router-outlet />
+}

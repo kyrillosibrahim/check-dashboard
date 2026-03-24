@@ -1,0 +1,100 @@
+<div class="login-page">
+  <div class="login-container">
+    <div class="login-card">
+      <!-- Logo -->
+      <div class="login-header">
+        <img src="../../../../../assets/logobluewithoutbg.png" alt="KaroKan" class="login-logo">
+        <h1 class="login-title">لوحة التحكم</h1>
+        <p class="login-subtitle">تسجيل الدخول للمتابعة</p>
+      </div>
+
+      <!-- Form -->
+      <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="login-form" autocomplete="off">
+
+        <!-- Phone Field -->
+        <div class="form-group">
+          <label for="phone" class="form-label">
+            <i class="bi bi-phone"></i>
+            رقم الموبايل
+          </label>
+          <div class="input-wrapper">
+            <input
+              type="tel"
+              id="phone"
+              name="phone"
+              [(ngModel)]="phone"
+              class="form-control"
+              placeholder="01XXXXXXXXX"
+              [disabled]="isLocked()"
+              maxlength="11"
+              autocomplete="off"
+              spellcheck="false"
+              dir="ltr"
+            >
+            <i class="bi bi-phone-fill input-icon"></i>
+          </div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group">
+          <label for="password" class="form-label">
+            <i class="bi bi-lock"></i>
+            كلمة المرور
+          </label>
+          <div class="input-wrapper">
+            <input
+              [type]="showPassword() ? 'text' : 'password'"
+              id="password"
+              name="password"
+              [(ngModel)]="password"
+              class="form-control"
+              placeholder="••••••••"
+              [disabled]="isLocked()"
+              autocomplete="new-password"
+              dir="ltr"
+            >
+            <button type="button" class="toggle-password" (click)="togglePassword()">
+              <i class="bi" [class.bi-eye]="!showPassword()" [class.bi-eye-slash]="showPassword()"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Error Message -->
+        @if (errorMessage()) {
+          <div class="alert-error">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>{{ errorMessage() }}</span>
+            @if (isLocked()) {
+              <span class="lock-timer"> ({{ lockTimer() }}ث)</span>
+            }
+          </div>
+        }
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="btn-login"
+          [disabled]="isLoading() || isLocked()"
+        >
+          @if (isLoading()) {
+            <span class="spinner"></span>
+            <span>جاري التحقق...</span>
+          } @else if (isLocked()) {
+            <i class="bi bi-lock-fill"></i>
+            <span>محظور مؤقتاً ({{ lockTimer() }}ث)</span>
+          } @else {
+            <i class="bi bi-box-arrow-in-right"></i>
+            <span>تسجيل الدخول</span>
+          }
+        </button>
+
+      </form>
+
+      <!-- Security Notice -->
+      <div class="security-notice">
+        <i class="bi bi-shield-lock-fill"></i>
+        <span>هذه المنطقة محمية ومخصصة للمسؤولين فقط</span>
+      </div>
+    </div>
+  </div>
+</div>

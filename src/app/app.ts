@@ -1,6 +1,7 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { ThemeService } from './core/services/theme.service';
+import { AuthService } from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -11,6 +12,7 @@ import { ThemeService } from './core/services/theme.service';
 })
 export class App {
   themeService = inject(ThemeService);
+  authService = inject(AuthService);
   sidebarOpen = false;
 
   toggleTheme(): void {
@@ -23,5 +25,10 @@ export class App {
 
   closeSidebar(): void {
     this.sidebarOpen = false;
+  }
+
+  logout(): void {
+    this.sidebarOpen = false;
+    this.authService.logout();
   }
 }

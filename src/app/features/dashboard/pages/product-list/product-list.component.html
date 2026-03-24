@@ -73,6 +73,33 @@
   </div>
 </div>
 
+<!-- Search Bar -->
+<div class="card border-0 shadow-sm mb-4 p-3 pstyle">
+  <div class="d-flex gap-2 align-items-center">
+    <div class="input-group">
+      <span class="input-group-text" style="background-color: var(--sz-bg-card); border-color: var(--sz-border-color);">
+        <i class="bi bi-search" style="color: var(--sz-accent);"></i>
+      </span>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="ابحث بالاسم..."
+        [(ngModel)]="searchQuery"
+        (keyup.enter)="search()"
+        style="background-color: var(--sz-bg-card); border-color: var(--sz-border-color); color: inherit;"
+      />
+      @if (searchQuery) {
+        <button class="btn btn-outline-secondary" type="button" (click)="clearSearch()" title="مسح البحث">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      }
+    </div>
+    <button class="btn btn-primary" style="white-space: nowrap;" (click)="search()">
+      <i class="bi bi-search me-1"></i> بحث
+    </button>
+  </div>
+</div>
+
 <!-- Product Table -->
 @if (isLoading) {
   <div class="text-center py-5">
