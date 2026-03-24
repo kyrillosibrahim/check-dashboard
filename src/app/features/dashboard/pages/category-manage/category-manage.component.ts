@@ -283,11 +283,13 @@ export class CategoryManageComponent implements OnInit {
     this.isSavingSub = true;
 
     if (this.editingSub) {
+      const subId = this.editingSub.id;
+      const imageUrl = this.selectedSubImageUrl || undefined;
       this.categoryService.updateSubcategory(
-        this.expandedCategoryId, this.editingSub.id, name, this.selectedSubImageUrl || undefined
+        this.expandedCategoryId, subId, name, imageUrl
       ).subscribe({
         next: (updatedCat) => {
-          this.updateCategoryInList(updatedCat);
+          this.updateCategoryInList(updatedCat, subId, imageUrl);
           Swal.fire({ title: 'تم تحديث القسم الفرعى!', icon: 'success', timer: 1500, showConfirmButton: false });
           this.resetSubForm();
         },
@@ -298,11 +300,14 @@ export class CategoryManageComponent implements OnInit {
         }
       });
     } else {
+      const imageUrl = this.selectedSubImageUrl || undefined;
       this.categoryService.addSubcategory(
-        this.expandedCategoryId, name, this.selectedSubImageUrl || undefined
+        this.expandedCategoryId, name, imageUrl
       ).subscribe({
         next: (updatedCat) => {
-          this.updateCategoryInList(updatedCat);
+          // For new subcategory, find it by name and patch the image
+          const newSub = updatedCat.subcategories?.find(s => s.name === name);
+          this.updateCategoryInList(updatedCat, newSub?.id, imageUrl);
           Swal.fire({ title: 'تم إضافة القسم الفرعى!', icon: 'success', timer: 1500, showConfirmButton: false });
           this.resetSubForm();
         },
@@ -364,10 +369,17 @@ export class CategoryManageComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-  private updateCategoryInList(updatedCat: ICategory): void {
+  private updateCategoryInList(updatedCat: ICategory, subId?: number, subImageUrl?: string): void {
     const idx = this.categories.findIndex(c => c.id === updatedCat.id);
     if (idx !== -1) {
-      this.categories[idx] = { ...this.categories[idx], ...updatedCat };
+      const merged = { ...this.categories[idx], ...updatedCat };
+      // If backend didn't return Cloudinary URL, patch it manually
+      if (subId && subImageUrl && merged.subcategories) {
+        merged.subcategories = merged.subcategories.map(s =>
+          s.id === subId ? { ...s, image: subImageUrl } : s
+        );
+      }
+      this.categories[idx] = merged;
     }
     this.cdr.markForCheck();
   }
