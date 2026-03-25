@@ -369,7 +369,29 @@ td {
   font-size: 0.85rem;
   padding: 0.4rem 0.7rem;
   border-radius: 20px;
-  transition: all 0.2s;
+  transition: opacity 0.15s, transform 0.15s, outline 0.1s;
+  cursor: grab;
+  user-select: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &.tag-dragging {
+    opacity: 0.35;
+    transform: scale(0.95);
+  }
+
+  &.tag-drag-over {
+    outline: 2px dashed rgba(255, 255, 255, 0.8);
+    transform: scale(1.06);
+  }
+
+  .drag-grip {
+    opacity: 0.6;
+    font-size: 0.9rem;
+    margin-inline-end: 2px;
+  }
 
   .btn-close {
     cursor: pointer;

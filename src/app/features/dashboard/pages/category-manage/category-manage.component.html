@@ -320,9 +320,18 @@
 
                         <!-- Filter tags list -->
                         @if ((cat.filterTags || []).length > 0) {
-                          <div class="d-flex flex-wrap gap-2">
-                            @for (tag of cat.filterTags; track tag) {
-                              <span class="badge bg-success d-flex align-items-center gap-1 filter-tag-badge">
+                          <div class="d-flex flex-wrap gap-2 filter-tags-container">
+                            @for (tag of cat.filterTags; track tag; let i = $index) {
+                              <span class="badge bg-success d-flex align-items-center gap-1 filter-tag-badge"
+                                    draggable="true"
+                                    [class.tag-dragging]="dragTagIndex === i"
+                                    [class.tag-drag-over]="dragOverTagIndex === i && dragTagIndex !== i"
+                                    (dragstart)="onTagDragStart($event, i)"
+                                    (dragover)="onTagDragOver($event, i)"
+                                    (dragleave)="onTagDragLeave()"
+                                    (drop)="onTagDrop($event, cat, i)"
+                                    (dragend)="onTagDragEnd()">
+                                <i class="bi bi-grip-vertical drag-grip"></i>
                                 <i class="bi bi-funnel-fill"></i>
                                 {{ tag }}
                                 <button type="button" class="btn-close btn-close-white ms-1"

@@ -52,6 +52,8 @@ export class CategoryManageComponent implements OnInit {
 
   // ─── Filter tags ───
   newFilterTag = '';
+  dragTagIndex = -1;
+  dragOverTagIndex = -1;
 
   ngOnInit(): void {
     this.loadAll();
@@ -459,6 +461,46 @@ export class CategoryManageComponent implements OnInit {
       next: () => { this.cdr.markForCheck(); },
       error: () => { Swal.fire('خطأ', 'فشل حفظ كلمات الفلتر', 'error'); }
     });
+  }
+
+  // ─── Filter tag drag & drop ───
+
+  onTagDragStart(event: DragEvent, index: number): void {
+    this.dragTagIndex = index;
+    event.dataTransfer?.setData('text/plain', String(index));
+  }
+
+  onTagDragOver(event: DragEvent, index: number): void {
+    event.preventDefault();
+    if (this.dragOverTagIndex !== index) {
+      this.dragOverTagIndex = index;
+      this.cdr.markForCheck();
+    }
+  }
+
+  onTagDragLeave(): void {
+    this.dragOverTagIndex = -1;
+    this.cdr.markForCheck();
+  }
+
+  onTagDrop(event: DragEvent, cat: ICategory, targetIndex: number): void {
+    event.preventDefault();
+    const from = this.dragTagIndex;
+    this.dragTagIndex = -1;
+    this.dragOverTagIndex = -1;
+    if (from === -1 || from === targetIndex) { this.cdr.markForCheck(); return; }
+    const tags = [...(cat.filterTags || [])];
+    const [moved] = tags.splice(from, 1);
+    tags.splice(targetIndex, 0, moved);
+    cat.filterTags = tags;
+    this.saveFilterTags(cat);
+    this.cdr.markForCheck();
+  }
+
+  onTagDragEnd(): void {
+    this.dragTagIndex = -1;
+    this.dragOverTagIndex = -1;
+    this.cdr.markForCheck();
   }
 
   onBrandBlur(): void {
