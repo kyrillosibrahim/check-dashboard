@@ -104,6 +104,7 @@
             <th>السعر</th>
             <th>التاريخ</th>
             <th>الحالة</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -169,6 +170,13 @@
                 @if (order.status === 'delivered' && order.paymentStatus === 'unpaid') {
                   <span class="return-badge">مرتجع</span>
                 }
+              </td>
+
+              <!-- Actions Column -->
+              <td class="actions-col">
+                <button class="action-btn delete-btn" (click)="onDelete(order, $event)" title="حذف الفاتورة">
+                  <i class="bi bi-trash-fill"></i>
+                </button>
               </td>
             </tr>
           }

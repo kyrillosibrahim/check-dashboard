@@ -102,6 +102,29 @@ export class InvoiceListComponent implements OnInit {
     return labels[status] || status;
   }
 
+  async onDelete(order: IOrder, event: Event): Promise<void> {
+    event.stopPropagation();
+    const result = await Swal.fire({
+      title: 'هل أنت متأكد؟',
+      text: `حذف الفاتورة #${order.id}`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      confirmButtonText: 'نعم، احذفها!',
+      cancelButtonText: 'إلغاء',
+    });
+    if (result.isConfirmed) {
+      this.orderService.delete(order.id).subscribe({
+        next: () => {
+          this.orders = this.orders.filter(o => o.id !== order.id);
+          Swal.fire({ title: 'تم حذف الفاتورة!', icon: 'success', timer: 1500, showConfirmButton: false });
+          this.cdr.markForCheck();
+        },
+        error: () => Swal.fire('خطأ', 'فشل حذف الفاتورة', 'error')
+      });
+    }
+  }
+
   // ─── Backup / Restore ───
 
   downloadBackup(): void {

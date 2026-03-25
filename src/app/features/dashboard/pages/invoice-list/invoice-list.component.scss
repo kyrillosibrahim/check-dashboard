@@ -289,3 +289,36 @@
   background-color: #0d6efd1f;
   border-radius: 5px;
 }
+
+/* ── Actions column ──────────────────── */
+.actions-col {
+  white-space: nowrap;
+  text-align: center;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  transition: transform 0.15s, opacity 0.15s;
+
+  &:hover {
+    transform: scale(1.1);
+    opacity: 0.85;
+  }
+}
+
+.delete-btn {
+  background: rgba(220, 53, 69, 0.12);
+  color: #dc3545;
+
+  &:hover {
+    background: rgba(220, 53, 69, 0.22);
+  }
+}
