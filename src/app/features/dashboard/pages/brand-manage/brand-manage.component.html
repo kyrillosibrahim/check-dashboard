@@ -36,9 +36,14 @@
       </div>
       <div style="min-width: 200px;">
         <label class="form-label">صورة الشعار</label>
-        <input type="file" class="form-control" accept="image/*" (change)="onFileSelected($event)">
+        <input type="file" class="form-control" accept="image/*" (change)="onFileSelected($event)" [disabled]="isUploadingImage">
+        @if (isUploadingImage) {
+          <small class="text-primary mt-1 d-block">
+            <span class="spinner-border spinner-border-sm me-1"></span>جاري الرفع على Cloudinary...
+          </small>
+        }
       </div>
-      @if (imagePreview) {
+      @if (imagePreview && !isUploadingImage) {
         <div class="brand-preview">
           <img [src]="imagePreview" alt="Preview" class="rounded">
         </div>

@@ -1,8 +1,8 @@
 import { Component, inject, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrandService } from '../../../../core/services/brand.service';
+import { CloudinaryService } from '../../../../core/services/cloudinary.service';
 import { IBrand } from '../../../../core/models/brand.model';
-import { API_CONFIG } from '../../../../core/config/api.config';
 import { BackupService } from '../../../../core/services/backup.service';
 import Swal from 'sweetalert2';
 
@@ -15,14 +15,16 @@ import Swal from 'sweetalert2';
 })
 export class BrandManageComponent implements OnInit {
   private brandService = inject(BrandService);
+  private cloudinaryService = inject(CloudinaryService);
   private cdr = inject(ChangeDetectorRef);
   private backupService = inject(BackupService);
 
   brands: IBrand[] = [];
   brandName = '';
   brandLink = '';
-  selectedFile: File | null = null;
   imagePreview: string | null = null;
+  selectedImageUrl: string | null = null;
+  isUploadingImage = false;
   editingBrand: IBrand | null = null;
   isLoading = true;
   isSaving = false;
@@ -49,16 +51,32 @@ export class BrandManageComponent implements OnInit {
     });
   }
 
-  onFileSelected(event: Event): void {
+  async onFileSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      this.selectedFile = input.files[0];
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.imagePreview = e.target?.result as string;
-        this.cdr.markForCheck();
-      };
-      reader.readAsDataURL(this.selectedFile);
+    const file = input.files?.[0];
+    if (!file) return;
+
+    // Show local preview immediately
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.imagePreview = e.target?.result as string;
+      this.cdr.markForCheck();
+    };
+    reader.readAsDataURL(file);
+
+    // Upload to Cloudinary
+    this.isUploadingImage = true;
+    this.cdr.markForCheck();
+    try {
+      this.selectedImageUrl = await this.cloudinaryService.uploadImage(file, 'brands');
+      this.imagePreview = this.selectedImageUrl;
+    } catch {
+      Swal.fire('خطأ', 'فشل رفع الصورة على Cloudinary', 'error');
+      this.selectedImageUrl = null;
+      this.imagePreview = null;
+    } finally {
+      this.isUploadingImage = false;
+      this.cdr.markForCheck();
     }
   }
 
@@ -70,13 +88,18 @@ export class BrandManageComponent implements OnInit {
     const fd = new FormData();
     fd.append('name', name);
     fd.append('link', this.brandLink.trim());
-    if (this.selectedFile) {
-      fd.append('image', this.selectedFile);
+    if (this.selectedImageUrl) {
+      fd.append('imageUrl', this.selectedImageUrl);
     }
 
     if (this.editingBrand) {
       this.brandService.update(this.editingBrand.id, fd).subscribe({
-        next: () => {
+        next: (updated) => {
+          // Patch image locally in case backend doesn't return Cloudinary URL
+          if (this.selectedImageUrl) {
+            const idx = this.brands.findIndex(b => b.id === updated.id);
+            if (idx !== -1) this.brands[idx] = { ...this.brands[idx], ...updated, image: this.selectedImageUrl };
+          }
           Swal.fire({ title: 'تم تحديث العلامة التجارية!', icon: 'success', timer: 1500, showConfirmButton: false });
           this.resetForm();
           this.loadBrands();
@@ -111,8 +134,8 @@ export class BrandManageComponent implements OnInit {
     this.editingBrand = brand;
     this.brandName = brand.name;
     this.brandLink = brand.link || '';
-    this.selectedFile = null;
-    this.imagePreview = brand.image ? (brand.image.startsWith('http') ? brand.image : `${API_CONFIG.uploadsUrl}/${brand.image}`) : null;
+    this.selectedImageUrl = brand.image || null;
+    this.imagePreview = brand.image || null;
     this.cdr.markForCheck();
   }
 
@@ -144,13 +167,13 @@ export class BrandManageComponent implements OnInit {
   }
 
   getImageUrl(brand: IBrand): string {
-    return brand.image ? (brand.image.startsWith('http') ? brand.image : `${API_CONFIG.uploadsUrl}/${brand.image}`) : '';
+    return brand.image || '';
   }
 
   private resetForm(): void {
     this.brandName = '';
     this.brandLink = '';
-    this.selectedFile = null;
+    this.selectedImageUrl = null;
     this.imagePreview = null;
     this.editingBrand = null;
     this.isSaving = false;
@@ -164,32 +187,8 @@ export class BrandManageComponent implements OnInit {
       Swal.fire('تنبيه', 'لا توجد علامات تجارية لتحميلها', 'warning');
       return;
     }
-
-    Swal.fire({ title: 'جاري تجهيز النسخة الاحتياطية...', html: '0 / ' + this.brands.length, allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
-    const brandsWithImages = [];
-    let imgOk = 0;
-    let imgTotal = 0;
-    for (let i = 0; i < this.brands.length; i++) {
-      const brand = this.brands[i];
-      const imageUrl = this.getImageUrl(brand);
-      let imageBase64 = '';
-      if (imageUrl) {
-        imgTotal++;
-        imageBase64 = await this.backupService.imageToBase64(imageUrl);
-        if (imageBase64) imgOk++;
-      }
-      brandsWithImages.push({ ...brand, imageBase64 });
-      Swal.update({ html: `${i + 1} / ${this.brands.length}` });
-    }
-
-    this.backupService.downloadJson(brandsWithImages, 'brands_backup');
-
-    if (imgTotal > 0 && imgOk < imgTotal) {
-      Swal.fire({ title: 'تم التحميل', html: `تم حفظ <b>${imgOk}</b> صورة من <b>${imgTotal}</b><br>بعض الصور لم يتم تحميلها`, icon: 'warning' });
-    } else {
-      Swal.fire({ title: 'تم تحميل النسخة الاحتياطية!', html: `تم حفظ <b>${imgOk}</b> صورة من <b>${imgTotal}</b>`, icon: 'success', timer: 2000, showConfirmButton: false });
-    }
+    this.backupService.downloadJson(this.brands, 'brands_backup');
+    Swal.fire({ title: 'تم تحميل النسخة الاحتياطية!', icon: 'success', timer: 1500, showConfirmButton: false });
   }
 
   async restoreBackup(): Promise<void> {
@@ -213,34 +212,30 @@ export class BrandManageComponent implements OnInit {
 
       let success = 0;
       let failed = 0;
-      let imagesRestored = 0;
-      let imagesInBackup = 0;
       for (let i = 0; i < data.length; i++) {
         const brand = data[i];
         try {
           const fd = new FormData();
           fd.append('name', brand.name);
           if (brand.link) fd.append('link', brand.link);
-          let hasImage = false;
+
+          // Upload to Cloudinary if base64, otherwise use existing URL
           if (brand.imageBase64) {
-            imagesInBackup++;
             const file = this.backupService.base64ToFile(brand.imageBase64, brand.name);
-            if (file) { fd.append('image', file); hasImage = true; }
+            if (file) {
+              const url = await this.cloudinaryService.uploadImage(file, 'brands');
+              fd.append('imageUrl', url);
+            }
+          } else if (brand.image?.startsWith('http')) {
+            fd.append('imageUrl', brand.image);
           }
 
           await new Promise<void>((resolve) => {
             this.brandService.update(brand.id, fd).subscribe({
-              next: () => { success++; if (hasImage) imagesRestored++; resolve(); },
+              next: () => { success++; resolve(); },
               error: () => {
-                const createFd = new FormData();
-                createFd.append('name', brand.name);
-                if (brand.link) createFd.append('link', brand.link);
-                if (brand.imageBase64) {
-                  const file = this.backupService.base64ToFile(brand.imageBase64, brand.name);
-                  if (file) createFd.append('image', file);
-                }
-                this.brandService.create(createFd).subscribe({
-                  next: () => { success++; if (hasImage) imagesRestored++; resolve(); },
+                this.brandService.create(fd).subscribe({
+                  next: () => { success++; resolve(); },
                   error: () => { failed++; resolve(); }
                 });
               }
@@ -251,7 +246,7 @@ export class BrandManageComponent implements OnInit {
         }
         Swal.update({ html: `${i + 1} / ${data.length}` });
       }
-      await Swal.fire('تم الاسترجاع', `نجح: ${success} | فشل: ${failed}<br>صور: ${imagesRestored} / ${imagesInBackup}`, success > 0 ? 'success' : 'error');
+      await Swal.fire('تم الاسترجاع', `نجح: ${success} | فشل: ${failed}`, success > 0 ? 'success' : 'error');
       this.loadBrands();
     } catch (err) {
       if (err) Swal.fire('خطأ', String(err), 'error');
