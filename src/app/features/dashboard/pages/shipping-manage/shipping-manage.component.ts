@@ -15,6 +15,36 @@ export class ShippingManageComponent implements OnInit {
   private governorateService = inject(GovernorateService);
   private cdr = inject(ChangeDetectorRef);
 
+  private readonly defaultGovernorates: IGovernorate[] = [
+    { id: 1, governorate_name_en: 'Cairo', governorate_name_ar: 'القاهرة', shippingCost: 0 },
+    { id: 2, governorate_name_en: 'Giza', governorate_name_ar: 'الجيزة', shippingCost: 0 },
+    { id: 3, governorate_name_en: 'Alexandria', governorate_name_ar: 'الإسكندرية', shippingCost: 0 },
+    { id: 4, governorate_name_en: 'Dakahlia', governorate_name_ar: 'الدقهلية', shippingCost: 0 },
+    { id: 5, governorate_name_en: 'Sharqia', governorate_name_ar: 'الشرقية', shippingCost: 0 },
+    { id: 6, governorate_name_en: 'Qalyubia', governorate_name_ar: 'القليوبية', shippingCost: 0 },
+    { id: 7, governorate_name_en: 'Gharbia', governorate_name_ar: 'الغربية', shippingCost: 0 },
+    { id: 8, governorate_name_en: 'Menoufia', governorate_name_ar: 'المنوفية', shippingCost: 0 },
+    { id: 9, governorate_name_en: 'Beheira', governorate_name_ar: 'البحيرة', shippingCost: 0 },
+    { id: 10, governorate_name_en: 'Kafr El Sheikh', governorate_name_ar: 'كفر الشيخ', shippingCost: 0 },
+    { id: 11, governorate_name_en: 'Damietta', governorate_name_ar: 'دمياط', shippingCost: 0 },
+    { id: 12, governorate_name_en: 'Port Said', governorate_name_ar: 'بورسعيد', shippingCost: 0 },
+    { id: 13, governorate_name_en: 'Ismailia', governorate_name_ar: 'الإسماعيلية', shippingCost: 0 },
+    { id: 14, governorate_name_en: 'Suez', governorate_name_ar: 'السويس', shippingCost: 0 },
+    { id: 15, governorate_name_en: 'Fayoum', governorate_name_ar: 'الفيوم', shippingCost: 0 },
+    { id: 16, governorate_name_en: 'Beni Suef', governorate_name_ar: 'بني سويف', shippingCost: 0 },
+    { id: 17, governorate_name_en: 'Minya', governorate_name_ar: 'المنيا', shippingCost: 0 },
+    { id: 18, governorate_name_en: 'Asyut', governorate_name_ar: 'أسيوط', shippingCost: 0 },
+    { id: 19, governorate_name_en: 'Sohag', governorate_name_ar: 'سوهاج', shippingCost: 0 },
+    { id: 20, governorate_name_en: 'Qena', governorate_name_ar: 'قنا', shippingCost: 0 },
+    { id: 21, governorate_name_en: 'Luxor', governorate_name_ar: 'الأقصر', shippingCost: 0 },
+    { id: 22, governorate_name_en: 'Aswan', governorate_name_ar: 'أسوان', shippingCost: 0 },
+    { id: 23, governorate_name_en: 'Red Sea', governorate_name_ar: 'البحر الأحمر', shippingCost: 0 },
+    { id: 24, governorate_name_en: 'North Sinai', governorate_name_ar: 'شمال سيناء', shippingCost: 0 },
+    { id: 25, governorate_name_en: 'South Sinai', governorate_name_ar: 'جنوب سيناء', shippingCost: 0 },
+    { id: 26, governorate_name_en: 'Matrouh', governorate_name_ar: 'مطروح', shippingCost: 0 },
+    { id: 27, governorate_name_en: 'New Valley', governorate_name_ar: 'الوادي الجديد', shippingCost: 0 },
+  ];
+
   governorates: IGovernorate[] = [];
   editedCosts: Map<number, number> = new Map();
   isLoading = true;
@@ -33,17 +63,23 @@ export class ShippingManageComponent implements OnInit {
     this.error = '';
     this.governorateService.getAll().subscribe({
       next: (data) => {
-        this.governorates = data;
+        this.governorates = this.mergeWithDefaults(data);
         this.editedCosts.clear();
         this.isLoading = false;
         this.cdr.markForCheck();
       },
       error: () => {
-        this.error = 'فشل تحميل المحافظات. تأكد أن السيرفر شغال.';
+        // Fallback: show all governorates with 0 cost
+        this.governorates = [...this.defaultGovernorates];
         this.isLoading = false;
         this.cdr.markForCheck();
       }
     });
+  }
+
+  private mergeWithDefaults(backendData: IGovernorate[]): IGovernorate[] {
+    const map = new Map(backendData.map(g => [g.id, g]));
+    return this.defaultGovernorates.map(def => map.get(def.id) || { ...def });
   }
 
   onCompanyNameChange(): void {
