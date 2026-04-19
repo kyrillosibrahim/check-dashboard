@@ -10,11 +10,12 @@ import { IBrand } from '../../../../core/models/brand.model';
 import { ICategory } from '../../../../core/models/category.model';
 import { API_CONFIG } from '../../../../core/config/api.config';
 import { BackupService } from '../../../../core/services/backup.service';
+import { PasteImageDirective } from '../../../../core/directives/paste-image.directive';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-site-settings',
-  imports: [FormsModule],
+  imports: [FormsModule, PasteImageDirective],
   templateUrl: './site-settings.component.html',
   styleUrl: './site-settings.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -132,15 +133,21 @@ export class SiteSettingsComponent implements OnInit {
   // --- Logo ---
   onLogoSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      this.logoFile = input.files[0];
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        this.logoPreview = e.target?.result as string;
-        this.cdr.markForCheck();
-      };
-      reader.readAsDataURL(this.logoFile);
-    }
+    if (input.files && input.files[0]) this.processLogoFile(input.files[0]);
+  }
+
+  onLogoPasted(file: File): void {
+    this.processLogoFile(file);
+  }
+
+  private processLogoFile(file: File): void {
+    this.logoFile = file;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.logoPreview = e.target?.result as string;
+      this.cdr.markForCheck();
+    };
+    reader.readAsDataURL(file);
   }
 
   // --- Product selection ---

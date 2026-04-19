@@ -20,8 +20,8 @@
       <i class="bi bi-plus-circle me-2" style="color: var(--sz-accent);"></i>إضافة بنر جديد
     </h6>
     <form (ngSubmit)="onSave()" class="d-flex gap-3 align-items-end flex-wrap">
-      <div style="min-width: 250px;">
-        <label class="form-label">صورة البنر *</label>
+      <div style="min-width: 250px;" (pasteImage)="onPastedImage($event)">
+        <label class="form-label">صورة البنر * <small class="text-secondary">(الصق Ctrl+V)</small></label>
         <input type="file" class="form-control" accept="image/*" (change)="onFileSelected($event)">
         @if (compressionInfo) {
           <small class="text-success d-block mt-1">

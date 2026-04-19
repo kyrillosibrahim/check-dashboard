@@ -31,8 +31,8 @@
                  placeholder="أدخل اسم القسم">
         </div>
         <div class="col-md-5">
-          <label class="form-label">صورة القسم</label>
-          <div class="image-upload-area">
+          <label class="form-label">صورة القسم <small class="text-secondary">(الصق Ctrl+V)</small></label>
+          <div class="image-upload-area" (pasteImage)="onCategoryImagePasted($event)">
             @if (isUploadingImage) {
               <div class="upload-placeholder">
                 <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
@@ -170,8 +170,8 @@
                                      placeholder="مثال: مكياج الشفاه">
                             </div>
                             <div class="col-md-4">
-                              <label class="form-label small">صورة القسم الفرعى</label>
-                              <div class="image-upload-area small-upload">
+                              <label class="form-label small">صورة القسم الفرعى <small class="text-secondary">(الصق Ctrl+V)</small></label>
+                              <div class="image-upload-area small-upload" (pasteImage)="onSubImagePasted($event)">
                                 @if (isUploadingSubImage) {
                                   <div class="upload-placeholder small-placeholder">
                                     <div class="spinner-border spinner-border-sm text-primary" role="status"></div>

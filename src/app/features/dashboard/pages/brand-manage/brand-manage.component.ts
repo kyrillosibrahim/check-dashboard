@@ -4,11 +4,12 @@ import { BrandService } from '../../../../core/services/brand.service';
 import { CloudinaryService } from '../../../../core/services/cloudinary.service';
 import { IBrand } from '../../../../core/models/brand.model';
 import { BackupService } from '../../../../core/services/backup.service';
+import { PasteImageDirective } from '../../../../core/directives/paste-image.directive';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-brand-manage',
-  imports: [FormsModule],
+  imports: [FormsModule, PasteImageDirective],
   templateUrl: './brand-manage.component.html',
   styleUrl: './brand-manage.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -54,8 +55,14 @@ export class BrandManageComponent implements OnInit {
   async onFileSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-    if (!file) return;
+    if (file) await this.processImageFile(file);
+  }
 
+  async onPastedImage(file: File): Promise<void> {
+    await this.processImageFile(file);
+  }
+
+  private async processImageFile(file: File): Promise<void> {
     // Show local preview immediately
     const reader = new FileReader();
     reader.onload = (e) => {

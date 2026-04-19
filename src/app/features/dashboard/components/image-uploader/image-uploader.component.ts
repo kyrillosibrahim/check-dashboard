@@ -1,9 +1,10 @@
 import { Component, Input, Output, EventEmitter, inject, ElementRef, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { ImageCompressionService } from '../../../../core/services/image-compression.service';
+import { PasteImageDirective } from '../../../../core/directives/paste-image.directive';
 
 @Component({
   selector: 'app-image-uploader',
-  imports: [],
+  imports: [PasteImageDirective],
   templateUrl: './image-uploader.component.html',
   styleUrl: './image-uploader.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -41,6 +42,12 @@ export class ImageUploaderComponent {
       this.processFiles(input.files);
       input.value = '';
     }
+  }
+
+  onPastedImage(file: File): void {
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    this.processFiles(dt.files);
   }
 
   openFilePicker(): void {

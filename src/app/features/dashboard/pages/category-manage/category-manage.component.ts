@@ -6,11 +6,12 @@ import { CloudinaryService } from '../../../../core/services/cloudinary.service'
 import { ICategory, ISubcategory } from '../../../../core/models/category.model';
 import { IBrand } from '../../../../core/models/brand.model';
 import { BackupService } from '../../../../core/services/backup.service';
+import { PasteImageDirective } from '../../../../core/directives/paste-image.directive';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-category-manage',
-  imports: [FormsModule],
+  imports: [FormsModule, PasteImageDirective],
   templateUrl: './category-manage.component.html',
   styleUrl: './category-manage.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -104,8 +105,14 @@ export class CategoryManageComponent implements OnInit {
   async onImageSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-    if (!file) return;
+    if (file) await this.processCategoryImage(file);
+  }
 
+  async onCategoryImagePasted(file: File): Promise<void> {
+    await this.processCategoryImage(file);
+  }
+
+  private async processCategoryImage(file: File): Promise<void> {
     // Show local preview immediately
     const reader = new FileReader();
     reader.onload = () => {
@@ -245,8 +252,14 @@ export class CategoryManageComponent implements OnInit {
   async onSubImageSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-    if (!file) return;
+    if (file) await this.processSubImage(file);
+  }
 
+  async onSubImagePasted(file: File): Promise<void> {
+    await this.processSubImage(file);
+  }
+
+  private async processSubImage(file: File): Promise<void> {
     // Show local preview immediately
     const reader = new FileReader();
     reader.onload = () => {

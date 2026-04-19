@@ -6,6 +6,7 @@
        (dragover)="onDragOver($event)"
        (dragleave)="onDragLeave()"
        (drop)="onDrop($event)"
+       (pasteImage)="onPastedImage($event)"
        (click)="openFilePicker()">
     <input #fileInput type="file" accept="image/*" multiple
            (change)="onFileSelect($event)" hidden>
@@ -14,7 +15,7 @@
       <span class="mt-2 text-secondary">جاري المعالجة...</span>
     } @else {
       <i class="bi bi-cloud-arrow-up fs-1" style="color: var(--sz-accent);"></i>
-      <span class="mt-2 text-secondary">اسحب الصور هنا أو اضغط للاختيار</span>
+      <span class="mt-2 text-secondary">اسحب الصور هنا أو اضغط للاختيار أو الصق Ctrl+V</span>
       <small class="text-secondary mt-1" style="font-size: 0.75rem;">
         <i class="bi bi-lightning-charge"></i> WebP &bull; max 600px &bull; ~80KB
       </small>

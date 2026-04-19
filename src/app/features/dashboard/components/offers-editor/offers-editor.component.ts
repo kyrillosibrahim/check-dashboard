@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, inject, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ImageCompressionService } from '../../../../core/services/image-compression.service';
+import { PasteImageDirective } from '../../../../core/directives/paste-image.directive';
 
 export interface IOffer {
   text: string;
@@ -10,7 +11,7 @@ export interface IOffer {
 
 @Component({
   selector: 'app-offers-editor',
-  imports: [FormsModule],
+  imports: [FormsModule, PasteImageDirective],
   templateUrl: './offers-editor.component.html',
   styleUrl: './offers-editor.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -38,10 +39,17 @@ export class OffersEditorComponent {
   async onImageSelect(event: Event, index: number): Promise<void> {
     const input = event.target as HTMLInputElement;
     if (!input.files?.length) return;
-
     const file = input.files[0];
     if (!file.type.startsWith('image/')) return;
+    await this.processOfferImage(file, index);
+    input.value = '';
+  }
 
+  async onImagePasted(file: File, index: number): Promise<void> {
+    await this.processOfferImage(file, index);
+  }
+
+  private async processOfferImage(file: File, index: number): Promise<void> {
     try {
       const result = await this.imageCompression.compressImage(file);
       this.offers[index] = { ...this.offers[index], image: result.dataUrl };
@@ -49,8 +57,6 @@ export class OffersEditorComponent {
     } catch (e) {
       console.error('Image compression failed:', e);
     }
-
-    input.value = '';
   }
 
   removeImage(index: number): void {

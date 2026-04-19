@@ -41,10 +41,10 @@
             </button>
           </div>
         } @else {
-          <div class="upload-zone" (click)="fileInput.click()">
+          <div class="upload-zone" (click)="fileInput.click()" (pasteImage)="onImagePasted($event, i)">
             <input #fileInput type="file" accept="image/*" hidden (change)="onImageSelect($event, i)">
             <i class="bi bi-cloud-arrow-up"></i>
-            <span>اضغط لاختيار صورة</span>
+            <span>اضغط لاختيار صورة أو الصق Ctrl+V</span>
           </div>
         }
       </div>

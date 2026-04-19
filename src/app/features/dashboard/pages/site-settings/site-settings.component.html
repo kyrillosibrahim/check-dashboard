@@ -32,7 +32,7 @@
       <h6>لوجو الموقع</h6>
     </div>
     <div class="section-body">
-      <div class="logo-upload-area">
+      <div class="logo-upload-area" (pasteImage)="onLogoPasted($event)">
         @if (logoPreview) {
           <div class="logo-preview-box">
             <img [src]="logoPreview" alt="Logo Preview">
@@ -48,6 +48,7 @@
             <i class="bi bi-upload me-1"></i>رفع لوجو جديد
             <input type="file" accept="image/*" hidden (change)="onLogoSelected($event)">
           </label>
+          <small class="text-secondary ms-2">(الصق Ctrl+V)</small>
         </div>
       </div>
     </div>

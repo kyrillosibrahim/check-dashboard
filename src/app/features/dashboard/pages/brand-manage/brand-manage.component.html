@@ -34,8 +34,8 @@
         <input type="url" class="form-control" [(ngModel)]="brandLink" name="brandLink"
                placeholder="https://example.com" dir="ltr">
       </div>
-      <div style="min-width: 200px;">
-        <label class="form-label">صورة الشعار</label>
+      <div style="min-width: 200px;" (pasteImage)="onPastedImage($event)">
+        <label class="form-label">صورة الشعار <small class="text-secondary">(الصق Ctrl+V)</small></label>
         <input type="file" class="form-control" accept="image/*" (change)="onFileSelected($event)" [disabled]="isUploadingImage">
         @if (isUploadingImage) {
           <small class="text-primary mt-1 d-block">

@@ -5,11 +5,12 @@ import { ImageCompressionService } from '../../../../core/services/image-compres
 import { IBanner } from '../../../../core/models/banner.model';
 import { API_CONFIG } from '../../../../core/config/api.config';
 import { BackupService } from '../../../../core/services/backup.service';
+import { PasteImageDirective } from '../../../../core/directives/paste-image.directive';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-banner-manage',
-  imports: [FormsModule],
+  imports: [FormsModule, PasteImageDirective],
   templateUrl: './banner-manage.component.html',
   styleUrl: './banner-manage.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -53,20 +54,23 @@ export class BannerManageComponent implements OnInit {
 
   async onFileSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      const file = input.files[0];
-      try {
-        const result = await this.compressionService.compressImage(file, 1200, 600);
-        this.imagePreview = result.dataUrl;
-        this.compressionInfo = `${result.originalKB} KB → ${result.compressedKB} KB`;
+    if (input.files && input.files[0]) await this.processBannerFile(input.files[0]);
+  }
 
-        // Convert compressed dataUrl back to File for upload
-        const blob = this.dataUrlToBlob(result.dataUrl);
-        this.selectedFile = new File([blob], 'banner.webp', { type: 'image/webp' });
-        this.cdr.markForCheck();
-      } catch {
-        Swal.fire('خطأ', 'فشل ضغط الصورة', 'error');
-      }
+  async onPastedImage(file: File): Promise<void> {
+    await this.processBannerFile(file);
+  }
+
+  private async processBannerFile(file: File): Promise<void> {
+    try {
+      const result = await this.compressionService.compressImage(file, 1200, 600);
+      this.imagePreview = result.dataUrl;
+      this.compressionInfo = `${result.originalKB} KB → ${result.compressedKB} KB`;
+      const blob = this.dataUrlToBlob(result.dataUrl);
+      this.selectedFile = new File([blob], 'banner.webp', { type: 'image/webp' });
+      this.cdr.markForCheck();
+    } catch {
+      Swal.fire('خطأ', 'فشل ضغط الصورة', 'error');
     }
   }
 
