@@ -94,8 +94,13 @@ export class InvoiceDetailComponent implements OnInit {
       document.body.style.overflow = 'hidden';
       this.cdr.detectChanges();
     }
+    const originalTitle = document.title;
+    const customerName = (this.order?.customer.name || 'عميل').trim();
+    const invoiceId = this.order?.id || '';
+    document.title = `${customerName} - ${invoiceId}`;
     setTimeout(() => {
       window.print();
+      document.title = originalTitle;
       if (!wasOpen) {
         this.showModal = false;
         document.body.style.overflow = '';
