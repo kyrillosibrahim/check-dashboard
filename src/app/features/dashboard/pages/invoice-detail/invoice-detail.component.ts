@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ChangeDetectorRef, HostListener, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
@@ -17,7 +17,7 @@ import { API_CONFIG } from '../../../../core/config/api.config';
   styleUrl: './invoice-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class InvoiceDetailComponent implements OnInit {
+export class InvoiceDetailComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private orderService = inject(OrderService);
@@ -27,8 +27,10 @@ export class InvoiceDetailComponent implements OnInit {
   order: IOrder | null = null;
   showModal = false;
   siteLogo: string | null = null;
+  private originalDocTitle = '';
 
   ngOnInit(): void {
+    this.originalDocTitle = document.title;
     const id = this.route.snapshot.paramMap.get('id')!;
     this.orderService.getById(id).subscribe({
       next: (order) => {
@@ -39,6 +41,7 @@ export class InvoiceDetailComponent implements OnInit {
             image: item.image ? item.image.replace(/https?:\/\/localhost:\d+/, API_CONFIG.baseUrl) : item.image
           }))
         };
+        this.updatePrintTitle();
         this.cdr.markForCheck();
       },
       error: () => {
@@ -46,6 +49,16 @@ export class InvoiceDetailComponent implements OnInit {
       }
     });
     this.loadSiteLogo();
+  }
+
+  ngOnDestroy(): void {
+    document.title = this.originalDocTitle;
+  }
+
+  private updatePrintTitle(): void {
+    if (!this.order) return;
+    const customerName = (this.order.customer.name || 'عميل').trim();
+    document.title = `${customerName} - ${this.order.id}`;
   }
 
   private loadSiteLogo(): void {
@@ -88,19 +101,15 @@ export class InvoiceDetailComponent implements OnInit {
   }
 
   printInvoice(): void {
+    this.updatePrintTitle();
     const wasOpen = this.showModal;
     if (!wasOpen) {
       this.showModal = true;
       document.body.style.overflow = 'hidden';
       this.cdr.detectChanges();
     }
-    const originalTitle = document.title;
-    const customerName = (this.order?.customer.name || 'عميل').trim();
-    const invoiceId = this.order?.id || '';
-    document.title = `${customerName} - ${invoiceId}`;
     setTimeout(() => {
       window.print();
-      document.title = originalTitle;
       if (!wasOpen) {
         this.showModal = false;
         document.body.style.overflow = '';
