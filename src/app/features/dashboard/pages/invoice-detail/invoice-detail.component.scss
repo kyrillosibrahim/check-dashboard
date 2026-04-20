@@ -532,6 +532,12 @@
       font-weight: 600 !important;
       border-color: #000 !important;
     }
+
+    /* Hide merchant column (3rd) in print */
+    th:nth-child(3),
+    td:nth-child(3) {
+      display: none !important;
+    }
   }
 
   .invoice-summary-row {
