@@ -167,3 +167,33 @@ $header-height: 56px;
   padding: 4px 8px;
   text-decoration: none;
 }
+
+/* ── Print: hide shell chrome ───────── */
+@media print {
+  @page {
+    margin: 0;
+    size: auto;
+  }
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+
+  .sidebar,
+  .top-header,
+  .logout-mobile,
+  .hamburger {
+    display: none !important;
+  }
+
+  .main-content {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
+  }
+
+  .page-content {
+    padding: 10mm !important;
+  }
+}
