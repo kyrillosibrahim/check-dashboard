@@ -124,7 +124,7 @@
 
       <div class="form-row">
         <label>شركة الشحن :</label>
-        <span class="form-value fw-semibold">J&T Express</span>
+        <span class="form-value fw-semibold">{{ order.shippingCompany || 'J&T Express' }}</span>
       </div>
 
       <div class="form-row">
@@ -133,9 +133,21 @@
       </div>
 
       <div class="form-row">
-        <label>المدينة :</label>
+        <label>المحافظة :</label>
         <span class="form-value">{{ order.shippingAddress.governorate || '---' }}</span>
       </div>
+
+      <div class="form-row">
+        <label>المدينة :</label>
+        <span class="form-value">{{ order.shippingAddress.city || '---' }}</span>
+      </div>
+
+      @if (order.shippingAddress.district) {
+        <div class="form-row">
+          <label>الحي :</label>
+          <span class="form-value">{{ order.shippingAddress.district }}</span>
+        </div>
+      }
 
       <div class="form-row">
         <label>العنوان :</label>
@@ -156,6 +168,11 @@
         <label>ملاحظة على الفاتورة :</label>
         <textarea class="form-control form-control-sm" rows="3"
                   [(ngModel)]="order.notes" placeholder="هنا ملاحظة على الفاتورة"></textarea>
+      </div>
+
+      <div class="form-row">
+        <label>طريقة الدفع :</label>
+        <span class="form-value fw-semibold">{{ getPaymentMethodLabel(order.paymentMethod) }}</span>
       </div>
 
       <div class="form-row">
@@ -214,7 +231,11 @@
               <h2>فاتورة بيع</h2>
             </div>
             <div class="invoice-logo">
-              <span class="logo-text">Check</span>
+              @if (siteLogo) {
+                <img [src]="siteLogo" alt="Logo" class="logo-img">
+              } @else {
+                <span class="logo-text">Check</span>
+              }
             </div>
           </div>
 
@@ -240,6 +261,16 @@
               <span class="info-label">المحافظة</span>
               <span class="info-value">{{ order.shippingAddress.governorate || '---' }}</span>
             </div>
+            <div class="info-item">
+              <span class="info-label">المدينة</span>
+              <span class="info-value">{{ order.shippingAddress.city || '---' }}</span>
+            </div>
+            @if (order.shippingAddress.district) {
+              <div class="info-item">
+                <span class="info-label">الحي</span>
+                <span class="info-value">{{ order.shippingAddress.district }}</span>
+              </div>
+            }
             <div class="info-item">
               <span class="info-label">العنوان</span>
               <span class="info-value">{{ order.shippingAddress.address || '---' }}</span>
@@ -309,7 +340,11 @@
             <div class="invoice-shipping-info">
               <div class="invoice-summary-row">
                 <span>شركة الشحن :</span>
-                <span class="fw-bold">J&T Express</span>
+                <span class="fw-bold">{{ order.shippingCompany || 'J&T Express' }}</span>
+              </div>
+              <div class="invoice-summary-row">
+                <span>طريقة الدفع :</span>
+                <span class="fw-bold">{{ getPaymentMethodLabel(order.paymentMethod) }}</span>
               </div>
               <div class="invoice-summary-row">
                 <span>حالة السداد :</span>
@@ -319,6 +354,12 @@
                 <span>حالة الطلب :</span>
                 <span class="fw-bold">{{ getStatusLabel(order.status) }}</span>
               </div>
+              @if (order.notes) {
+                <div class="invoice-summary-row">
+                  <span>ملاحظة :</span>
+                  <span class="fw-bold">{{ order.notes }}</span>
+                </div>
+              }
             </div>
           </div>
 

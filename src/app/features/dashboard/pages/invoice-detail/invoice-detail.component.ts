@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import Swal from 'sweetalert2';
 import { OrderService } from '../../../../core/services/order.service';
+import { SettingsService } from '../../../../core/services/settings.service';
 import { IOrder } from '../../../../core/models/order.model';
 import { DatePipe } from '@angular/common';
 import { EgpCurrencyPipe } from '../../../../shared/pipes/egp-currency.pipe';
@@ -20,10 +21,12 @@ export class InvoiceDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private orderService = inject(OrderService);
+  private settingsService = inject(SettingsService);
   private cdr = inject(ChangeDetectorRef);
 
   order: IOrder | null = null;
   showModal = false;
+  siteLogo: string | null = null;
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id')!;
@@ -41,6 +44,19 @@ export class InvoiceDetailComponent implements OnInit {
       error: () => {
         this.router.navigate(['/invoices']);
       }
+    });
+    this.loadSiteLogo();
+  }
+
+  private loadSiteLogo(): void {
+    this.settingsService.getSettings().subscribe({
+      next: (s) => {
+        if (s?.logo) {
+          this.siteLogo = s.logo.startsWith('http') ? s.logo : `${API_CONFIG.uploadsUrl}/${s.logo}`;
+          this.cdr.markForCheck();
+        }
+      },
+      error: () => {}
     });
   }
 
@@ -72,7 +88,20 @@ export class InvoiceDetailComponent implements OnInit {
   }
 
   printInvoice(): void {
-    window.print();
+    const wasOpen = this.showModal;
+    if (!wasOpen) {
+      this.showModal = true;
+      document.body.style.overflow = 'hidden';
+      this.cdr.detectChanges();
+    }
+    setTimeout(() => {
+      window.print();
+      if (!wasOpen) {
+        this.showModal = false;
+        document.body.style.overflow = '';
+        this.cdr.detectChanges();
+      }
+    }, 150);
   }
 
   openInvoiceModal(): void {
@@ -98,6 +127,7 @@ export class InvoiceDetailComponent implements OnInit {
         shippingCost: this.order.shippingCost,
         status: this.order.status,
         paymentStatus: this.order.paymentStatus,
+        paymentMethod: this.order.paymentMethod,
         notes: this.order.notes,
         storeProfitTotal: this.order.storeProfitTotal,
         systemCommission: this.order.systemCommission,
@@ -137,6 +167,14 @@ export class InvoiceDetailComponent implements OnInit {
       paid: 'تم السداد',
     };
     return labels[status] || status;
+  }
+
+  getPaymentMethodLabel(method: string | undefined): string {
+    const labels: Record<string, string> = {
+      cod: 'الدفع عند الاستلام',
+      instapay: 'تحويل انستاباي',
+    };
+    return method ? (labels[method] || method) : '---';
   }
 
   getStatusLabel(status: string): string {

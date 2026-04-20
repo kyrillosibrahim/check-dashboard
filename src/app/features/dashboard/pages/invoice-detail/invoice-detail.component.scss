@@ -299,6 +299,12 @@
   letter-spacing: 1px;
 }
 
+.logo-img {
+  max-height: 60px;
+  max-width: 160px;
+  object-fit: contain;
+}
+
 /* ── Invoice Info Grid ─────────────── */
 .invoice-info-grid {
   display: grid;
@@ -428,27 +434,55 @@
 
 /* ── Print Styles ────────────────────── */
 @media print {
-  .action-buttons,
-  .save-btn,
-  .delete-invoice-btn,
-  .detail-card .form-select,
-  .detail-card textarea,
-  .summary-input,
-  .invoice-modal-header,
-  .invoice-modal-footer {
-    display: none !important;
+  @page {
+    margin: 10mm;
   }
 
+  /* Hide everything on the page first */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Then show only the invoice paper area */
+  #invoice-print-area,
+  #invoice-print-area * {
+    visibility: visible;
+  }
+
+  /* Pin the print area to the top-left of the printed page */
+  #invoice-print-area {
+    position: absolute !important;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Reset the modal overlay/modal so it doesn't cover the whole page */
   .invoice-modal-overlay {
-    position: static;
-    background: none;
+    position: static !important;
+    background: none !important;
+    display: block !important;
+    inset: auto !important;
+    animation: none !important;
+    height: auto !important;
   }
 
   .invoice-modal {
-    box-shadow: none;
-    max-height: none;
-    width: 100%;
-    max-width: 100%;
+    position: static !important;
+    box-shadow: none !important;
+    max-height: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    animation: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+  }
+
+  .invoice-modal-header,
+  .invoice-modal-footer {
+    display: none !important;
   }
 
   // Force ALL text inside invoice paper to be solid black
