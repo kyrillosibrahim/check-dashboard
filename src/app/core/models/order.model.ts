@@ -36,6 +36,7 @@ export interface IOrder {
   total: number;
   status: 'pending' | 'processing' | 'shipped' | 'delivered';
   paymentStatus: string;
+  paymentMethod?: 'cod' | 'instapay';
   notes: string;
   date: string;
   storeProfitTotal: number;

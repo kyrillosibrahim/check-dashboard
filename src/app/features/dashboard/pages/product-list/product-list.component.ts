@@ -3,8 +3,12 @@ import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../../../core/services/product.service';
 import { CategoryService } from '../../../../core/services/category.service';
+import { MerchantService } from '../../../../core/services/merchant.service';
+import { BrandService } from '../../../../core/services/brand.service';
 import { IProduct } from '../../../../core/models/product.model';
 import { ICategory } from '../../../../core/models/category.model';
+import { IMerchant } from '../../../../core/models/merchant.model';
+import { IBrand } from '../../../../core/models/brand.model';
 import { ProductTableComponent } from '../../components/product-table/product-table.component';
 import { BackupService } from '../../../../core/services/backup.service';
 import { API_CONFIG } from '../../../../core/config/api.config';
@@ -20,6 +24,8 @@ import Swal from 'sweetalert2';
 export class ProductListComponent implements OnInit {
   private productService = inject(ProductService);
   private categoryService = inject(CategoryService);
+  private merchantService = inject(MerchantService);
+  private brandService = inject(BrandService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
   private backupService = inject(BackupService);
@@ -27,48 +33,38 @@ export class ProductListComponent implements OnInit {
   allProducts: IProduct[] = [];
   products: IProduct[] = [];
   categories: ICategory[] = [];
+  merchants: IMerchant[] = [];
+  brands: IBrand[] = [];
+
   selectedCategory = '';
-  searchQuery = '';
+  selectedMerchant = '';
+  selectedBrand = '';
+
   isLoading = true;
   error = '';
-
-  get featuredCount(): number {
-    return this.allProducts.filter(p => p.isFeatured).length;
-  }
-
-  get lowStockCount(): number {
-    return this.allProducts.filter(p => p.stock < 10).length;
-  }
-
-  getCategoryCount(category: string): number {
-    return this.allProducts.filter(p => p.category === category).length;
-  }
-
-  filterByCategory(category: string): void {
-    this.selectedCategory = category;
-    this.applyFilters();
-  }
 
   search(): void {
     this.applyFilters();
   }
 
-  clearSearch(): void {
-    this.searchQuery = '';
+  resetFilters(): void {
+    this.selectedCategory = '';
+    this.selectedMerchant = '';
+    this.selectedBrand = '';
     this.applyFilters();
   }
 
   private applyFilters(): void {
-    let filtered = this.selectedCategory
-      ? this.allProducts.filter(p => p.category === this.selectedCategory)
-      : this.allProducts;
+    let filtered = this.allProducts;
 
-    if (this.searchQuery.trim()) {
-      const q = this.searchQuery.trim().toLowerCase();
-      filtered = filtered.filter(p =>
-        (p.titleAr && p.titleAr.toLowerCase().includes(q)) ||
-        p.title.toLowerCase().includes(q)
-      );
+    if (this.selectedCategory) {
+      filtered = filtered.filter(p => p.category === this.selectedCategory);
+    }
+    if (this.selectedMerchant) {
+      filtered = filtered.filter(p => p.merchant === this.selectedMerchant);
+    }
+    if (this.selectedBrand) {
+      filtered = filtered.filter(p => p.brand === this.selectedBrand);
     }
 
     this.products = filtered;
@@ -80,6 +76,14 @@ export class ProductListComponent implements OnInit {
       this.categories = c;
       this.cdr.markForCheck();
     });
+    this.merchantService.getAll().subscribe(m => {
+      this.merchants = m;
+      this.cdr.markForCheck();
+    });
+    this.brandService.getAll().subscribe(b => {
+      this.brands = b;
+      this.cdr.markForCheck();
+    });
     this.loadProducts();
   }
 
@@ -89,7 +93,7 @@ export class ProductListComponent implements OnInit {
     this.productService.getAll().subscribe({
       next: (p) => {
         this.allProducts = p;
-        this.filterByCategory(this.selectedCategory);
+        this.applyFilters();
         this.isLoading = false;
         this.cdr.markForCheck();
       },

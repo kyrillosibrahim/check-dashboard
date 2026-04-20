@@ -16,7 +16,7 @@
 
 <!-- Stats Cards -->
 <div class="row g-3 mb-4">
-  <div class="col-6 col-md-3">
+  <div class="col-6 col-md-6">
     <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
       <div class="card-body text-center py-3 pstyle">
         <i class="bi bi-box-seam fs-3 mb-1 d-block" style="color: var(--sz-accent);"></i>
@@ -25,7 +25,7 @@
       </div>
     </div>
   </div>
-  <div class="col-6 col-md-3">
+  <div class="col-6 col-md-6">
     <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
       <div class="card-body text-center py-3 pstyle">
         <i class="bi bi-grid fs-3 mb-1 d-block" style="color: var(--sz-accent);"></i>
@@ -34,69 +34,63 @@
       </div>
     </div>
   </div>
-  <div class="col-6 col-md-3">
-    <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
-      <div class="card-body text-center py-3 pstyle">
-        <i class="bi bi-star fs-3 mb-1 d-block text-warning"></i>
-        <h4 class="fw-bold mb-0">{{ featuredCount }}</h4>
-        <small class="text-secondary">مميزة</small>
-      </div>
-    </div>
-  </div>
-  <div class="col-6 col-md-3">
-    <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
-      <div class="card-body text-center py-3 pstyle">
-        <i class="bi bi-exclamation-triangle fs-3 mb-1 d-block text-danger"></i>
-        <h4 class="fw-bold mb-0">{{ lowStockCount }}</h4>
-        <small class="text-secondary">مخزون منخفض</small>
-      </div>
-    </div>
-  </div>
 </div>
 
-<!-- Category Filter -->
-<div class="card border-0 shadow-sm mb-4 p-3 pstyle" >
-  <div class="d-flex align-items-center gap-3 flex-wrap">
-    <label class="fw-semibold mb-0" style="white-space: nowrap;">
-      <i class="bi bi-funnel me-1" style="color: var(--sz-accent);"></i>فلترة حسب القسم:
-    </label>
-    <div class="d-flex gap-2 flex-wrap">
-      <button class="btn btn-sm" [class.btn-primary]="!selectedCategory" [class.btn-outline-secondary]="selectedCategory" (click)="filterByCategory('')">
-        الكل ({{ allProducts.length }})
-      </button>
-      @for (cat of categories; track cat.id) {
-        <button class="btn btn-sm" [class.btn-primary]="selectedCategory === cat.slug" [class.btn-outline-secondary]="selectedCategory !== cat.slug" (click)="filterByCategory(cat.slug)">
-          {{ cat.name }} ({{ getCategoryCount(cat.slug) }})
-        </button>
-      }
-    </div>
-  </div>
-</div>
-
-<!-- Search Bar -->
+<!-- Filters -->
 <div class="card border-0 shadow-sm mb-4 p-3 pstyle">
-  <div class="d-flex gap-2 align-items-center">
-    <div class="input-group">
-      <span class="input-group-text" style="background-color: var(--sz-bg-card); border-color: var(--sz-border-color);">
-        <i class="bi bi-search" style="color: var(--sz-accent);"></i>
-      </span>
-      <input
-        type="text"
-        class="form-control"
-        placeholder="ابحث بالاسم..."
-        [(ngModel)]="searchQuery"
-        (keyup.enter)="search()"
-        style="background-color: var(--sz-bg-card); border-color: var(--sz-border-color); color: inherit;"
-      />
-      @if (searchQuery) {
-        <button class="btn btn-outline-secondary" type="button" (click)="clearSearch()" title="مسح البحث">
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <i class="bi bi-funnel" style="color: var(--sz-accent);"></i>
+    <span class="fw-semibold">فلترة المنتجات</span>
+  </div>
+
+  <div class="row g-3 align-items-end">
+    <!-- Category Dropdown -->
+    <div class="col-md-3">
+      <label class="form-label small mb-1">القسم</label>
+      <select class="form-select" [(ngModel)]="selectedCategory"
+              style="background-color: var(--sz-bg-card); border-color: var(--sz-border-color); color: inherit;">
+        <option value="">كل الأقسام</option>
+        @for (cat of categories; track cat.id) {
+          <option [value]="cat.slug">{{ cat.name }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Merchant Dropdown -->
+    <div class="col-md-3">
+      <label class="form-label small mb-1">التاجر</label>
+      <select class="form-select" [(ngModel)]="selectedMerchant"
+              style="background-color: var(--sz-bg-card); border-color: var(--sz-border-color); color: inherit;">
+        <option value="">كل التجار</option>
+        @for (m of merchants; track m.id) {
+          <option [value]="m.name">{{ m.name }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Brand Dropdown -->
+    <div class="col-md-3">
+      <label class="form-label small mb-1">العلامة التجارية</label>
+      <select class="form-select" [(ngModel)]="selectedBrand"
+              style="background-color: var(--sz-bg-card); border-color: var(--sz-border-color); color: inherit;">
+        <option value="">كل العلامات</option>
+        @for (b of brands; track b.id) {
+          <option [value]="b.name">{{ b.name }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="col-md-3 d-flex gap-2">
+      <button class="btn btn-primary flex-grow-1" (click)="search()">
+        <i class="bi bi-search me-1"></i> بحث
+      </button>
+      @if (selectedCategory || selectedMerchant || selectedBrand) {
+        <button class="btn btn-outline-secondary" (click)="resetFilters()" title="مسح الفلاتر">
           <i class="bi bi-x-lg"></i>
         </button>
       }
     </div>
-    <button class="btn btn-primary" style="white-space: nowrap;" (click)="search()">
-      <i class="bi bi-search me-1"></i> بحث
-    </button>
   </div>
 </div>
 

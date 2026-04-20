@@ -11,7 +11,7 @@
             <th>بعد الخصم</th>
             <th>نسبة الخصم</th>
             <th>نسبة الربح</th>
-            <th>المخزون</th>
+            <th>التاجر</th>
             <th class="text-start pe-3">الإجراءات</th>
           </tr>
         </thead>
@@ -57,10 +57,10 @@
                 }
               </td>
               <td>
-                @if (product.stock < 10) {
-                  <span class="badge bg-danger">{{ product.stock }}</span>
+                @if (product.merchant) {
+                  <span class="fw-semibold">{{ product.merchant }}</span>
                 } @else {
-                  <span class="badge bg-success">{{ product.stock }}</span>
+                  <span class="text-secondary">&mdash;</span>
                 }
               </td>
               <td class="text-start pe-3">
