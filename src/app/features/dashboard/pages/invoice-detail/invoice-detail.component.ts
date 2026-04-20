@@ -5,7 +5,9 @@ import { firstValueFrom } from 'rxjs';
 import Swal from 'sweetalert2';
 import { OrderService } from '../../../../core/services/order.service';
 import { SettingsService } from '../../../../core/services/settings.service';
+import { ProductService } from '../../../../core/services/product.service';
 import { IOrder } from '../../../../core/models/order.model';
+import { IProduct } from '../../../../core/models/product.model';
 import { DatePipe } from '@angular/common';
 import { EgpCurrencyPipe } from '../../../../shared/pipes/egp-currency.pipe';
 import { API_CONFIG } from '../../../../core/config/api.config';
@@ -22,11 +24,13 @@ export class InvoiceDetailComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private orderService = inject(OrderService);
   private settingsService = inject(SettingsService);
+  private productService = inject(ProductService);
   private cdr = inject(ChangeDetectorRef);
 
   order: IOrder | null = null;
   showModal = false;
   siteLogo: string | null = null;
+  private products: IProduct[] = [];
   private originalDocTitle = '';
 
   ngOnInit(): void {
@@ -49,6 +53,10 @@ export class InvoiceDetailComponent implements OnInit, OnDestroy {
       }
     });
     this.loadSiteLogo();
+    this.productService.getAll().subscribe({
+      next: (products) => { this.products = products; },
+      error: () => {}
+    });
   }
 
   ngOnDestroy(): void {
@@ -89,11 +97,26 @@ export class InvoiceDetailComponent implements OnInit, OnDestroy {
     return this.totalAfterDiscounts + (this.order?.shippingCost || 0);
   }
 
+  private calcOrderProfit(): number {
+    if (!this.order) return 0;
+    if (this.order.storeProfitTotal) return this.order.storeProfitTotal;
+    const productMap = new Map(this.products.map(p => [p.id, p]));
+    let profit = 0;
+    for (const item of this.order.items) {
+      const product = productMap.get(item.productId);
+      if (product?.wholesalePrice) {
+        const sellPrice = product.discountedPrice || product.price;
+        profit += (sellPrice - product.wholesalePrice) * item.quantity;
+      }
+    }
+    return profit;
+  }
+
   showProfit(): void {
-    const profit = this.order?.storeProfitTotal || 0;
+    const profit = this.calcOrderProfit();
     Swal.fire({
       title: 'الربحية',
-      text: `قيمة الربحية الاجمالية ${profit.toFixed(1)}`,
+      text: `قيمة الربحية الاجمالية ${profit.toFixed(1)} ج.م`,
       icon: 'info',
       confirmButtonText: 'OK',
       confirmButtonColor: '#7c5cbf',
