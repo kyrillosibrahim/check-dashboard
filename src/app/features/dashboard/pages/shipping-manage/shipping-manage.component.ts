@@ -47,14 +47,12 @@ export class ShippingManageComponent implements OnInit {
 
   governorates: IGovernorate[] = [];
   editedCosts: Map<number, number> = new Map();
+  editedExtras: Map<number, number> = new Map();
   isLoading = true;
   isSaving = false;
   error = '';
-  companyName = '';
 
   ngOnInit(): void {
-    const saved = localStorage.getItem('shippingCompanyName');
-    if (saved) this.companyName = saved;
     this.loadGovernorates();
   }
 
@@ -65,11 +63,11 @@ export class ShippingManageComponent implements OnInit {
       next: (data) => {
         this.governorates = this.mergeWithDefaults(data);
         this.editedCosts.clear();
+        this.editedExtras.clear();
         this.isLoading = false;
         this.cdr.markForCheck();
       },
       error: () => {
-        // Fallback: show all governorates with 0 cost
         this.governorates = [...this.defaultGovernorates];
         this.isLoading = false;
         this.cdr.markForCheck();
@@ -82,52 +80,38 @@ export class ShippingManageComponent implements OnInit {
     return this.defaultGovernorates.map(def => map.get(def.id) || { ...def });
   }
 
-  onCompanyNameChange(): void {
-    localStorage.setItem('shippingCompanyName', this.companyName);
-  }
-
   onCostChange(gov: IGovernorate, newCost: number): void {
     this.editedCosts.set(gov.id, newCost);
   }
 
-  hasChanges(gov: IGovernorate): boolean {
+  onExtraChange(gov: IGovernorate, newExtra: number): void {
+    this.editedExtras.set(gov.id, newExtra);
+  }
+
+  private costChanged(gov: IGovernorate): boolean {
     return this.editedCosts.has(gov.id) && this.editedCosts.get(gov.id) !== gov.shippingCost;
   }
 
-  get totalChanges(): number {
-    let count = 0;
-    this.editedCosts.forEach((cost, id) => {
-      const gov = this.governorates.find(g => g.id === id);
-      if (gov && cost !== gov.shippingCost) count++;
-    });
-    return count;
+  private extraChanged(gov: IGovernorate): boolean {
+    return this.editedExtras.has(gov.id) && this.editedExtras.get(gov.id) !== (gov.extraShippingCost || 0);
   }
 
-  saveSingle(gov: IGovernorate): void {
-    const newCost = this.editedCosts.get(gov.id);
-    if (newCost === undefined || newCost === gov.shippingCost) return;
+  hasChanges(gov: IGovernorate): boolean {
+    return this.costChanged(gov) || this.extraChanged(gov);
+  }
 
-    this.governorateService.updateShippingCost(gov.id, newCost).subscribe({
-      next: (updated) => {
-        gov.shippingCost = updated.shippingCost;
-        this.editedCosts.delete(gov.id);
-        Swal.fire({ title: `تم تحديث سعر شحن ${gov.governorate_name_ar}`, icon: 'success', timer: 1500, showConfirmButton: false });
-        this.cdr.markForCheck();
-      },
-      error: (err) => {
-        Swal.fire('خطأ', err?.error?.error || 'فشل التحديث', 'error');
-      }
-    });
+  get totalChanges(): number {
+    return this.governorates.filter(g => this.hasChanges(g)).length;
   }
 
   async saveAll(): Promise<void> {
-    const changes: { gov: IGovernorate; cost: number }[] = [];
-    this.editedCosts.forEach((cost, id) => {
-      const gov = this.governorates.find(g => g.id === id);
-      if (gov && cost !== gov.shippingCost) {
-        changes.push({ gov, cost });
-      }
-    });
+    const changes = this.governorates
+      .filter(g => this.hasChanges(g))
+      .map(gov => ({
+        gov,
+        cost: this.editedCosts.get(gov.id) ?? gov.shippingCost,
+        extra: this.editedExtras.get(gov.id) ?? (gov.extraShippingCost || 0),
+      }));
 
     if (changes.length === 0) {
       Swal.fire('تنبيه', 'لا توجد تغييرات لحفظها', 'info');
@@ -148,13 +132,15 @@ export class ShippingManageComponent implements OnInit {
     let failed = 0;
 
     for (let i = 0; i < changes.length; i++) {
-      const { gov, cost } = changes[i];
+      const { gov, cost, extra } = changes[i];
       try {
-        await new Promise<void>((resolve, reject) => {
-          this.governorateService.updateShippingCost(gov.id, cost).subscribe({
+        await new Promise<void>((resolve) => {
+          this.governorateService.updateShippingCost(gov.id, cost, extra).subscribe({
             next: (updated) => {
               gov.shippingCost = updated.shippingCost;
+              gov.extraShippingCost = updated.extraShippingCost ?? extra;
               this.editedCosts.delete(gov.id);
+              this.editedExtras.delete(gov.id);
               success++;
               resolve();
             },

@@ -12,7 +12,9 @@ export class GovernorateService {
     return this.http.get<IGovernorate[]>(API_CONFIG.governoratesUrl);
   }
 
-  updateShippingCost(id: number, shippingCost: number): Observable<IGovernorate> {
-    return this.http.put<IGovernorate>(`${API_CONFIG.governoratesUrl}/${id}`, { shippingCost });
+  updateShippingCost(id: number, shippingCost: number, extraShippingCost?: number): Observable<IGovernorate> {
+    const body: any = { shippingCost };
+    if (extraShippingCost !== undefined) body.extraShippingCost = extraShippingCost;
+    return this.http.put<IGovernorate>(`${API_CONFIG.governoratesUrl}/${id}`, body);
   }
 }

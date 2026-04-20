@@ -10,23 +10,6 @@
   }
 </div>
 
-<!-- Company Name -->
-<div class="card border-0 shadow-sm mb-4 pstyle">
-  <div class="card-body p-4">
-    <h6 class="fw-bold mb-3">
-      <i class="bi bi-building me-2" style="color: var(--sz-accent);"></i>شركة الشحن
-    </h6>
-    <div class="row">
-      <div class="col-md-6">
-        <label class="form-label">اسم شركة الشحن</label>
-        <input type="text" class="form-control" [(ngModel)]="companyName"
-               (ngModelChange)="onCompanyNameChange()"
-               placeholder="أدخل اسم شركة الشحن">
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- Governorates List -->
 @if (isLoading) {
   <div class="text-center py-5">
@@ -48,7 +31,7 @@
               <th class="ps-3">#</th>
               <th>المحافظة</th>
               <th>سعر الشحن (ج.م)</th>
-              <th class="text-start pe-3">الإجراء</th>
+              <th class="pe-3">زيادة كل 5 قطع (ج.م)</th>
             </tr>
           </thead>
           <tbody>
@@ -62,12 +45,11 @@
                          (ngModelChange)="onCostChange(gov, $event)"
                          min="0" step="5" dir="ltr">
                 </td>
-                <td class="text-start pe-3">
-                  @if (hasChanges(gov)) {
-                    <button class="btn btn-sm btn-outline-success" (click)="saveSingle(gov)">
-                      <i class="bi bi-check-lg me-1"></i>حفظ
-                    </button>
-                  }
+                <td style="width: 200px;" class="pe-3">
+                  <input type="number" class="form-control form-control-sm cost-input"
+                         [ngModel]="editedExtras.has(gov.id) ? editedExtras.get(gov.id) : (gov.extraShippingCost || 0)"
+                         (ngModelChange)="onExtraChange(gov, $event)"
+                         min="0" step="5" dir="ltr">
                 </td>
               </tr>
             } @empty {
