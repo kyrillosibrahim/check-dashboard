@@ -276,21 +276,25 @@
 
       @for (item of naturalProducts; track $index; let i = $index) {
         <div class="natural-row">
-          <div class="natural-video-cell" (pasteImage)="onNaturalVideoPasted($event, i)" pasteAccept="video/">
+          <div class="natural-video-cell" (pasteImage)="onNaturalVideoPasted($event, i)" pasteAccept="">
             @if (uploadingVideoIndex === i) {
               <div class="natural-uploading">
                 <div class="spinner-border spinner-border-sm text-primary"></div>
                 <span>جاري الرفع...</span>
               </div>
             } @else if (item.video) {
-              <video [src]="item.video" muted playsinline></video>
+              @if (item.video.includes('/video/upload/')) {
+                <video [src]="item.video" muted playsinline></video>
+              } @else {
+                <img [src]="item.video" alt="">
+              }
             } @else {
               <span class="natural-placeholder">
                 <i class="bi bi-camera-video"></i>
-                اختر فيديو أو الصق Ctrl+V
+                اختر فيديو/صورة أو الصق Ctrl+V
               </span>
             }
-            <input type="file" accept="video/*" hidden #videoInput
+            <input type="file" accept="video/*,image/*" hidden #videoInput
                    (change)="onNaturalVideoSelected($event, i)">
             <button type="button" class="natural-pick-btn" (click)="videoInput.click()"
                     [disabled]="uploadingVideoIndex === i">

@@ -180,17 +180,21 @@ export class SiteSettingsComponent implements OnInit {
   }
 
   private async processNaturalVideo(file: File, index: number): Promise<void> {
-    if (!file.type.startsWith('video/')) {
-      Swal.fire('خطأ', 'الملف لازم يكون فيديو', 'error');
+    const isVideo = file.type.startsWith('video/');
+    const isImage = file.type.startsWith('image/');
+    if (!isVideo && !isImage) {
+      Swal.fire('خطأ', 'الملف لازم يكون فيديو أو صورة', 'error');
       return;
     }
     this.uploadingVideoIndex = index;
     this.cdr.markForCheck();
     try {
-      const url = await this.cloudinaryService.uploadVideo(file, 'natural-products');
+      const url = isVideo
+        ? await this.cloudinaryService.uploadVideo(file, 'natural-products')
+        : await this.cloudinaryService.uploadImage(file, 'natural-products');
       this.naturalProducts[index] = { ...this.naturalProducts[index], video: url };
     } catch (e: any) {
-      Swal.fire('خطأ', e?.message || 'فشل رفع الفيديو', 'error');
+      Swal.fire('خطأ', e?.message || 'فشل رفع الملف', 'error');
     } finally {
       this.uploadingVideoIndex = null;
       this.cdr.markForCheck();
