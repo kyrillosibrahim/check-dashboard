@@ -14,6 +14,7 @@ export interface ISiteSettings {
   };
   bestSellingProducts: string[];   // product IDs
   bestSellingBrands: number[];     // brand IDs
+  naturalProducts?: { video: string; link: string }[];
   cartCount?: number;
   favoritesCount?: number;
 }

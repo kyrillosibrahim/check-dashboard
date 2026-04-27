@@ -263,6 +263,56 @@
     </div>
   </div>
 
+  <!-- ═══════ Section: Natural Products (videos) ═══════ -->
+  <div class="settings-section">
+    <div class="section-header">
+      <i class="bi bi-camera-video"></i>
+      <h6>المنتجات في الطبيعة</h6>
+    </div>
+    <div class="section-body">
+      <p class="text-muted small mb-3">
+        ارفع فيديوهات قصيرة للمنتجات في الاستخدام الواقعي وحدد لكل فيديو لينك. الفيديوهات تظهر في الصفحة الرئيسية بعد قسم العلامات التجارية وتتحرك تلقائياً كل 2 ثانية.
+      </p>
+
+      @for (item of naturalProducts; track $index; let i = $index) {
+        <div class="natural-row">
+          <div class="natural-video-cell" (pasteImage)="onNaturalVideoPasted($event, i)" pasteAccept="video/">
+            @if (uploadingVideoIndex === i) {
+              <div class="natural-uploading">
+                <div class="spinner-border spinner-border-sm text-primary"></div>
+                <span>جاري الرفع...</span>
+              </div>
+            } @else if (item.video) {
+              <video [src]="item.video" muted playsinline></video>
+            } @else {
+              <span class="natural-placeholder">
+                <i class="bi bi-camera-video"></i>
+                اختر فيديو أو الصق Ctrl+V
+              </span>
+            }
+            <input type="file" accept="video/*" hidden #videoInput
+                   (change)="onNaturalVideoSelected($event, i)">
+            <button type="button" class="natural-pick-btn" (click)="videoInput.click()"
+                    [disabled]="uploadingVideoIndex === i">
+              <i class="bi bi-upload"></i>
+            </button>
+          </div>
+          <input type="text" class="form-control natural-link-input"
+                 [(ngModel)]="item.link" name="naturalLink-{{i}}"
+                 placeholder="/products/.. أو https://..." dir="ltr">
+          <button type="button" class="btn btn-outline-danger btn-sm natural-remove-btn"
+                  (click)="removeNaturalProduct(i)" title="حذف">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      }
+
+      <button type="button" class="btn btn-outline-primary btn-sm" (click)="addNaturalProduct()">
+        <i class="bi bi-plus-lg me-1"></i>أضف فيديو
+      </button>
+    </div>
+  </div>
+
   <!-- ═══════ Save Button ═══════ -->
   <div class="save-area">
     <button class="btn btn-primary btn-lg px-5" (click)="onSave()" [disabled]="isSaving">

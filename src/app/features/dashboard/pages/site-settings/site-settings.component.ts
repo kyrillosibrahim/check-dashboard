@@ -10,6 +10,7 @@ import { IBrand } from '../../../../core/models/brand.model';
 import { ICategory } from '../../../../core/models/category.model';
 import { API_CONFIG } from '../../../../core/config/api.config';
 import { BackupService } from '../../../../core/services/backup.service';
+import { CloudinaryService } from '../../../../core/services/cloudinary.service';
 import { PasteImageDirective } from '../../../../core/directives/paste-image.directive';
 import Swal from 'sweetalert2';
 
@@ -27,6 +28,7 @@ export class SiteSettingsComponent implements OnInit {
   private categoryService = inject(CategoryService);
   private cdr = inject(ChangeDetectorRef);
   private backupService = inject(BackupService);
+  private cloudinaryService = inject(CloudinaryService);
 
   settings: ISiteSettings = {
     logo: '',
@@ -39,6 +41,10 @@ export class SiteSettingsComponent implements OnInit {
   // Logo
   logoFile: File | null = null;
   logoPreview: string | null = null;
+
+  // Natural products (videos with links)
+  naturalProducts: { video: string; link: string }[] = [];
+  uploadingVideoIndex: number | null = null;
 
   // All products, brands & categories for selection
   allProducts: IProduct[] = [];
@@ -75,6 +81,7 @@ export class SiteSettingsComponent implements OnInit {
         if (s.logo) {
           this.logoPreview = s.logo.startsWith('http') ? s.logo : `${API_CONFIG.uploadsUrl}/${s.logo}`;
         }
+        this.naturalProducts = (s.naturalProducts || []).map(i => ({ video: i.video || '', link: i.link || '' }));
         this.loadCategories();
         this.loadProducts();
         this.loadBrands();
@@ -148,6 +155,46 @@ export class SiteSettingsComponent implements OnInit {
       this.cdr.markForCheck();
     };
     reader.readAsDataURL(file);
+  }
+
+  // --- Natural Products (videos with links) ---
+  addNaturalProduct(): void {
+    this.naturalProducts = [...this.naturalProducts, { video: '', link: '' }];
+    this.cdr.markForCheck();
+  }
+
+  removeNaturalProduct(index: number): void {
+    this.naturalProducts = this.naturalProducts.filter((_, i) => i !== index);
+    this.cdr.markForCheck();
+  }
+
+  onNaturalVideoSelected(event: Event, index: number): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (file) this.processNaturalVideo(file, index);
+    input.value = '';
+  }
+
+  onNaturalVideoPasted(file: File, index: number): void {
+    this.processNaturalVideo(file, index);
+  }
+
+  private async processNaturalVideo(file: File, index: number): Promise<void> {
+    if (!file.type.startsWith('video/')) {
+      Swal.fire('خطأ', 'الملف لازم يكون فيديو', 'error');
+      return;
+    }
+    this.uploadingVideoIndex = index;
+    this.cdr.markForCheck();
+    try {
+      const url = await this.cloudinaryService.uploadVideo(file, 'natural-products');
+      this.naturalProducts[index] = { ...this.naturalProducts[index], video: url };
+    } catch (e: any) {
+      Swal.fire('خطأ', e?.message || 'فشل رفع الفيديو', 'error');
+    } finally {
+      this.uploadingVideoIndex = null;
+      this.cdr.markForCheck();
+    }
   }
 
   // --- Product selection ---
@@ -226,6 +273,7 @@ export class SiteSettingsComponent implements OnInit {
     fd.append('social', JSON.stringify(this.settings.social));
     fd.append('bestSellingProducts', JSON.stringify(this.selectedProducts.map(p => p.id)));
     fd.append('bestSellingBrands', JSON.stringify(this.selectedBrands.map(b => b.id)));
+    fd.append('naturalProducts', JSON.stringify(this.naturalProducts.filter(i => i.video || i.link)));
 
     this.settingsService.updateSettings(fd).subscribe({
       next: () => {

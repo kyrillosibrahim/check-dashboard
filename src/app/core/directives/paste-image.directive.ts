@@ -1,4 +1,4 @@
-import { Directive, ElementRef, EventEmitter, HostListener, OnDestroy, Output, inject } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, HostListener, Input, OnDestroy, Output, inject } from '@angular/core';
 
 @Directive({
   selector: '[pasteImage]',
@@ -8,6 +8,8 @@ export class PasteImageDirective implements OnDestroy {
   private static hoverEl: HTMLElement | null = null;
   private el = inject<ElementRef<HTMLElement>>(ElementRef);
 
+  /** Accepted MIME prefix: 'image/' (default), 'video/', or '' for any file. */
+  @Input() pasteAccept: string = 'image/';
   @Output() pasteImage = new EventEmitter<File>();
 
   @HostListener('mouseenter')
@@ -29,7 +31,7 @@ export class PasteImageDirective implements OnDestroy {
     if (!items) return;
     for (let i = 0; i < items.length; i++) {
       const item = items[i];
-      if (item.kind === 'file' && item.type.startsWith('image/')) {
+      if (item.kind === 'file' && (this.pasteAccept === '' || item.type.startsWith(this.pasteAccept))) {
         const file = item.getAsFile();
         if (file) {
           event.preventDefault();
