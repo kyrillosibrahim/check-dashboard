@@ -211,6 +211,7 @@
   </div>
 
   <!-- ═══ Accordion: Details ═══ -->
+  @if (!hideDetails) {
   <div class="accordion-panel" [class.open]="panels['details']">
     <div class="accordion-header" (click)="togglePanel('details')">
       <span class="accordion-title">
@@ -317,6 +318,7 @@
       </div>
     }
   </div>
+  }
 
   <!-- ═══ Actions ═══ -->
   <div class="actions-bar">

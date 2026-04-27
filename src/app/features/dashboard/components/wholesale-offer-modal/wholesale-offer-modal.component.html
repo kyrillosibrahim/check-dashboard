@@ -1,0 +1,28 @@
+@if (show) {
+  <div class="wholesale-modal-backdrop" (click)="onCancel()"></div>
+  <div class="wholesale-modal" role="dialog" aria-modal="true">
+    <div class="wholesale-modal-dialog">
+      <div class="wholesale-modal-content">
+        <div class="wholesale-modal-header">
+          <h5 class="fw-bold mb-0">
+            <i class="bi bi-cart-plus me-2" style="color: var(--sz-accent);"></i>
+            {{ isEdit ? 'تعديل عرض جملة' : 'إضافة عرض جملة جديد' }}
+          </h5>
+          <button type="button" class="btn-close-custom" (click)="onCancel()" [disabled]="isSaving" aria-label="إغلاق">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <div class="wholesale-modal-body">
+          <app-product-form
+            [product]="product"
+            [categories]="categories"
+            [brands]="brands"
+            [merchants]="merchants"
+            [hideDetails]="true"
+            (save)="onSave($event)"
+            (cancel)="onCancel()" />
+        </div>
+      </div>
+    </div>
+  </div>
+}

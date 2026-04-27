@@ -1,0 +1,82 @@
+.wholesale-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1050;
+  animation: fadeIn 0.15s ease;
+}
+
+.wholesale-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1051;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2rem 1rem;
+  overflow-y: auto;
+  pointer-events: none;
+}
+
+.wholesale-modal-dialog {
+  width: 100%;
+  max-width: 1100px;
+  pointer-events: auto;
+  animation: slideDown 0.2s ease;
+}
+
+.wholesale-modal-content {
+  background-color: var(--sz-bg-page, #fff);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--sz-border-color, #ddd);
+  overflow: hidden;
+}
+
+.wholesale-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--sz-border-color, #ddd);
+  background-color: var(--sz-bg-card, #f8f9fa);
+}
+
+.wholesale-modal-body {
+  padding: 1.25rem;
+  max-height: calc(100vh - 10rem);
+  overflow-y: auto;
+}
+
+.btn-close-custom {
+  background: transparent;
+  border: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover:not(:disabled) {
+    background-color: rgba(0, 0, 0, 0.08);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-20px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}

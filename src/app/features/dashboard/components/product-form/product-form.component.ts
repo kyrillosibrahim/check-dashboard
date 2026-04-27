@@ -23,6 +23,8 @@ export class ProductFormComponent implements OnInit, OnChanges {
   @Input() categories: ICategory[] = [];
   @Input() brands: IBrand[] = [];
   @Input() merchants: IMerchant[] = [];
+  /** Hide the "تفاصيل المنتج" accordion (used for wholesale-offer modal). */
+  @Input() hideDetails = false;
   @Output() save = new EventEmitter<IProduct>();
   @Output() cancel = new EventEmitter<void>();
 
@@ -92,6 +94,8 @@ export class ProductFormComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
+    const detailsValidators = this.hideDetails ? [] : [Validators.required];
+    const stockValidators = this.hideDetails ? [Validators.min(0)] : [Validators.required, Validators.min(0)];
     this.form = this.fb.group({
       title: [this.product?.title || '', [Validators.required, Validators.minLength(3)]],
       titleAr: [this.product?.titleAr || ''],
@@ -102,11 +106,11 @@ export class ProductFormComponent implements OnInit, OnChanges {
       wholesalePrice: [this.product?.wholesalePrice || 0, [Validators.required, Validators.min(0)]],
       originalPrice: [this.product?.originalPrice || this.product?.price || 0, [Validators.required, Validators.min(0.01)]],
       discountedPrice: [this.product?.discountedPrice || 0, [Validators.required, Validators.min(0)]],
-      category: [this.product?.category || '', [Validators.required]],
+      category: [this.product?.category || '', detailsValidators],
       subcategory: [this.product?.subcategory || ''],
-      brand: [this.product?.brand || '', [Validators.required]],
+      brand: [this.product?.brand || '', detailsValidators],
       merchant: [this.product?.merchant || ''],
-      stock: [this.product?.stock ?? 100, [Validators.required, Validators.min(0)]],
+      stock: [this.product?.stock ?? 100, stockValidators],
       rating: [this.product?.rating || 0, [Validators.min(0), Validators.max(5)]],
       isFeatured: [this.product?.isFeatured || false],
       comingSoon: [this.product?.comingSoon || false],
@@ -213,6 +217,7 @@ export class ProductFormComponent implements OnInit, OnChanges {
       merchant: v.merchant || undefined,
       isFeatured: v.isFeatured,
       comingSoon: v.comingSoon,
+      isWholesaleOffer: this.product?.isWholesaleOffer || false,
       tags: this.product?.tags || [],
       filterTags: this.selectedFilterTags,
       slug: this.generatedSlug,
