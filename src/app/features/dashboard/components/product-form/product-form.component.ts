@@ -25,6 +25,12 @@ export class ProductFormComponent implements OnInit, OnChanges {
   @Input() merchants: IMerchant[] = [];
   /** Hide the "تفاصيل المنتج" accordion (used for wholesale-offer modal). */
   @Input() hideDetails = false;
+  /** Hide the main product images uploader (used for wholesale-offer modal). */
+  @Input() hideMainImages = false;
+  /** Hide the slider images uploader (used for wholesale-offer modal). */
+  @Input() hideSliderImages = false;
+  /** Show the minimum-quantity input next to the wholesale price. */
+  @Input() showMinWholesaleQuantity = false;
   @Output() save = new EventEmitter<IProduct>();
   @Output() cancel = new EventEmitter<void>();
 
@@ -104,6 +110,7 @@ export class ProductFormComponent implements OnInit, OnChanges {
       descriptionHtml: [this.product?.descriptionHtml || this.product?.description || ''],
       descriptionHtmlAr: [this.product?.descriptionHtmlAr || this.product?.descriptionAr || ''],
       wholesalePrice: [this.product?.wholesalePrice || 0, [Validators.required, Validators.min(0)]],
+      minWholesaleQuantity: [this.product?.minWholesaleQuantity || 0, [Validators.min(0)]],
       originalPrice: [this.product?.originalPrice || this.product?.price || 0, [Validators.required, Validators.min(0.01)]],
       discountedPrice: [this.product?.discountedPrice || 0, [Validators.required, Validators.min(0)]],
       category: [this.product?.category || '', detailsValidators],
@@ -224,6 +231,7 @@ export class ProductFormComponent implements OnInit, OnChanges {
       wholesalePrice,
       originalPrice,
       discountedPrice,
+      minWholesaleQuantity: +v.minWholesaleQuantity || 0,
       merchantProfitPercent,
       productForm: this.product?.productForm,
       faq: this.faqs.filter(f => f.q || f.qAr),

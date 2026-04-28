@@ -11,6 +11,8 @@ import { Subscription, combineLatest, startWith } from 'rxjs';
 })
 export class PriceCalculatorComponent implements OnInit, OnDestroy {
   @Input({ required: true }) form!: FormGroup;
+  /** When true, render the minimum-quantity input (used for wholesale offers). */
+  @Input() showMinQuantity = false;
 
   discountPercent = 0;
   profitPercent = 0;

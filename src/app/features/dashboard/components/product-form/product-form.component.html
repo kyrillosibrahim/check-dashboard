@@ -95,7 +95,7 @@
 
     @if (panels['pricing']) {
       <div class="accordion-body">
-        <app-price-calculator [form]="form" />
+        <app-price-calculator [form]="form" [showMinQuantity]="showMinWholesaleQuantity" />
       </div>
     }
   </div>
@@ -113,18 +113,22 @@
     @if (panels['images']) {
       <div class="accordion-body">
         <div class="row g-4">
-          <div class="col-12">
-            <app-image-uploader
-              label="الصور الرئيسية"
-              [images]="mainImages"
-              (imagesChange)="mainImages = $event" />
-          </div>
-          <div class="col-12">
-            <app-image-uploader
-              label="صور السلايدر"
-              [images]="swiperImages"
-              (imagesChange)="swiperImages = $event" />
-          </div>
+          @if (!hideMainImages) {
+            <div class="col-12">
+              <app-image-uploader
+                label="الصور الرئيسية"
+                [images]="mainImages"
+                (imagesChange)="mainImages = $event" />
+            </div>
+          }
+          @if (!hideSliderImages) {
+            <div class="col-12">
+              <app-image-uploader
+                label="صور السلايدر"
+                [images]="swiperImages"
+                (imagesChange)="swiperImages = $event" />
+            </div>
+          }
           <div class="col-12">
             <app-image-uploader
               label="صور المنتج الحقيقية"

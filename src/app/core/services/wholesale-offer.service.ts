@@ -67,6 +67,7 @@ export class WholesaleOfferService {
     fd.append('wholesalePrice', String(offer.wholesalePrice || 0));
     fd.append('originalPrice', String(offer.originalPrice || 0));
     fd.append('discountedPrice', String(offer.discountedPrice || 0));
+    fd.append('minWholesaleQuantity', String(offer.minWholesaleQuantity || 0));
 
     if (offer.faq?.length) fd.append('faq', JSON.stringify(offer.faq));
     if (offer.offers?.length) fd.append('offers', JSON.stringify(offer.offers));

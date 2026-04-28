@@ -5,7 +5,7 @@
 
 <div class="row g-3" [formGroup]="form">
   <!-- Wholesale Price -->
-  <div class="col-md-4">
+  <div [class.col-md-3]="showMinQuantity" [class.col-md-4]="!showMinQuantity">
     <label class="form-label">سعر الجملة</label>
     <div class="input-group">
       <input type="number" class="form-control" formControlName="wholesalePrice" min="0" step="0.01">
@@ -13,8 +13,19 @@
     </div>
   </div>
 
+  @if (showMinQuantity) {
+    <div class="col-md-3">
+      <label class="form-label">الحد الأدنى لسعر الجملة</label>
+      <div class="input-group">
+        <input type="number" class="form-control" formControlName="minWholesaleQuantity" min="0" step="1">
+        <span class="input-group-text">قطعة</span>
+      </div>
+      <small class="text-secondary">سعر الجملة يطبّق ابتداءً من هذا العدد</small>
+    </div>
+  }
+
   <!-- Original Price -->
-  <div class="col-md-4">
+  <div [class.col-md-3]="showMinQuantity" [class.col-md-4]="!showMinQuantity">
     <label class="form-label">السعر الأصلي</label>
     <div class="input-group">
       <input type="number" class="form-control" formControlName="originalPrice" min="0" step="0.01"
@@ -24,7 +35,7 @@
   </div>
 
   <!-- Discounted Price -->
-  <div class="col-md-4">
+  <div [class.col-md-3]="showMinQuantity" [class.col-md-4]="!showMinQuantity">
     <label class="form-label">السعر بعد الخصم</label>
     <div class="input-group">
       <input type="number" class="form-control" formControlName="discountedPrice" min="0" step="0.01"

@@ -34,6 +34,7 @@ export interface IProduct {
   originalPrice?: number;
   discountedPrice?: number;
   merchantProfitPercent?: number;
+  minWholesaleQuantity?: number;
 
   // Dashboard image categories
   swiperImages?: string[];
@@ -50,6 +51,9 @@ export interface IProduct {
 
   // Special offers
   offers?: { text: string; textAr?: string; image?: string }[];
+
+  // Wholesale offers section flag
+  isWholesaleOffer?: boolean;
 
   // SEO fields
   metaTitle?: string;

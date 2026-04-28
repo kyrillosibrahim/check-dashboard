@@ -12,6 +12,8 @@ export interface IWholesaleOffer {
   discountedPrice: number;
   discountPercentage?: number;
   merchantProfitPercentage?: number;
+  /** Quantity at which the wholesale price kicks in. Default 0 means always. */
+  minWholesaleQuantity?: number;
   /** Cloudinary URLs (populated from server response). */
   mainImages?: string[];
   swiperImages?: string[];
