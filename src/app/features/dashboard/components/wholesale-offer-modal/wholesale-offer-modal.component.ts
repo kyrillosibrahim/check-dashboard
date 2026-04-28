@@ -1,13 +1,8 @@
-import { Component, EventEmitter, Input, Output, inject, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { IProduct } from '../../../../core/models/product.model';
-import { ICategory } from '../../../../core/models/category.model';
-import { IBrand } from '../../../../core/models/brand.model';
-import { IMerchant } from '../../../../core/models/merchant.model';
-import { ProductService } from '../../../../core/services/product.service';
-import { CategoryService } from '../../../../core/services/category.service';
-import { BrandService } from '../../../../core/services/brand.service';
-import { MerchantService } from '../../../../core/services/merchant.service';
+import { IWholesaleOffer } from '../../../../core/models/wholesale-offer.model';
+import { WholesaleOfferService } from '../../../../core/services/wholesale-offer.service';
 import { ProductFormComponent } from '../product-form/product-form.component';
 import Swal from 'sweetalert2';
 
@@ -18,40 +13,55 @@ import Swal from 'sweetalert2';
   styleUrl: './wholesale-offer-modal.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class WholesaleOfferModalComponent implements OnInit {
+export class WholesaleOfferModalComponent {
   @Input() show = false;
-  @Input() product: IProduct | null = null;
+  @Input() offer: IWholesaleOffer | null = null;
   @Output() close = new EventEmitter<void>();
-  @Output() saved = new EventEmitter<IProduct>();
+  @Output() saved = new EventEmitter<IWholesaleOffer>();
 
-  private productService = inject(ProductService);
-  private categoryService = inject(CategoryService);
-  private brandService = inject(BrandService);
-  private merchantService = inject(MerchantService);
+  private wholesaleService = inject(WholesaleOfferService);
   private cdr = inject(ChangeDetectorRef);
 
-  categories: ICategory[] = [];
-  brands: IBrand[] = [];
-  merchants: IMerchant[] = [];
   isSaving = false;
 
-  ngOnInit(): void {
-    this.categoryService.getDetailed().subscribe(c => {
-      this.categories = c;
-      this.cdr.markForCheck();
-    });
-    this.brandService.getAll().subscribe(b => {
-      this.brands = b;
-      this.cdr.markForCheck();
-    });
-    this.merchantService.getAll().subscribe(m => {
-      this.merchants = m;
-      this.cdr.markForCheck();
-    });
+  /** Adapter: ProductFormComponent works with IProduct, so we expose the offer as a product-shaped object. */
+  get formProduct(): IProduct | null {
+    if (!this.offer) return null;
+    return {
+      id: this.offer.id,
+      title: this.offer.title,
+      titleAr: this.offer.titleAr,
+      description: this.offer.description || '',
+      descriptionAr: this.offer.descriptionAr,
+      descriptionHtml: this.offer.descriptionHtml,
+      descriptionHtmlAr: this.offer.descriptionHtmlAr,
+      price: this.offer.originalPrice,
+      discountPercentage: this.offer.discountPercentage || 0,
+      rating: 0,
+      ratingsCount: 0,
+      stock: 0,
+      categoryId: 0,
+      category: '',
+      images: this.offer.mainImages || [],
+      swiperImages: this.offer.swiperImages,
+      naturalImages: this.offer.normalImages,
+      brand: '',
+      isFeatured: false,
+      tags: [],
+      slug: this.offer.slug,
+      wholesalePrice: this.offer.wholesalePrice,
+      originalPrice: this.offer.originalPrice,
+      discountedPrice: this.offer.discountedPrice,
+      faq: this.offer.faq,
+      offers: this.offer.offers,
+      metaTitle: this.offer.metaTitle,
+      metaDescription: this.offer.metaDescription,
+      seoKeywords: this.offer.seoKeywords,
+    };
   }
 
   get isEdit(): boolean {
-    return !!this.product;
+    return !!this.offer;
   }
 
   onCancel(): void {
@@ -64,35 +74,48 @@ export class WholesaleOfferModalComponent implements OnInit {
     this.isSaving = true;
     this.cdr.markForCheck();
 
-    const payload: IProduct = {
-      ...product,
-      isWholesaleOffer: true,
-      category: product.category || 'wholesale',
-      categoryFolder: product.categoryFolder || 'wholesale',
-      brand: product.brand || 'wholesale',
-      stock: product.stock || 0,
-      id: this.isEdit ? product.id : (product.id || this.productService.generateId())
+    const slug = product.slug || this.wholesaleService.generateSlug(product.title);
+    const payload: IWholesaleOffer = {
+      id: this.isEdit ? this.offer!.id : (product.id || this.wholesaleService.generateId()),
+      slug,
+      title: product.title,
+      titleAr: product.titleAr,
+      description: product.description,
+      descriptionAr: product.descriptionAr,
+      descriptionHtml: product.descriptionHtml,
+      descriptionHtmlAr: product.descriptionHtmlAr,
+      wholesalePrice: product.wholesalePrice || 0,
+      originalPrice: product.originalPrice || product.price || 0,
+      discountedPrice: product.discountedPrice || 0,
+      images: product.images,
+      swiperImages: product.swiperImages,
+      naturalImages: product.naturalImages,
+      faq: product.faq,
+      offers: product.offers,
+      metaTitle: product.metaTitle,
+      metaDescription: product.metaDescription,
+      seoKeywords: product.seoKeywords,
     };
 
     try {
       const request$ = this.isEdit
-        ? this.productService.updateProduct(payload)
-        : this.productService.createProduct(payload);
+        ? this.wholesaleService.update(payload)
+        : this.wholesaleService.create(payload);
       const result = await firstValueFrom(request$);
 
       await Swal.fire({
-        title: this.isEdit ? 'تم تحديث المنتج!' : 'تم حفظ المنتج بنجاح!',
+        title: this.isEdit ? 'تم تحديث عرض الجملة!' : 'تم حفظ عرض الجملة بنجاح!',
         icon: 'success',
         timer: 1500,
         showConfirmButton: false
       });
 
-      this.saved.emit(result.product || payload);
+      this.saved.emit(result.offer || payload);
       this.close.emit();
     } catch (err: any) {
       if (!this.isEdit && err?.status === 409) {
         const confirm = await Swal.fire({
-          title: 'المنتج موجود بالفعل!',
+          title: 'العرض موجود بالفعل!',
           text: `"${payload.title}" موجود على السيرفر. عايز تحدثه؟`,
           icon: 'warning',
           showCancelButton: true,
@@ -102,9 +125,9 @@ export class WholesaleOfferModalComponent implements OnInit {
         });
         if (confirm.isConfirmed) {
           try {
-            const result = await firstValueFrom(this.productService.updateProduct(payload));
-            await Swal.fire('تم تحديث المنتج!', '', 'success');
-            this.saved.emit(result.product || payload);
+            const result = await firstValueFrom(this.wholesaleService.update(payload));
+            await Swal.fire('تم تحديث العرض!', '', 'success');
+            this.saved.emit(result.offer || payload);
             this.close.emit();
           } catch (innerErr: any) {
             Swal.fire('خطأ', innerErr?.error?.error || 'فشل التحديث', 'error');

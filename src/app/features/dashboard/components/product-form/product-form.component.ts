@@ -217,7 +217,6 @@ export class ProductFormComponent implements OnInit, OnChanges {
       merchant: v.merchant || undefined,
       isFeatured: v.isFeatured,
       comingSoon: v.comingSoon,
-      isWholesaleOffer: this.product?.isWholesaleOffer || false,
       tags: this.product?.tags || [],
       filterTags: this.selectedFilterTags,
       slug: this.generatedSlug,

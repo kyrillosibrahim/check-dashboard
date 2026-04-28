@@ -16,4 +16,5 @@ export const API_CONFIG = {
   priceComparisonsUrl: `${BASE}/api/price-comparisons`,
   expensesUrl: `${BASE}/api/expenses`,
   governoratesUrl: `${BASE}/api/governorates`,
+  wholesaleOffersUrl: `${BASE}/api/wholesale-offers`,
 };

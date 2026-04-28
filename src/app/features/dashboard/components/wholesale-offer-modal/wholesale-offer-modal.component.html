@@ -14,10 +14,10 @@
         </div>
         <div class="wholesale-modal-body">
           <app-product-form
-            [product]="product"
-            [categories]="categories"
-            [brands]="brands"
-            [merchants]="merchants"
+            [product]="formProduct"
+            [categories]="[]"
+            [brands]="[]"
+            [merchants]="[]"
             [hideDetails]="true"
             (save)="onSave($event)"
             (cancel)="onCancel()" />

@@ -1,0 +1,128 @@
+<!-- Page Title -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h4 class="fw-bold mb-0">
+    <i class="bi bi-cart-plus me-2" style="color: var(--sz-accent);"></i>
+    كافة عروض الجملة
+  </h4>
+  <button class="btn btn-primary btn-sm" (click)="openAddModal()">
+    <i class="bi bi-plus-lg me-1"></i> إضافة عرض جملة
+  </button>
+</div>
+
+<!-- Stats Card -->
+<div class="row g-3 mb-4">
+  <div class="col-12">
+    <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
+      <div class="card-body text-center py-3 pstyle">
+        <i class="bi bi-cart-plus fs-3 mb-1 d-block" style="color: var(--sz-accent);"></i>
+        <h4 class="fw-bold mb-0">{{ allOffers.length }}</h4>
+        <small class="text-secondary">إجمالي عروض الجملة</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="card border-0 shadow-sm mb-4 p-3 pstyle">
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <i class="bi bi-funnel" style="color: var(--sz-accent);"></i>
+    <span class="fw-semibold">فلترة عروض الجملة</span>
+  </div>
+  <div class="row g-3 align-items-end">
+    <div class="col-md-9">
+      <label class="form-label small mb-1">بحث بالاسم</label>
+      <input type="text" class="form-control" [(ngModel)]="searchTerm" placeholder="ابحث..."
+             (keyup.enter)="search()"
+             style="background-color: var(--sz-bg-card); border-color: var(--sz-border-color); color: inherit;">
+    </div>
+    <div class="col-md-3 d-flex gap-2">
+      <button class="btn btn-primary flex-grow-1" (click)="search()">
+        <i class="bi bi-search me-1"></i> بحث
+      </button>
+      @if (searchTerm) {
+        <button class="btn btn-outline-secondary" (click)="resetFilters()" title="مسح الفلاتر">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Wholesale Offers Table -->
+@if (isLoading) {
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2 text-secondary">جاري تحميل عروض الجملة...</p>
+  </div>
+} @else if (error) {
+  <div class="alert alert-danger">
+    <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+    <button class="btn btn-sm btn-outline-danger ms-3" (click)="loadOffers()">إعادة المحاولة</button>
+  </div>
+} @else {
+  <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table mb-0 align-middle pstyle">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--sz-border-color);">
+              <th class="ps-3">الصورة</th>
+              <th>الاسم</th>
+              <th>سعر الجملة</th>
+              <th>السعر القطاعى</th>
+              <th>سعر العميل التاجر</th>
+              <th class="text-start pe-3">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (offer of offers; track offer.id) {
+              <tr>
+                <td class="ps-3">
+                  <img [src]="getImageUrl(offer)" [alt]="offer.title" class="rounded product-thumb" loading="lazy">
+                </td>
+                <td>
+                  <div class="fw-semibold">{{ offer.titleAr || offer.title }}</div>
+                </td>
+                <td>
+                  @if (offer.wholesalePrice) {
+                    <span class="fw-semibold">{{ offer.wholesalePrice | egpCurrency }}</span>
+                  } @else {
+                    <span class="text-secondary">&mdash;</span>
+                  }
+                </td>
+                <td class="fw-semibold">{{ offer.originalPrice | egpCurrency }}</td>
+                <td>
+                  @if (offer.discountedPrice) {
+                    <span class="fw-semibold" style="color: var(--sz-accent);">{{ offer.discountedPrice | egpCurrency }}</span>
+                  } @else {
+                    <span class="text-secondary">&mdash;</span>
+                  }
+                </td>
+                <td class="text-start pe-3">
+                  <div class="d-flex gap-2 justify-content-start">
+                    <button class="action-btn edit-btn" (click)="onEdit(offer)" title="تعديل">
+                      <i class="bi bi-pencil-fill"></i>
+                    </button>
+                    <button class="action-btn delete-btn" (click)="onDelete(offer)" title="حذف">
+                      <i class="bi bi-trash-fill"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6" class="text-center py-4 text-secondary">لا توجد عروض جملة</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+}
+
+<app-wholesale-offer-modal
+  [show]="modalOpen"
+  [offer]="editingOffer"
+  (close)="onModalClose()"
+  (saved)="onModalSaved()" />
