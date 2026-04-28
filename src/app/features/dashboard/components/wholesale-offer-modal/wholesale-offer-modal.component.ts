@@ -67,6 +67,10 @@ export class WholesaleOfferModalComponent implements OnInit {
     const payload: IProduct = {
       ...product,
       isWholesaleOffer: true,
+      category: product.category || 'wholesale',
+      categoryFolder: product.categoryFolder || 'wholesale',
+      brand: product.brand || 'wholesale',
+      stock: product.stock || 0,
       id: this.isEdit ? product.id : (product.id || this.productService.generateId())
     };
 
