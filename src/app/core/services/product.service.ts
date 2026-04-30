@@ -114,6 +114,30 @@ export class ProductService {
     await this.appendImages(fd, 'swiperImages', product.swiperImages);
     await this.appendImages(fd, 'normalImages', product.naturalImages);
 
+    // Variants
+    if (product.hasVariants) {
+      fd.append('hasVariants', 'true');
+      fd.append('variantOptionType', product.variantOptionType || '');
+      fd.append('variantOptionTypeAr', product.variantOptionTypeAr || '');
+      fd.append('baseVariantNameAr', product.baseVariantNameAr || '');
+      if (product.variants?.length) {
+        const meta = product.variants.map(v => ({
+          id: v.id,
+          name: v.name,
+          nameAr: v.nameAr,
+          wholesalePrice: v.wholesalePrice,
+          originalPrice: v.originalPrice,
+          discountedPrice: v.discountedPrice,
+          stock: v.stock
+        }));
+        fd.append('variants', JSON.stringify(meta));
+        for (let i = 0; i < product.variants.length; i++) {
+          await this.appendImages(fd, `variant_${i}_mainImages`, product.variants[i].mainImages);
+          await this.appendImages(fd, `variant_${i}_normalImages`, product.variants[i].naturalImages);
+        }
+      }
+    }
+
     return fd;
   }
 

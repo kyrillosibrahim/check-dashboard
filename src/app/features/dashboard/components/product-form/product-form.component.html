@@ -140,6 +140,114 @@
     }
   </div>
 
+  <!-- ═══ Accordion: Variants (sizes / types / colors) ═══ -->
+  <div class="accordion-panel" [class.open]="panels['variants']">
+    <div class="accordion-header" (click)="togglePanel('variants')">
+      <span class="accordion-title">
+        <i class="bi bi-grid-3x3-gap"></i>
+        خيارات المنتج (مقاسات / أنواع / ألوان)
+      </span>
+      <i class="bi accordion-chevron" [class.bi-chevron-down]="!panels['variants']" [class.bi-chevron-up]="panels['variants']"></i>
+    </div>
+
+    @if (panels['variants']) {
+      <div class="accordion-body">
+        <div class="row g-3">
+          <!-- Toggle: enable variants -->
+          <div class="col-12">
+            <div class="check-card">
+              <input type="checkbox" class="form-check-input" formControlName="hasVariants" id="hasVariants">
+              <label for="hasVariants">يحتوى على ( مقاس أو نوع أو حجم ) آخر</label>
+            </div>
+          </div>
+
+          @if (hasVariantsEnabled) {
+            <!-- Option type dropdown -->
+            <div class="col-md-6">
+              <label class="form-label">نوع الخيار</label>
+              <select class="form-select" formControlName="variantOptionType">
+                <option value="">اختر نوع الخيار</option>
+                @for (opt of variantTypeOptions; track opt.value) {
+                  <option [value]="opt.value">{{ opt.labelAr }}</option>
+                }
+              </select>
+            </div>
+            <!-- Base variant Arabic name -->
+            <div class="col-md-6">
+              <label class="form-label">اسم الخيار الأساسى (للمنتج الحالى)</label>
+              <input type="text" class="form-control" formControlName="baseVariantNameAr"
+                     placeholder="مثال: شراب أسود">
+              <small class="text-muted">يستخدم نفس صور وأسعار المنتج الأعلى</small>
+            </div>
+
+            <!-- Variants list -->
+            <div class="col-12">
+              <div formArrayName="variants" class="variants-list">
+                @for (vCtrl of variantsArray.controls; let i = $index; track vCtrl) {
+                  <div class="variant-card" [formGroupName]="i">
+                    <div class="variant-card__head">
+                      <span class="variant-card__index">#{{ i + 1 }}</span>
+                      <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeVariant(i)">
+                        <i class="bi bi-trash"></i>
+                        حذف
+                      </button>
+                    </div>
+
+                    <div class="row g-3">
+                      <div class="col-md-6">
+                        <label class="form-label">اسم الخيار (عربى) *</label>
+                        <input type="text" class="form-control" formControlName="nameAr" placeholder="مثال: شراب أحمر">
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">اسم الخيار (EN)</label>
+                        <input type="text" class="form-control" formControlName="name" placeholder="Red Strap" dir="ltr">
+                      </div>
+
+                      <div class="col-md-4">
+                        <label class="form-label">سعر الجملة</label>
+                        <input type="number" min="0" class="form-control" formControlName="wholesalePrice">
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label">السعر الأصلى *</label>
+                        <input type="number" min="0" step="0.01" class="form-control" formControlName="originalPrice">
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label">السعر بعد الخصم</label>
+                        <input type="number" min="0" step="0.01" class="form-control" formControlName="discountedPrice">
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label">المخزون</label>
+                        <input type="number" min="0" class="form-control" formControlName="stock">
+                      </div>
+
+                      <div class="col-12">
+                        <app-image-uploader
+                          label="الصور الأساسية"
+                          [images]="variantsMainImages[i]"
+                          (imagesChange)="onVariantMainImagesChange(i, $event)" />
+                      </div>
+                      <div class="col-12">
+                        <app-image-uploader
+                          label="الصور على الطبيعة"
+                          [images]="variantsNaturalImages[i]"
+                          (imagesChange)="onVariantNaturalImagesChange(i, $event)" />
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+
+              <button type="button" class="btn btn-outline-primary mt-2" (click)="addVariant()">
+                <i class="bi bi-plus-lg me-1"></i>
+                إضافة خيار جديد
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
   <!-- ═══ Accordion: Offers ═══ -->
   <div class="accordion-panel" [class.open]="panels['offers']">
     <div class="accordion-header" (click)="togglePanel('offers')">

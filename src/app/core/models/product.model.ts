@@ -62,4 +62,24 @@ export interface IProduct {
   metaTitle?: string;
   metaDescription?: string;
   seoKeywords?: string[];
+
+  // Variants (sizes / types / colors / volumes / models)
+  hasVariants?: boolean;
+  variantOptionType?: 'size' | 'type' | 'volume' | 'color' | 'model';
+  variantOptionTypeAr?: string;
+  baseVariantName?: string;
+  baseVariantNameAr?: string;
+  variants?: IProductVariant[];
+}
+
+export interface IProductVariant {
+  id: string;
+  name: string;
+  nameAr?: string;
+  mainImages: string[];
+  naturalImages?: string[];
+  wholesalePrice?: number;
+  originalPrice?: number;
+  discountedPrice?: number;
+  stock?: number;
 }

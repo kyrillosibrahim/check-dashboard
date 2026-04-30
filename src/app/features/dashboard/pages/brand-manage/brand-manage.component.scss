@@ -11,13 +11,48 @@ td {
   font-size: 0.875rem;
 }
 
-.brand-preview {
-  img {
-    width: 50px;
-    height: 50px;
+.drop-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  min-height: 100px;
+  border: 2px dashed var(--sz-border-color, #d1d5db);
+  border-radius: 8px;
+  background: var(--sz-bg-card, #fff);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  padding: 12px;
+  text-align: center;
+  user-select: none;
+
+  &:hover, &.drag-over {
+    border-color: var(--sz-accent, #095da6);
+    background: rgba(9, 93, 166, 0.05);
+  }
+
+  &.has-preview {
+    padding: 6px;
+    min-height: unset;
+  }
+
+  .drop-icon {
+    font-size: 1.8rem;
+    color: var(--sz-accent, #095da6);
+    opacity: 0.7;
+  }
+
+  .drop-hint {
+    font-size: 0.8rem;
+    color: var(--sz-text-primary, #1f2937);
+  }
+
+  .drop-preview {
+    max-width: 90px;
+    max-height: 90px;
     object-fit: contain;
-    background: #fff;
-    padding: 4px;
   }
 }
 
@@ -68,4 +103,53 @@ td {
   border: 1px solid #00000030;
   background-color: #0d6efd1f;
   border-radius: 5px;
+}
+
+.pagination-wrap {
+  padding: 12px 4px;
+
+  .pagination {
+    flex-wrap: wrap;
+    gap: 4px;
+
+    .page-item {
+      .page-link {
+        background: var(--sz-bg-card, #fff);
+        color: var(--sz-text-primary, #1f2937);
+        border: 1px solid var(--sz-border-color, #d1d5db);
+        font-size: 0.85rem;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.15s;
+        min-width: 38px;
+        text-align: center;
+
+        &:hover:not(:disabled) {
+          background: rgba(9, 93, 166, 0.08);
+          border-color: var(--sz-accent, #095da6);
+          color: var(--sz-accent, #095da6);
+        }
+
+        &:disabled {
+          cursor: not-allowed;
+          opacity: 0.45;
+        }
+      }
+
+      &.active .page-link {
+        background: var(--sz-accent, #095da6);
+        border-color: var(--sz-accent, #095da6);
+        color: #fff;
+        font-weight: 700;
+      }
+
+      &.disabled .page-link {
+        background: var(--sz-bg-card, #fff);
+        color: var(--sz-text-secondary, #6b7280);
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+    }
+  }
 }

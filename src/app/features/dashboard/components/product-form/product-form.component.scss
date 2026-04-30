@@ -181,6 +181,43 @@ textarea.form-control {
   }
 }
 
+/* ── Variants list ──────────────────────────── */
+.variants-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.variant-card {
+  border: 1px solid var(--sz-border-color, #e9ecef);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  background-color: var(--sz-bg-secondary, #f8f9fa);
+  position: relative;
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+
+  &__index {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 0.6rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #1bbc9b, #17a689);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.8rem;
+  }
+}
+
 /* ── Actions bar ────────────────────────────── */
 .actions-bar {
   display: flex;

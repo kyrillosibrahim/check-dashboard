@@ -20,12 +20,15 @@ export class BrandManageComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private backupService = inject(BackupService);
 
+  readonly pageSize = 30;
   brands: IBrand[] = [];
+  currentPage = 1;
   brandName = '';
   brandLink = '';
   imagePreview: string | null = null;
   selectedImageUrl: string | null = null;
   isUploadingImage = false;
+  isDragOver = false;
   editingBrand: IBrand | null = null;
   isLoading = true;
   isSaving = false;
@@ -40,7 +43,8 @@ export class BrandManageComponent implements OnInit {
     this.error = '';
     this.brandService.getAll().subscribe({
       next: (brands) => {
-        this.brands = brands;
+        this.brands = [...brands].sort((a, b) => (b.id || 0) - (a.id || 0));
+        if (this.currentPage > this.totalPages) this.currentPage = this.totalPages || 1;
         this.isLoading = false;
         this.cdr.markForCheck();
       },
@@ -122,6 +126,7 @@ export class BrandManageComponent implements OnInit {
         next: () => {
           Swal.fire({ title: 'تم إضافة العلامة التجارية!', icon: 'success', timer: 1500, showConfirmButton: false });
           this.resetForm();
+          this.currentPage = 1;
           this.loadBrands();
         },
         error: (err) => {
@@ -175,6 +180,37 @@ export class BrandManageComponent implements OnInit {
 
   getImageUrl(brand: IBrand): string {
     return brand.image || '';
+  }
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.brands.length / this.pageSize));
+  }
+
+  get pagedBrands(): IBrand[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.brands.slice(start, start + this.pageSize);
+  }
+
+  get pageNumbers(): number[] {
+    const start = Math.max(1, this.currentPage - 2);
+    const end = Math.min(this.totalPages, this.currentPage + 2);
+    const result: number[] = [];
+    for (let i = start; i <= end; i++) result.push(i);
+    return result;
+  }
+
+  get rangeStart(): number {
+    return this.brands.length === 0 ? 0 : (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  get rangeEnd(): number {
+    return Math.min(this.currentPage * this.pageSize, this.brands.length);
+  }
+
+  goToPage(n: number): void {
+    if (n < 1 || n > this.totalPages || n === this.currentPage) return;
+    this.currentPage = n;
+    this.cdr.markForCheck();
   }
 
   private resetForm(): void {

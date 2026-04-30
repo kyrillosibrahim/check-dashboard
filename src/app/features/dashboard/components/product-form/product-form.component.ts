@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { IProduct } from '../../../../core/models/product.model';
+import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
+import { IProduct, IProductVariant } from '../../../../core/models/product.model';
 import { ICategory, ISubcategory } from '../../../../core/models/category.model';
 import { IBrand } from '../../../../core/models/brand.model';
 import { IMerchant } from '../../../../core/models/merchant.model';
@@ -53,12 +53,26 @@ export class ProductFormComponent implements OnInit, OnChanges {
     description: false,
     pricing: false,
     images: false,
+    variants: false,
     offers: false,
     offerBundle: false,
     faq: false,
     seo: false,
     details: false
   };
+
+  /** Available variant option types shown in the dropdown */
+  variantTypeOptions: { value: NonNullable<IProduct['variantOptionType']>; labelAr: string }[] = [
+    { value: 'size',   labelAr: 'مقاس' },
+    { value: 'type',   labelAr: 'نوع' },
+    { value: 'volume', labelAr: 'حجم' },
+    { value: 'color',  labelAr: 'لون' },
+    { value: 'model',  labelAr: 'موديل' }
+  ];
+
+  /** Per-variant image arrays parallel to the variants FormArray index */
+  variantsMainImages: string[][] = [];
+  variantsNaturalImages: string[][] = [];
 
   /** Language tab for description editor */
   descLang: 'ar' | 'en' = 'ar';
@@ -132,7 +146,11 @@ export class ProductFormComponent implements OnInit, OnChanges {
       comingSoon: [this.product?.comingSoon || false],
       metaTitle: [this.product?.metaTitle || ''],
       metaDescription: [this.product?.metaDescription || ''],
-      seoKeywords: [this.product?.seoKeywords?.join(', ') || '']
+      seoKeywords: [this.product?.seoKeywords?.join(', ') || ''],
+      hasVariants: [this.product?.hasVariants || false],
+      variantOptionType: [this.product?.variantOptionType || ''],
+      baseVariantNameAr: [this.product?.baseVariantNameAr || ''],
+      variants: this.fb.array([])
     });
 
     if (this.product) {
@@ -141,6 +159,18 @@ export class ProductFormComponent implements OnInit, OnChanges {
       this.realImages = [...(this.product.naturalImages || [])];
       this.offers = [...(this.product.offers || [])];
       this.faqs = (this.product.faq || []).map(f => ({ ...f }));
+
+      // Hydrate variants
+      if (this.product.variants?.length) {
+        for (const v of this.product.variants) {
+          this.pushVariant(v);
+        }
+      }
+
+      // If hasVariants is true, open the panel by default
+      if (this.product.hasVariants) {
+        this.panels['variants'] = true;
+      }
     }
 
     if (this.product?.slug) {
@@ -180,6 +210,54 @@ export class ProductFormComponent implements OnInit, OnChanges {
     } else {
       this.filteredBrands = this.brands;
     }
+  }
+
+  // ─── Variants helpers ────────────────────────────────────────────
+  get variantsArray(): FormArray {
+    return this.form.get('variants') as FormArray;
+  }
+
+  get hasVariantsEnabled(): boolean {
+    return !!this.form.get('hasVariants')?.value;
+  }
+
+  addVariant(): void {
+    this.pushVariant();
+    this.cdr.markForCheck();
+  }
+
+  private pushVariant(seed?: IProductVariant): void {
+    const group = this.fb.group({
+      id: [seed?.id || `var-${Date.now()}-${this.variantsArray.length}`],
+      nameAr: [seed?.nameAr || '', Validators.required],
+      name: [seed?.name || ''],
+      wholesalePrice: [seed?.wholesalePrice ?? 0, [Validators.min(0)]],
+      originalPrice: [seed?.originalPrice ?? 0, [Validators.required, Validators.min(0.01)]],
+      discountedPrice: [seed?.discountedPrice ?? 0, [Validators.min(0)]],
+      stock: [seed?.stock ?? 0, [Validators.min(0)]]
+    });
+    this.variantsArray.push(group);
+    this.variantsMainImages.push([...(seed?.mainImages || [])]);
+    this.variantsNaturalImages.push([...(seed?.naturalImages || [])]);
+  }
+
+  removeVariant(index: number): void {
+    this.variantsArray.removeAt(index);
+    this.variantsMainImages.splice(index, 1);
+    this.variantsNaturalImages.splice(index, 1);
+    this.cdr.markForCheck();
+  }
+
+  onVariantMainImagesChange(index: number, imgs: string[]): void {
+    this.variantsMainImages[index] = imgs;
+  }
+
+  onVariantNaturalImagesChange(index: number, imgs: string[]): void {
+    this.variantsNaturalImages[index] = imgs;
+  }
+
+  variantGroup(index: number): FormGroup {
+    return this.variantsArray.at(index) as FormGroup;
   }
 
   toggleFilterTag(tag: string): void {
@@ -249,9 +327,33 @@ export class ProductFormComponent implements OnInit, OnChanges {
       offers: this.offers.filter(o => o.text || o.textAr || o.image),
       metaTitle: v.metaTitle || undefined,
       metaDescription: v.metaDescription || undefined,
-      seoKeywords: v.seoKeywords ? v.seoKeywords.split(',').map((k: string) => k.trim()).filter((k: string) => k) : undefined
+      seoKeywords: v.seoKeywords ? v.seoKeywords.split(',').map((k: string) => k.trim()).filter((k: string) => k) : undefined,
+      hasVariants: !!v.hasVariants,
+      variantOptionType: v.hasVariants ? (v.variantOptionType || undefined) : undefined,
+      variantOptionTypeAr: v.hasVariants
+        ? this.variantTypeOptions.find(o => o.value === v.variantOptionType)?.labelAr
+        : undefined,
+      baseVariantNameAr: v.hasVariants ? (v.baseVariantNameAr || undefined) : undefined,
+      variants: v.hasVariants ? this.collectVariants() : undefined
     };
 
     this.save.emit(product);
+  }
+
+  private collectVariants(): IProductVariant[] {
+    return this.variantsArray.controls.map((ctrl, i) => {
+      const val = (ctrl as FormGroup).value;
+      return {
+        id: val.id,
+        name: val.name || val.nameAr,
+        nameAr: val.nameAr || undefined,
+        mainImages: this.variantsMainImages[i] || [],
+        naturalImages: this.variantsNaturalImages[i]?.length ? this.variantsNaturalImages[i] : undefined,
+        wholesalePrice: +val.wholesalePrice || 0,
+        originalPrice: +val.originalPrice || 0,
+        discountedPrice: +val.discountedPrice || 0,
+        stock: +val.stock || 0
+      } as IProductVariant;
+    });
   }
 }

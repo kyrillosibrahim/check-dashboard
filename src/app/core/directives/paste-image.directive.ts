@@ -11,6 +11,7 @@ export class PasteImageDirective implements OnDestroy {
   /** Accepted MIME prefix: 'image/' (default), 'video/', or '' for any file. */
   @Input() pasteAccept: string = 'image/';
   @Output() pasteImage = new EventEmitter<File>();
+  @Output() dragActive = new EventEmitter<boolean>();
 
   @HostListener('mouseenter')
   onMouseEnter(): void {
@@ -21,6 +22,38 @@ export class PasteImageDirective implements OnDestroy {
   onMouseLeave(): void {
     if (PasteImageDirective.hoverEl === this.el.nativeElement) {
       PasteImageDirective.hoverEl = null;
+    }
+  }
+
+  @HostListener('dragover', ['$event'])
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+    this.dragActive.emit(true);
+  }
+
+  @HostListener('dragleave', ['$event'])
+  onDragLeave(event: DragEvent): void {
+    // Only emit false if leaving the host element itself (not a child)
+    if (!this.el.nativeElement.contains(event.relatedTarget as Node)) {
+      this.dragActive.emit(false);
+    }
+  }
+
+  @HostListener('drop', ['$event'])
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dragActive.emit(false);
+    const files = event.dataTransfer?.files;
+    if (!files?.length) return;
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (this.pasteAccept === '' || file.type.startsWith(this.pasteAccept)) {
+        this.pasteImage.emit(file);
+        return;
+      }
     }
   }
 

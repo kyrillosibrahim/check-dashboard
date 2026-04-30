@@ -34,20 +34,25 @@
         <input type="url" class="form-control" [(ngModel)]="brandLink" name="brandLink"
                placeholder="https://example.com" dir="ltr">
       </div>
-      <div style="min-width: 200px;" (pasteImage)="onPastedImage($event)">
-        <label class="form-label">صورة الشعار <small class="text-secondary">(الصق Ctrl+V)</small></label>
-        <input type="file" class="form-control" accept="image/*" (change)="onFileSelected($event)" [disabled]="isUploadingImage">
-        @if (isUploadingImage) {
-          <small class="text-primary mt-1 d-block">
-            <span class="spinner-border spinner-border-sm me-1"></span>جاري الرفع على Cloudinary...
-          </small>
-        }
+      <div style="min-width: 200px;"
+           (pasteImage)="onPastedImage($event)"
+           (dragActive)="isDragOver = $event">
+        <label class="form-label">صورة الشعار</label>
+        <label class="drop-zone" [class.drag-over]="isDragOver" [class.has-preview]="imagePreview && !isUploadingImage" for="brandLogoInput">
+          @if (isUploadingImage) {
+            <span class="spinner-border spinner-border-sm text-primary"></span>
+            <span class="drop-hint text-primary">جاري الرفع...</span>
+          } @else if (imagePreview) {
+            <img [src]="imagePreview" alt="Preview" class="drop-preview rounded">
+          } @else {
+            <i class="bi bi-cloud-arrow-up drop-icon"></i>
+            <span class="drop-hint">اسحب وأفلت أو Ctrl+V</span>
+            <small class="text-secondary">أو اضغط للاختيار</small>
+          }
+        </label>
+        <input id="brandLogoInput" type="file" class="d-none" accept="image/*"
+               (change)="onFileSelected($event)" [disabled]="isUploadingImage">
       </div>
-      @if (imagePreview && !isUploadingImage) {
-        <div class="brand-preview">
-          <img [src]="imagePreview" alt="Preview" class="rounded">
-        </div>
-      }
       <div class="d-flex gap-2">
         <button type="submit" class="btn btn-primary px-4" [disabled]="!brandName.trim() || isSaving">
           @if (editingBrand) {
@@ -91,7 +96,7 @@
             </tr>
           </thead>
           <tbody>
-            @for (brand of brands; track brand.id) {
+            @for (brand of pagedBrands; track brand.id) {
               <tr>
                 <td class="ps-3">
                   @if (getImageUrl(brand)) {
@@ -133,4 +138,46 @@
       </div>
     </div>
   </div>
+
+  @if (totalPages > 1) {
+    <nav class="pagination-wrap d-flex flex-wrap justify-content-between align-items-center mt-3 gap-2">
+      <small class="text-secondary">
+        صفحة {{ currentPage }} من {{ totalPages }} —
+        عرض {{ rangeStart }} إلى {{ rangeEnd }} من {{ brands.length }}
+      </small>
+      <ul class="pagination mb-0">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+            <i class="bi bi-chevron-right"></i> السابق
+          </button>
+        </li>
+        @if (pageNumbers[0] > 1) {
+          <li class="page-item">
+            <button class="page-link" (click)="goToPage(1)">1</button>
+          </li>
+          @if (pageNumbers[0] > 2) {
+            <li class="page-item disabled"><span class="page-link">…</span></li>
+          }
+        }
+        @for (n of pageNumbers; track n) {
+          <li class="page-item" [class.active]="n === currentPage">
+            <button class="page-link" (click)="goToPage(n)">{{ n }}</button>
+          </li>
+        }
+        @if (pageNumbers[pageNumbers.length - 1] < totalPages) {
+          @if (pageNumbers[pageNumbers.length - 1] < totalPages - 1) {
+            <li class="page-item disabled"><span class="page-link">…</span></li>
+          }
+          <li class="page-item">
+            <button class="page-link" (click)="goToPage(totalPages)">{{ totalPages }}</button>
+          </li>
+        }
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+            التالي <i class="bi bi-chevron-left"></i>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  }
 }
