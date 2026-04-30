@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ProductService } from '../../../../core/services/product.service';
 import { CategoryService } from '../../../../core/services/category.service';
@@ -14,6 +14,8 @@ import { BackupService } from '../../../../core/services/backup.service';
 import { API_CONFIG } from '../../../../core/config/api.config';
 import Swal from 'sweetalert2';
 
+const PAGE_SIZE = 25;
+
 @Component({
   selector: 'app-product-list',
   imports: [ProductTableComponent, RouterLink, FormsModule],
@@ -27,10 +29,12 @@ export class ProductListComponent implements OnInit {
   private merchantService = inject(MerchantService);
   private brandService = inject(BrandService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private cdr = inject(ChangeDetectorRef);
   private backupService = inject(BackupService);
 
-  allProducts: IProduct[] = [];
+  readonly pageSize = PAGE_SIZE;
+
   products: IProduct[] = [];
   categories: ICategory[] = [];
   merchants: IMerchant[] = [];
@@ -40,36 +44,12 @@ export class ProductListComponent implements OnInit {
   selectedMerchant = '';
   selectedBrand = '';
 
+  currentPage = 1;
+  totalProducts = 0;
+  totalPages = 0;
+
   isLoading = true;
   error = '';
-
-  search(): void {
-    this.applyFilters();
-  }
-
-  resetFilters(): void {
-    this.selectedCategory = '';
-    this.selectedMerchant = '';
-    this.selectedBrand = '';
-    this.applyFilters();
-  }
-
-  private applyFilters(): void {
-    let filtered = this.allProducts;
-
-    if (this.selectedCategory) {
-      filtered = filtered.filter(p => p.category === this.selectedCategory);
-    }
-    if (this.selectedMerchant) {
-      filtered = filtered.filter(p => p.merchant === this.selectedMerchant);
-    }
-    if (this.selectedBrand) {
-      filtered = filtered.filter(p => p.brand === this.selectedBrand);
-    }
-
-    this.products = filtered;
-    this.cdr.markForCheck();
-  }
 
   ngOnInit(): void {
     this.categoryService.getAll().subscribe(c => {
@@ -84,24 +64,91 @@ export class ProductListComponent implements OnInit {
       this.brands = b;
       this.cdr.markForCheck();
     });
-    this.loadProducts();
+
+    this.route.queryParams.subscribe(params => {
+      this.currentPage = Math.max(1, parseInt(params['page'], 10) || 1);
+      this.selectedCategory = params['category'] || '';
+      this.selectedMerchant = params['merchant'] || '';
+      this.selectedBrand = params['brand'] || '';
+      this.loadProducts();
+    });
   }
 
   loadProducts(): void {
     this.isLoading = true;
     this.error = '';
-    this.productService.getAll().subscribe({
-      next: (p) => {
-        this.allProducts = p;
-        this.applyFilters();
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      },
-      error: () => {
-        this.error = 'فشل تحميل المنتجات. تأكد أن السيرفر شغال.';
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      }
+    this.productService
+      .getPaginated({
+        page: this.currentPage,
+        limit: this.pageSize,
+        category: this.selectedCategory || undefined,
+        brand: this.selectedBrand || undefined,
+        merchant: this.selectedMerchant || undefined,
+      })
+      .subscribe({
+        next: ({ products, total }) => {
+          this.products = products;
+          this.totalProducts = total;
+          this.totalPages = Math.max(1, Math.ceil(total / this.pageSize));
+
+          if (this.currentPage > this.totalPages && total > 0) {
+            this.navigateTo({ page: this.totalPages });
+            return;
+          }
+
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        },
+        error: () => {
+          this.error = 'فشل تحميل المنتجات. تأكد أن السيرفر شغال.';
+          this.isLoading = false;
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  search(): void {
+    this.navigateTo({
+      page: 1,
+      category: this.selectedCategory || null,
+      merchant: this.selectedMerchant || null,
+      brand: this.selectedBrand || null,
+    });
+  }
+
+  resetFilters(): void {
+    this.selectedCategory = '';
+    this.selectedMerchant = '';
+    this.selectedBrand = '';
+    this.navigateTo({ page: null, category: null, merchant: null, brand: null });
+  }
+
+  goToPage(n: number): void {
+    if (n < 1 || n > this.totalPages || n === this.currentPage) return;
+    this.navigateTo({ page: n });
+  }
+
+  get rangeStart(): number {
+    return this.totalProducts === 0 ? 0 : (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  get rangeEnd(): number {
+    return Math.min(this.currentPage * this.pageSize, this.totalProducts);
+  }
+
+  get pageNumbers(): number[] {
+    const start = Math.max(1, this.currentPage - 2);
+    const end = Math.min(this.totalPages, this.currentPage + 2);
+    const result: number[] = [];
+    for (let i = start; i <= end; i++) result.push(i);
+    return result;
+  }
+
+  private navigateTo(merge: Params): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: merge,
+      queryParamsHandling: 'merge',
     });
   }
 
@@ -125,7 +172,11 @@ export class ProductListComponent implements OnInit {
       this.productService.deleteProduct(category, product.slug!).subscribe({
         next: () => {
           Swal.fire('تم حذف المنتج!', '', 'success');
-          this.loadProducts();
+          if (this.products.length === 1 && this.currentPage > 1) {
+            this.navigateTo({ page: this.currentPage - 1 });
+          } else {
+            this.loadProducts();
+          }
         },
         error: (err) => {
           Swal.fire('خطأ', err?.error?.error || 'فشل الحذف', 'error');
@@ -142,18 +193,37 @@ export class ProductListComponent implements OnInit {
     return `${API_CONFIG.uploadsUrl}/${path}`;
   }
 
+  private async fetchAllProducts(): Promise<IProduct[]> {
+    return new Promise((resolve, reject) => {
+      this.productService.getAll().subscribe({
+        next: (list) => resolve([...list].reverse()),
+        error: (err) => reject(err),
+      });
+    });
+  }
+
   async downloadBackup(): Promise<void> {
-    if (!this.allProducts.length) {
+    Swal.fire({ title: 'جاري تحميل قائمة المنتجات...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+    let allProducts: IProduct[];
+    try {
+      allProducts = await this.fetchAllProducts();
+    } catch {
+      Swal.fire('خطأ', 'فشل تحميل المنتجات', 'error');
+      return;
+    }
+
+    if (!allProducts.length) {
       Swal.fire('تنبيه', 'لا توجد منتجات لتحميلها', 'warning');
       return;
     }
 
-    Swal.fire({ title: 'جاري تجهيز النسخة الاحتياطية...', html: '0 / ' + this.allProducts.length, allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    Swal.fire({ title: 'جاري تجهيز النسخة الاحتياطية...', html: '0 / ' + allProducts.length, allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
     const productsWithImages = [];
-    for (let i = 0; i < this.allProducts.length; i++) {
-      const p = this.allProducts[i];
-      Swal.update({ html: `${i + 1} / ${this.allProducts.length}` });
+    for (let i = 0; i < allProducts.length; i++) {
+      const p = allProducts[i];
+      Swal.update({ html: `${i + 1} / ${allProducts.length}` });
 
       const convertImages = async (paths: string[] | undefined): Promise<string[]> => {
         if (!paths?.length) return [];
@@ -168,7 +238,6 @@ export class ProductListComponent implements OnInit {
         return results;
       };
 
-      // API returns mainImages/normalImages, but buildFormData reads images/naturalImages
       const images = await convertImages(p.mainImages?.length ? p.mainImages : p.images);
       const swiperImages = await convertImages(p.swiperImages);
       const naturalImages = await convertImages(p.normalImages?.length ? p.normalImages : p.naturalImages);
@@ -205,7 +274,6 @@ export class ProductListComponent implements OnInit {
         const product = data[i];
         Swal.update({ html: `${i + 1} / ${data.length}` });
 
-        // Ensure images are in the fields buildFormData expects
         if (!product.images?.length && product.mainImages?.length) {
           product.images = product.mainImages;
         }

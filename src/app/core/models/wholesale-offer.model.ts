@@ -14,6 +14,9 @@ export interface IWholesaleOffer {
   merchantProfitPercentage?: number;
   /** Quantity at which the wholesale price kicks in. Default 0 means always. */
   minWholesaleQuantity?: number;
+  /** Bundle offer: buy this many pieces for the special bundle price. */
+  offerPiecesCount?: number;
+  offerPrice?: number;
   /** Cloudinary URLs (populated from server response). */
   mainImages?: string[];
   swiperImages?: string[];

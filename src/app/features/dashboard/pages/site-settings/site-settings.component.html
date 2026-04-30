@@ -271,7 +271,7 @@
     </div>
     <div class="section-body">
       <p class="text-muted small mb-3">
-        ارفع فيديوهات قصيرة للمنتجات في الاستخدام الواقعي وحدد لكل فيديو لينك. الفيديوهات تظهر في الصفحة الرئيسية بعد قسم العلامات التجارية وتتحرك تلقائياً كل 2 ثانية.
+        ارفع فيديوهات قصيرة للمنتجات في الاستخدام الواقعي واختر لكل فيديو منتج من قائمة المنتجات. الفيديوهات تظهر في الصفحة الرئيسية بعد قسم العلامات التجارية وتتحرك تلقائياً كل 2 ثانية.
       </p>
 
       @for (item of naturalProducts; track $index; let i = $index) {
@@ -301,9 +301,53 @@
               <i class="bi bi-upload"></i>
             </button>
           </div>
-          <input type="text" class="form-control natural-link-input"
-                 [(ngModel)]="item.link" name="naturalLink-{{i}}"
-                 placeholder="/products/.. أو https://..." dir="ltr">
+
+          <div class="natural-product-cell search-dropdown-wrap">
+            @if (naturalProductSelected[i]; as selected) {
+              <div class="natural-selected-product">
+                @if (getProductImage(selected)) {
+                  <img [src]="getProductImage(selected)" [alt]="selected.title" class="dropdown-thumb">
+                } @else {
+                  <div class="dropdown-thumb-placeholder"><i class="bi bi-box"></i></div>
+                }
+                <div class="dropdown-info">
+                  <span class="dropdown-title">{{ selected.titleAr || selected.title }}</span>
+                  <span class="dropdown-sub">{{ selected.price }} ج.م</span>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary natural-clear-btn"
+                        (click)="clearNaturalProduct(i)" title="تغيير المنتج">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+              </div>
+            } @else {
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control"
+                       [(ngModel)]="naturalSearch[i]" name="naturalSearch-{{i}}"
+                       placeholder="ابحث عن منتج لإضافته..."
+                       (focus)="openNaturalDropdown(i)"
+                       (blur)="onNaturalDropdownBlur()">
+              </div>
+              @if (naturalDropdownIndex === i && filteredNaturalProducts(i).length > 0) {
+                <div class="search-dropdown">
+                  @for (product of filteredNaturalProducts(i); track product.id) {
+                    <div class="dropdown-item-custom" (mousedown)="selectNaturalProduct(i, product)">
+                      @if (getProductImage(product)) {
+                        <img [src]="getProductImage(product)" [alt]="product.title" class="dropdown-thumb">
+                      } @else {
+                        <div class="dropdown-thumb-placeholder"><i class="bi bi-box"></i></div>
+                      }
+                      <div class="dropdown-info">
+                        <span class="dropdown-title">{{ product.titleAr || product.title }}</span>
+                        <span class="dropdown-sub">{{ product.price }} ج.م</span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            }
+          </div>
+
           <button type="button" class="btn btn-outline-danger btn-sm natural-remove-btn"
                   (click)="removeNaturalProduct(i)" title="حذف">
             <i class="bi bi-trash"></i>

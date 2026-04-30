@@ -20,7 +20,7 @@
     <div class="card border-0 shadow-sm" style="background-color: var(--sz-bg-card);">
       <div class="card-body text-center py-3 pstyle">
         <i class="bi bi-box-seam fs-3 mb-1 d-block" style="color: var(--sz-accent);"></i>
-        <h4 class="fw-bold mb-0">{{ allProducts.length }}</h4>
+        <h4 class="fw-bold mb-0">{{ totalProducts }}</h4>
         <small class="text-secondary">إجمالي المنتجات</small>
       </div>
     </div>
@@ -110,4 +110,48 @@
     [products]="products"
     (edit)="onEdit($event)"
     (delete)="onDelete($event)" />
+
+  @if (totalPages > 1) {
+    <nav class="pagination-wrap d-flex flex-wrap justify-content-between align-items-center mt-3 gap-2">
+      <small class="text-secondary">
+        صفحة {{ currentPage }} من {{ totalPages }} —
+        عرض {{ rangeStart }} إلى {{ rangeEnd }} من {{ totalProducts }}
+      </small>
+      <ul class="pagination mb-0">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+            <i class="bi bi-chevron-right"></i>
+            السابق
+          </button>
+        </li>
+        @if (pageNumbers[0] > 1) {
+          <li class="page-item">
+            <button class="page-link" (click)="goToPage(1)">1</button>
+          </li>
+          @if (pageNumbers[0] > 2) {
+            <li class="page-item disabled"><span class="page-link">…</span></li>
+          }
+        }
+        @for (n of pageNumbers; track n) {
+          <li class="page-item" [class.active]="n === currentPage">
+            <button class="page-link" (click)="goToPage(n)">{{ n }}</button>
+          </li>
+        }
+        @if (pageNumbers[pageNumbers.length - 1] < totalPages) {
+          @if (pageNumbers[pageNumbers.length - 1] < totalPages - 1) {
+            <li class="page-item disabled"><span class="page-link">…</span></li>
+          }
+          <li class="page-item">
+            <button class="page-link" (click)="goToPage(totalPages)">{{ totalPages }}</button>
+          </li>
+        }
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <button class="page-link" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+            التالي
+            <i class="bi bi-chevron-left"></i>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  }
 }

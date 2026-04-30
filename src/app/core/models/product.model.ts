@@ -35,6 +35,9 @@ export interface IProduct {
   discountedPrice?: number;
   merchantProfitPercent?: number;
   minWholesaleQuantity?: number;
+  /** Wholesale "bundle" offer: buy N pieces at this special bundle price. */
+  offerPiecesCount?: number;
+  offerPrice?: number;
 
   // Dashboard image categories
   swiperImages?: string[];

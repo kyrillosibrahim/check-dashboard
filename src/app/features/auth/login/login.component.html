@@ -11,27 +11,26 @@
       <!-- Form -->
       <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="login-form" autocomplete="off">
 
-        <!-- Phone Field -->
+        <!-- Username Field -->
         <div class="form-group">
-          <label for="phone" class="form-label">
-            <i class="bi bi-phone"></i>
-            رقم الموبايل
+          <label for="username" class="form-label">
+            <i class="bi bi-person"></i>
+            اسم المستخدم
           </label>
           <div class="input-wrapper">
             <input
-              type="tel"
-              id="phone"
-              name="phone"
-              [(ngModel)]="phone"
+              type="text"
+              id="username"
+              name="username"
+              [(ngModel)]="username"
               class="form-control"
-              placeholder="01XXXXXXXXX"
+              placeholder="admin / koko"
               [disabled]="isLocked()"
-              maxlength="11"
               autocomplete="off"
               spellcheck="false"
               dir="ltr"
             >
-            <i class="bi bi-phone-fill input-icon"></i>
+            <i class="bi bi-person-fill input-icon"></i>
           </div>
         </div>
 

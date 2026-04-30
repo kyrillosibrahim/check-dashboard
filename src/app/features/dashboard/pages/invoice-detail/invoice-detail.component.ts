@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import { OrderService } from '../../../../core/services/order.service';
 import { SettingsService } from '../../../../core/services/settings.service';
 import { ProductService } from '../../../../core/services/product.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { IOrder } from '../../../../core/models/order.model';
 import { IProduct } from '../../../../core/models/product.model';
 import { DatePipe } from '@angular/common';
@@ -26,6 +27,7 @@ export class InvoiceDetailComponent implements OnInit, OnDestroy {
   private settingsService = inject(SettingsService);
   private productService = inject(ProductService);
   private cdr = inject(ChangeDetectorRef);
+  authService = inject(AuthService);
 
   order: IOrder | null = null;
   showModal = false;

@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { adminGuard } from './core/guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -25,6 +26,13 @@ export const routes: Routes = [
     loadComponent: () => import('./features/dashboard/pages/product-add/product-add.component')
       .then(c => c.ProductAddComponent),
     title: 'KaroKan - Add Product',
+    canActivate: [authGuard]
+  },
+  {
+    path: 'wholesale-offers',
+    loadComponent: () => import('./features/dashboard/pages/wholesale-offers-list/wholesale-offers-list.component')
+      .then(c => c.WholesaleOffersListComponent),
+    title: 'KaroKan - كافة عروض الجملة',
     canActivate: [authGuard]
   },
   {
@@ -74,14 +82,14 @@ export const routes: Routes = [
     loadComponent: () => import('./features/dashboard/pages/profits/profits.component')
       .then(c => c.ProfitsComponent),
     title: 'KaroKan - الأرباح',
-    canActivate: [authGuard]
+    canActivate: [authGuard, adminGuard]
   },
   {
     path: 'expenses',
     loadComponent: () => import('./features/dashboard/pages/expense-manage/expense-manage.component')
       .then(c => c.ExpenseManageComponent),
     title: 'KaroKan - الخسائر والخصومات',
-    canActivate: [authGuard]
+    canActivate: [authGuard, adminGuard]
   },
   {
     path: 'merchants',
@@ -117,6 +125,20 @@ export const routes: Routes = [
       .then(c => c.SiteSettingsComponent),
     title: 'KaroKan - إعدادات الموقع',
     canActivate: [authGuard]
+  },
+  {
+    path: 'guardian-angel',
+    loadComponent: () => import('./features/dashboard/pages/guardian-angel/guardian-angel.component')
+      .then(c => c.GuardianAngelComponent),
+    title: 'KaroKan - الملاك الحارس',
+    canActivate: [authGuard]
+  },
+  {
+    path: 'admin-activity',
+    loadComponent: () => import('./features/dashboard/pages/admin-activity/admin-activity.component')
+      .then(c => c.AdminActivityComponent),
+    title: 'KaroKan - حركة الإدارة',
+    canActivate: [authGuard, adminGuard]
   },
   {
     path: '**',

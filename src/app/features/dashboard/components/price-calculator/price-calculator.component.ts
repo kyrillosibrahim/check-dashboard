@@ -13,20 +13,41 @@ export class PriceCalculatorComponent implements OnInit, OnDestroy {
   @Input({ required: true }) form!: FormGroup;
   /** When true, render the minimum-quantity input (used for wholesale offers). */
   @Input() showMinQuantity = false;
+  /** When true, hide originalPrice and rename discountedPrice to "السعر فى السلة" (wholesale offers only). */
+  @Input() wholesaleMode = false;
 
   discountPercent = 0;
   profitPercent = 0;
   private sub?: Subscription;
 
   ngOnInit(): void {
-    const wholesale$ = this.form.get('wholesalePrice')!.valueChanges.pipe(startWith(this.form.get('wholesalePrice')!.value));
-    const original$ = this.form.get('originalPrice')!.valueChanges.pipe(startWith(this.form.get('originalPrice')!.value));
-    const discounted$ = this.form.get('discountedPrice')!.valueChanges.pipe(startWith(this.form.get('discountedPrice')!.value));
+    const wholesaleCtrl = this.form.get('wholesalePrice')!;
+    const originalCtrl = this.form.get('originalPrice')!;
+    const discountedCtrl = this.form.get('discountedPrice')!;
 
-    this.sub = combineLatest([wholesale$, original$, discounted$]).subscribe(([w, o, d]) => {
-      this.discountPercent = o > 0 ? Math.round(((o - d) / o) * 100 * 100) / 100 : 0;
-      this.profitPercent = w > 0 ? Math.round(((d - w) / w) * 100 * 100) / 100 : 0;
-    });
+    if (this.wholesaleMode) {
+      if (+discountedCtrl.value > 0) {
+        originalCtrl.setValue(+discountedCtrl.value, { emitEvent: false });
+      }
+
+      const wholesale$ = wholesaleCtrl.valueChanges.pipe(startWith(wholesaleCtrl.value));
+      const discounted$ = discountedCtrl.valueChanges.pipe(startWith(discountedCtrl.value));
+
+      this.sub = combineLatest([wholesale$, discounted$]).subscribe(([w, d]) => {
+        originalCtrl.setValue(+d || 0, { emitEvent: false });
+        this.discountPercent = 0;
+        this.profitPercent = w > 0 ? Math.round(((d - w) / w) * 100 * 100) / 100 : 0;
+      });
+    } else {
+      const wholesale$ = wholesaleCtrl.valueChanges.pipe(startWith(wholesaleCtrl.value));
+      const original$ = originalCtrl.valueChanges.pipe(startWith(originalCtrl.value));
+      const discounted$ = discountedCtrl.valueChanges.pipe(startWith(discountedCtrl.value));
+
+      this.sub = combineLatest([wholesale$, original$, discounted$]).subscribe(([w, o, d]) => {
+        this.discountPercent = o > 0 ? Math.round(((o - d) / o) * 100 * 100) / 100 : 0;
+        this.profitPercent = w > 0 ? Math.round(((d - w) / w) * 100 * 100) / 100 : 0;
+      });
+    }
   }
 
   ngOnDestroy(): void {

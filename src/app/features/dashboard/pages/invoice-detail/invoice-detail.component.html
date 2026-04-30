@@ -202,9 +202,11 @@
   <button class="action-btn save-btn" (click)="saveInvoice()">
     <i class="bi bi-check-lg me-2"></i>حفظ الفاتورة
   </button>
-  <button class="action-btn delete-invoice-btn" (click)="deleteInvoice()">
-    <i class="bi bi-trash me-2"></i>حذف الفاتورة
-  </button>
+  @if (authService.isAdmin()) {
+    <button class="action-btn delete-invoice-btn" (click)="deleteInvoice()">
+      <i class="bi bi-trash me-2"></i>حذف الفاتورة
+    </button>
+  }
 </div>
 </div>
 

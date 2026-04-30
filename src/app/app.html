@@ -23,6 +23,11 @@
           <i class="bi bi-plus-circle"></i>
           <span>إضافة منتج</span>
         </a>
+        <a routerLink="/wholesale-offers" routerLinkActive="active"
+           class="nav-item" (click)="closeSidebar()">
+          <i class="bi bi-cart-plus"></i>
+          <span>كافة عروض الجملة</span>
+        </a>
         <a routerLink="/categories" routerLinkActive="active"
            class="nav-item" (click)="closeSidebar()">
           <i class="bi bi-grid"></i>
@@ -48,16 +53,23 @@
           <i class="bi bi-receipt"></i>
           <span>الفواتير</span>
         </a>
-        <a routerLink="/profits" routerLinkActive="active"
-           class="nav-item" (click)="closeSidebar()">
-          <i class="bi bi-graph-up-arrow"></i>
-          <span>الأرباح</span>
-        </a>
-        <a routerLink="/expenses" routerLinkActive="active"
-           class="nav-item" (click)="closeSidebar()">
-          <i class="bi bi-arrow-down-circle"></i>
-          <span>الخسائر</span>
-        </a>
+        @if (authService.isAdmin()) {
+          <a routerLink="/profits" routerLinkActive="active"
+             class="nav-item" (click)="closeSidebar()">
+            <i class="bi bi-graph-up-arrow"></i>
+            <span>الأرباح</span>
+          </a>
+          <a routerLink="/expenses" routerLinkActive="active"
+             class="nav-item" (click)="closeSidebar()">
+            <i class="bi bi-arrow-down-circle"></i>
+            <span>الخسائر</span>
+          </a>
+          <a routerLink="/admin-activity" routerLinkActive="active"
+             class="nav-item" (click)="closeSidebar()">
+            <i class="bi bi-activity"></i>
+            <span>حركة الإدارة</span>
+          </a>
+        }
         <a routerLink="/merchants" routerLinkActive="active"
            class="nav-item" (click)="closeSidebar()">
           <i class="bi bi-shop"></i>
@@ -78,6 +90,11 @@
           <i class="bi bi-gear"></i>
           <span>الإعدادات</span>
         </a>
+        <a routerLink="/guardian-angel" routerLinkActive="active"
+           class="nav-item" (click)="closeSidebar()">
+          <i class="bi bi-shield-fill-check"></i>
+          <span>الملاك الحارس</span>
+        </a>
 
         <!-- Logout Button -->
         <button class="nav-item logout-btn" (click)="logout()">
@@ -96,6 +113,12 @@
 
     <!-- Main Content -->
     <div class="main-content">
+      @if (guardianAngel.isTodaySelected()) {
+        <div class="ga-alert-banner" role="alert">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <span>يوم ربنا انهارده  — «ابْسُطُ يَدَكَ لِلْفَقِيرِ، لِكَيْ تَكْمُلَ بَرَكَتُكَ»</span>
+        </div>
+      }
       <!-- Top Header Bar -->
       <header class="top-header d-lg-none">
         <button class="btn btn-link hamburger" (click)="toggleSidebar()">

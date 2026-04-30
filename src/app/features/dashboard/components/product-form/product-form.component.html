@@ -95,7 +95,7 @@
 
     @if (panels['pricing']) {
       <div class="accordion-body">
-        <app-price-calculator [form]="form" [showMinQuantity]="showMinWholesaleQuantity" />
+        <app-price-calculator [form]="form" [showMinQuantity]="showMinWholesaleQuantity" [wholesaleMode]="showMinWholesaleQuantity" />
       </div>
     }
   </div>
@@ -159,7 +159,41 @@
     }
   </div>
 
+  <!-- ═══ Accordion: Offer Bundle (wholesale only) ═══ -->
+  @if (showOfferBundle) {
+  <div class="accordion-panel" [class.open]="panels['offerBundle']">
+    <div class="accordion-header" (click)="togglePanel('offerBundle')">
+      <span class="accordion-title">
+        <i class="bi bi-bag-plus"></i>
+        عدد القطع فى شكل العرض
+      </span>
+      <i class="bi accordion-chevron" [class.bi-chevron-down]="!panels['offerBundle']" [class.bi-chevron-up]="panels['offerBundle']"></i>
+    </div>
+
+    @if (panels['offerBundle']) {
+      <div class="accordion-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">عدد قطع العرض</label>
+            <input type="number" min="0" class="form-control" formControlName="offerPiecesCount" placeholder="مثال: 3">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">سعر العرض (ج.م)</label>
+            <input type="number" min="0" class="form-control" formControlName="offerPrice" placeholder="مثال: 200">
+          </div>
+          <div class="col-12">
+            <small class="text-muted">
+              يظهر فى الموقع كشريط أحمر على بطاقة المنتج: "اشترى {{ form.value.offerPiecesCount || 'N' }} واحصل عليهم بسعر {{ form.value.offerPrice || 'P' }} ج.م"
+            </small>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+  }
+
   <!-- ═══ Accordion: FAQ ═══ -->
+  @if (!hideFaq) {
   <div class="accordion-panel" [class.open]="panels['faq']">
     <div class="accordion-header" (click)="togglePanel('faq')">
       <span class="accordion-title">
@@ -177,8 +211,10 @@
       </div>
     }
   </div>
+  }
 
   <!-- ═══ Accordion: SEO ═══ -->
+  @if (!hideSeo) {
   <div class="accordion-panel" [class.open]="panels['seo']">
     <div class="accordion-header" (click)="togglePanel('seo')">
       <span class="accordion-title">
@@ -213,6 +249,7 @@
       </div>
     }
   </div>
+  }
 
   <!-- ═══ Accordion: Details ═══ -->
   @if (!hideDetails) {

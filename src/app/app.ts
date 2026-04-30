@@ -2,6 +2,8 @@ import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { ThemeService } from './core/services/theme.service';
 import { AuthService } from './core/services/auth.service';
+import { GuardianAngelService } from './core/services/guardian-angel.service';
+import { ActivityTrackerService } from './core/services/activity-tracker.service';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +15,13 @@ import { AuthService } from './core/services/auth.service';
 export class App {
   themeService = inject(ThemeService);
   authService = inject(AuthService);
+  guardianAngel = inject(GuardianAngelService);
+  private activityTracker = inject(ActivityTrackerService);
   sidebarOpen = false;
+
+  constructor() {
+    this.activityTracker.start();
+  }
 
   toggleTheme(): void {
     this.themeService.toggleTheme();

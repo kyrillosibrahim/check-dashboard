@@ -7,6 +7,7 @@ import { IOrder } from '../../../../core/models/order.model';
 import { EgpCurrencyPipe } from '../../../../shared/pipes/egp-currency.pipe';
 import { API_CONFIG } from '../../../../core/config/api.config';
 import { BackupService } from '../../../../core/services/backup.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -20,6 +21,7 @@ export class InvoiceListComponent implements OnInit {
   private orderService = inject(OrderService);
   private cdr = inject(ChangeDetectorRef);
   private backupService = inject(BackupService);
+  authService = inject(AuthService);
 
   orders: IOrder[] = [];
   isLoading = true;

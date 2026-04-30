@@ -1,0 +1,54 @@
+<div class="ga-container">
+  <header class="ga-header">
+    <h2>الملاك الحارس</h2>
+    <!-- <p>اختر يومًا واحدًا من كل أسبوع للصدقة بإذن الله</p> -->
+  </header>
+
+  <div class="ga-actions">
+    <button type="button" class="btn-randomize" (click)="randomize()">
+      <i class="bi bi-shuffle"></i>
+      <span>اختيار عشوائى</span>
+    </button>
+    <button type="button" class="btn-reset" (click)="reset()">
+      <i class="bi bi-arrow-counterclockwise"></i>
+      <span>إعادة الاختيار</span>
+    </button>
+  </div>
+
+  <div class="ga-calendar">
+    <div class="ga-month-title">{{ monthLabel() }}</div>
+
+    <div class="ga-weekdays">
+      <span>السبت</span>
+      <span>الأحد</span>
+      <span>الإثنين</span>
+      <span>الثلاثاء</span>
+      <span>الأربعاء</span>
+      <span>الخميس</span>
+      <span>الجمعة</span>
+    </div>
+
+    @for (week of weeks(); track $index) {
+      <div class="ga-week-row">
+        @for (cell of week; track $index) {
+          <div class="ga-day"
+               [class.empty]="!cell.date"
+               [class.first-of-month]="cell.isFirstOfMonth"
+               [class.last-of-month]="cell.isLastOfMonth"
+               [class.today]="cell.isToday"
+               [class.selected]="cell.isSelected">
+            @if (cell.date) {
+              <span class="day-number">{{ cell.dayNumber }}</span>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <div class="ga-legend">
+      <span class="legend-item"><span class="dot first"></span> بداية / نهاية الشهر</span>
+      <span class="legend-item"><span class="dot today"></span> اليوم الحالى</span>
+      <span class="legend-item"><span class="dot selected"></span> أيام العشور</span>
+    </div>
+  </div>
+</div>

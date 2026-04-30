@@ -58,8 +58,13 @@
               }
             ],
             "styles": [
-              "node_modules/quill/dist/quill.snow.css",
+              "node_modules/summernote/dist/summernote-lite.min.css",
               "src/styles.scss"
+            ],
+            "scripts": [
+              "node_modules/jquery/dist/jquery.min.js",
+              "node_modules/summernote/dist/summernote-lite.min.js",
+              "node_modules/summernote/dist/lang/summernote-ar-AR.min.js"
             ]
           },
           "configurations": {

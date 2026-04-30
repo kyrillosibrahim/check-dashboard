@@ -1,8 +1,13 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { IProduct } from '../models/product.model';
 import { API_CONFIG } from '../config/api.config';
+
+export interface PaginatedProducts {
+  products: IProduct[];
+  total: number;
+}
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
@@ -10,6 +15,22 @@ export class ProductService {
 
   getAll(): Observable<IProduct[]> {
     return this.http.get<IProduct[]>(API_CONFIG.productsUrl);
+  }
+
+  getPaginated(params: {
+    page: number;
+    limit: number;
+    category?: string;
+    brand?: string;
+    merchant?: string;
+  }): Observable<PaginatedProducts> {
+    let httpParams = new HttpParams()
+      .set('page', String(params.page))
+      .set('limit', String(params.limit));
+    if (params.category) httpParams = httpParams.set('category', params.category);
+    if (params.brand)    httpParams = httpParams.set('brand', params.brand);
+    if (params.merchant) httpParams = httpParams.set('merchant', params.merchant);
+    return this.http.get<PaginatedProducts>(API_CONFIG.productsUrl, { params: httpParams });
   }
 
   getProduct(category: string, slug: string): Observable<IProduct> {

@@ -1,0 +1,175 @@
+.admin-activity-page {
+  .page-title {
+    color: var(--sz-text-primary);
+    font-weight: 700;
+  }
+
+  .page-subtitle {
+    color: var(--sz-text-secondary);
+    font-size: 0.9rem;
+  }
+}
+
+.stat-card {
+  background-color: var(--sz-bg-card, #fff);
+  border: 1px solid var(--sz-border-color, #e5e7eb);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: transform 0.15s, box-shadow 0.15s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  }
+
+  .stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+
+  .stat-label {
+    font-size: 0.78rem;
+    color: var(--sz-text-secondary);
+    margin-bottom: 2px;
+  }
+
+  .stat-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--sz-text-primary);
+  }
+}
+
+.filter-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+
+  .filter-btn {
+    border: 1px solid var(--sz-border-color, #d1d5db);
+    background: transparent;
+    color: var(--sz-text-secondary);
+    padding: 4px 12px;
+    border-radius: 18px;
+    font-size: 0.8rem;
+    transition: all 0.15s;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(9, 93, 166, 0.06);
+    }
+
+    &.active {
+      background: #095da6;
+      color: #fff;
+      border-color: #095da6;
+    }
+  }
+}
+
+.activity-table-wrap {
+  background: var(--sz-bg-card, #fff);
+  border-radius: 12px;
+  border: 1px solid var(--sz-border-color, #e5e7eb);
+  overflow: hidden;
+}
+
+.activity-table {
+  margin-bottom: 0;
+
+  th {
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--sz-text-secondary);
+    white-space: nowrap;
+    border-bottom: 2px solid var(--sz-border-color);
+    padding: 14px 12px;
+    background: var(--sz-bg-soft, #f9fafb);
+  }
+
+  td {
+    font-size: 0.875rem;
+    border-color: var(--sz-border-color, #e9ecef);
+    padding: 12px;
+    color: var(--sz-text-primary);
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    transition: background 0.15s;
+
+    &:hover {
+      background: rgba(9, 93, 166, 0.04);
+    }
+  }
+}
+
+.user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 0.78rem;
+  font-weight: 600;
+
+  &.user-admin {
+    background: rgba(34, 197, 94, 0.12);
+    color: #15803d;
+  }
+
+  &.user-koko {
+    background: rgba(245, 158, 11, 0.12);
+    color: #b45309;
+  }
+}
+
+.day-cell {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.date-cell,
+.time-cell {
+  white-space: nowrap;
+  color: var(--sz-text-secondary);
+}
+
+.title-cell {
+  font-weight: 500;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.path-cell {
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  color: var(--sz-text-secondary);
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.duration-cell {
+  white-space: nowrap;
+  font-weight: 600;
+  color: #095da6;
+}
+
+.empty-state {
+  background: var(--sz-bg-card, #fff);
+  border-radius: 12px;
+  border: 1px dashed var(--sz-border-color, #d1d5db);
+}

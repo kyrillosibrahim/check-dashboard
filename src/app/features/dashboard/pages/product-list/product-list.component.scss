@@ -7,3 +7,53 @@
   background-color: #0d6efd1f;
   border-radius: 5px;
 }
+
+.pagination-wrap {
+  padding: 12px 4px;
+
+  .pagination {
+    flex-wrap: wrap;
+    gap: 4px;
+
+    .page-item {
+      .page-link {
+        background: var(--sz-bg-card, #fff);
+        color: var(--sz-text-primary, #1f2937);
+        border: 1px solid var(--sz-border-color, #d1d5db);
+        font-size: 0.85rem;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.15s;
+        min-width: 38px;
+        text-align: center;
+
+        &:hover:not(:disabled) {
+          background: rgba(9, 93, 166, 0.08);
+          border-color: var(--sz-accent, #095da6);
+          color: var(--sz-accent, #095da6);
+        }
+
+        &:disabled {
+          cursor: not-allowed;
+          opacity: 0.45;
+        }
+      }
+
+      &.active .page-link {
+        background: var(--sz-accent, #095da6);
+        border-color: var(--sz-accent, #095da6);
+        color: #fff;
+        font-weight: 700;
+      }
+
+      &.disabled .page-link {
+        background: var(--sz-bg-card, #fff);
+        color: var(--sz-text-secondary, #6b7280);
+        cursor: not-allowed;
+        opacity: 0.5;
+      }
+    }
+  }
+}
+

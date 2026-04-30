@@ -15,7 +15,7 @@ export class LoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  phone = '';
+  username = '';
   password = '';
   showPassword = signal(false);
   errorMessage = signal('');
@@ -33,15 +33,15 @@ export class LoginComponent {
     if (this.isLocked()) return;
     this.errorMessage.set('');
 
-    if (!this.phone.trim() || !this.password.trim()) {
-      this.errorMessage.set('يرجى إدخال رقم الموبايل وكلمة المرور');
+    if (!this.username.trim() || !this.password.trim()) {
+      this.errorMessage.set('يرجى إدخال اسم المستخدم وكلمة المرور');
       return;
     }
 
     this.isLoading.set(true);
 
     setTimeout(() => {
-      const success = this.authService.login(this.phone, this.password);
+      const success = this.authService.login(this.username, this.password);
       this.isLoading.set(false);
 
       if (success) {
@@ -54,7 +54,7 @@ export class LoginComponent {
         if (attempts >= 5) {
           this.lockAccount();
         } else {
-          this.errorMessage.set(`رقم الموبايل أو كلمة المرور غير صحيحة. (${attempts}/5 محاولات)`);
+          this.errorMessage.set(`اسم المستخدم أو كلمة المرور غير صحيحة. (${attempts}/5 محاولات)`);
         }
         this.password = '';
       }

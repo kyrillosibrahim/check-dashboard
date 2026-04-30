@@ -116,17 +116,6 @@
   }
 }
 
-/* Remove green focus from Quill editor elements */
-:host ::ng-deep .ql-toolbar,
-:host ::ng-deep .ql-container,
-:host ::ng-deep .ql-editor {
-  &:focus, &:focus-within {
-    border-color: var(--sz-border-color) !important;
-    box-shadow: none !important;
-    outline: none !important;
-  }
-}
-
 .form-label {
   font-size: 0.8rem;
   font-weight: 600;

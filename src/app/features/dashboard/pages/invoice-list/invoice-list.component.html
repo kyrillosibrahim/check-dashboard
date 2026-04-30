@@ -174,9 +174,11 @@
 
               <!-- Actions Column -->
               <td class="actions-col">
-                <button class="action-btn delete-btn" (click)="onDelete(order, $event)" title="حذف الفاتورة">
-                  <i class="bi bi-trash-fill"></i>
-                </button>
+                @if (authService.isAdmin()) {
+                  <button class="action-btn delete-btn" (click)="onDelete(order, $event)" title="حذف الفاتورة">
+                    <i class="bi bi-trash-fill"></i>
+                  </button>
+                }
               </td>
             </tr>
           }

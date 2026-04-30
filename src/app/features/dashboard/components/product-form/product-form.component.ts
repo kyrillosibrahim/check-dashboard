@@ -31,6 +31,12 @@ export class ProductFormComponent implements OnInit, OnChanges {
   @Input() hideSliderImages = false;
   /** Show the minimum-quantity input next to the wholesale price. */
   @Input() showMinWholesaleQuantity = false;
+  /** Hide the SEO accordion (used for wholesale-offer modal). */
+  @Input() hideSeo = false;
+  /** Hide the FAQ accordion (used for wholesale-offer modal). */
+  @Input() hideFaq = false;
+  /** Show the "offer bundle" accordion with offerPiecesCount + offerPrice (wholesale-only). */
+  @Input() showOfferBundle = false;
   @Output() save = new EventEmitter<IProduct>();
   @Output() cancel = new EventEmitter<void>();
 
@@ -48,6 +54,7 @@ export class ProductFormComponent implements OnInit, OnChanges {
     pricing: false,
     images: false,
     offers: false,
+    offerBundle: false,
     faq: false,
     seo: false,
     details: false
@@ -111,6 +118,8 @@ export class ProductFormComponent implements OnInit, OnChanges {
       descriptionHtmlAr: [this.product?.descriptionHtmlAr || this.product?.descriptionAr || ''],
       wholesalePrice: [this.product?.wholesalePrice || 0, [Validators.required, Validators.min(0)]],
       minWholesaleQuantity: [this.product?.minWholesaleQuantity || 0, [Validators.min(0)]],
+      offerPiecesCount: [this.product?.offerPiecesCount || 0, [Validators.min(0)]],
+      offerPrice: [this.product?.offerPrice || 0, [Validators.min(0)]],
       originalPrice: [this.product?.originalPrice || this.product?.price || 0, [Validators.required, Validators.min(0.01)]],
       discountedPrice: [this.product?.discountedPrice || 0, [Validators.required, Validators.min(0)]],
       category: [this.product?.category || '', detailsValidators],
@@ -232,6 +241,8 @@ export class ProductFormComponent implements OnInit, OnChanges {
       originalPrice,
       discountedPrice,
       minWholesaleQuantity: +v.minWholesaleQuantity || 0,
+      offerPiecesCount: +v.offerPiecesCount || 0,
+      offerPrice: +v.offerPrice || 0,
       merchantProfitPercent,
       productForm: this.product?.productForm,
       faq: this.faqs.filter(f => f.q || f.qAr),

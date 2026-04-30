@@ -46,6 +46,11 @@ export class SiteSettingsComponent implements OnInit {
   naturalProducts: { video: string; link: string }[] = [];
   uploadingVideoIndex: number | null = null;
 
+  // Per-row state for the natural-products product picker
+  naturalProductSelected: (IProduct | null)[] = [];
+  naturalSearch: string[] = [];
+  naturalDropdownIndex: number | null = null;
+
   // All products, brands & categories for selection
   allProducts: IProduct[] = [];
   allBrands: IBrand[] = [];
@@ -113,10 +118,26 @@ export class SiteSettingsComponent implements OnInit {
           item => typeof item === 'object' ? item.id : item
         );
         this.selectedProducts = products.filter(p => bestIds.includes(p.id));
+        this.hydrateNaturalSelection();
         this.checkLoaded();
       },
       error: () => this.checkLoaded()
     });
+  }
+
+  /** Resolve `link` strings (e.g. "/product/prod-abc") back to product objects for display */
+  private hydrateNaturalSelection(): void {
+    this.naturalProductSelected = this.naturalProducts.map(item => {
+      const id = this.extractProductId(item.link);
+      return id ? this.allProducts.find(p => p.id === id) || null : null;
+    });
+    this.naturalSearch = this.naturalProducts.map(() => '');
+  }
+
+  private extractProductId(link: string): string | null {
+    if (!link) return null;
+    const match = link.match(/\/product\/([^/?#]+)/);
+    return match ? decodeURIComponent(match[1]) : null;
   }
 
   private loadBrands(): void {
@@ -160,12 +181,57 @@ export class SiteSettingsComponent implements OnInit {
   // --- Natural Products (videos with links) ---
   addNaturalProduct(): void {
     this.naturalProducts = [...this.naturalProducts, { video: '', link: '' }];
+    this.naturalProductSelected = [...this.naturalProductSelected, null];
+    this.naturalSearch = [...this.naturalSearch, ''];
     this.cdr.markForCheck();
   }
 
   removeNaturalProduct(index: number): void {
     this.naturalProducts = this.naturalProducts.filter((_, i) => i !== index);
+    this.naturalProductSelected = this.naturalProductSelected.filter((_, i) => i !== index);
+    this.naturalSearch = this.naturalSearch.filter((_, i) => i !== index);
+    if (this.naturalDropdownIndex === index) this.naturalDropdownIndex = null;
     this.cdr.markForCheck();
+  }
+
+  filteredNaturalProducts(index: number): IProduct[] {
+    const term = (this.naturalSearch[index] || '').trim().toLowerCase();
+    const list = term
+      ? this.allProducts.filter(p =>
+          (p.title?.toLowerCase().includes(term)) ||
+          (p.titleAr?.toLowerCase().includes(term))
+        )
+      : this.allProducts;
+    return list.slice(0, 30);
+  }
+
+  selectNaturalProduct(index: number, product: IProduct): void {
+    this.naturalProductSelected[index] = product;
+    this.naturalProducts[index] = {
+      ...this.naturalProducts[index],
+      link: `/product/${product.id}`
+    };
+    this.naturalSearch[index] = '';
+    this.naturalDropdownIndex = null;
+    this.cdr.markForCheck();
+  }
+
+  clearNaturalProduct(index: number): void {
+    this.naturalProductSelected[index] = null;
+    this.naturalProducts[index] = { ...this.naturalProducts[index], link: '' };
+    this.cdr.markForCheck();
+  }
+
+  openNaturalDropdown(index: number): void {
+    this.naturalDropdownIndex = index;
+    this.cdr.markForCheck();
+  }
+
+  onNaturalDropdownBlur(): void {
+    setTimeout(() => {
+      this.naturalDropdownIndex = null;
+      this.cdr.markForCheck();
+    }, 200);
   }
 
   onNaturalVideoSelected(event: Event, index: number): void {
