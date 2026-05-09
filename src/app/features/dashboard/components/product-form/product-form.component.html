@@ -321,6 +321,25 @@
   </div>
   }
 
+  <!-- ═══ Accordion: مقارنة المواقع ═══ -->
+  <div class="accordion-panel" [class.open]="panels['comparisons']">
+    <div class="accordion-header" (click)="togglePanel('comparisons')">
+      <span class="accordion-title">
+        <i class="bi bi-bar-chart-line"></i>
+        مقارنة الأسعار مع مواقع أخرى
+      </span>
+      <i class="bi accordion-chevron" [class.bi-chevron-down]="!panels['comparisons']" [class.bi-chevron-up]="panels['comparisons']"></i>
+    </div>
+
+    @if (panels['comparisons']) {
+      <div class="accordion-body">
+        <app-comparison-sites-editor
+          [sites]="comparisonSites"
+          (sitesChange)="comparisonSites = $event" />
+      </div>
+    }
+  </div>
+
   <!-- ═══ Accordion: SEO ═══ -->
   @if (!hideSeo) {
   <div class="accordion-panel" [class.open]="panels['seo']">

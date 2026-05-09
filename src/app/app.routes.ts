@@ -106,6 +106,13 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'external-websites',
+    loadComponent: () => import('./features/dashboard/pages/external-websites-manage/external-websites-manage.component')
+      .then(c => c.ExternalWebsitesManageComponent),
+    title: 'KaroKan - إدارة المواقع الخارجية',
+    canActivate: [authGuard]
+  },
+  {
     path: 'price-compare',
     loadComponent: () => import('./features/dashboard/pages/price-compare/price-compare.component')
       .then(c => c.PriceCompareComponent),

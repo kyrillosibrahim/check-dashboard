@@ -10,10 +10,12 @@ import { PriceCalculatorComponent } from '../price-calculator/price-calculator.c
 import { OffersEditorComponent, IOffer } from '../offers-editor/offers-editor.component';
 import { RichTextEditorComponent } from '../rich-text-editor/rich-text-editor.component';
 import { FaqEditorComponent, IFaqItem } from '../faq-editor/faq-editor.component';
+import { ComparisonSitesEditorComponent } from '../comparison-sites-editor/comparison-sites-editor.component';
+import { IComparisonSite } from '../../../../core/models/product.model';
 
 @Component({
   selector: 'app-product-form',
-  imports: [ReactiveFormsModule, ImageUploaderComponent, PriceCalculatorComponent, OffersEditorComponent, RichTextEditorComponent, FaqEditorComponent],
+  imports: [ReactiveFormsModule, ImageUploaderComponent, PriceCalculatorComponent, OffersEditorComponent, RichTextEditorComponent, FaqEditorComponent, ComparisonSitesEditorComponent],
   templateUrl: './product-form.component.html',
   styleUrl: './product-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -58,7 +60,8 @@ export class ProductFormComponent implements OnInit, OnChanges {
     offerBundle: false,
     faq: false,
     seo: false,
-    details: false
+    details: false,
+    comparisons: false
   };
 
   /** Available variant option types shown in the dropdown */
@@ -102,6 +105,7 @@ export class ProductFormComponent implements OnInit, OnChanges {
   realImages: string[] = [];
   offers: IOffer[] = [];
   faqs: IFaqItem[] = [];
+  comparisonSites: IComparisonSite[] = [];
 
   /** Subcategories of the currently selected category */
   filteredSubcategories: ISubcategory[] = [];
@@ -159,6 +163,7 @@ export class ProductFormComponent implements OnInit, OnChanges {
       this.realImages = [...(this.product.naturalImages || [])];
       this.offers = [...(this.product.offers || [])];
       this.faqs = (this.product.faq || []).map(f => ({ ...f }));
+      this.comparisonSites = (this.product.comparisonSites || []).map(s => ({ ...s }));
 
       // Hydrate variants
       if (this.product.variants?.length) {
@@ -325,6 +330,9 @@ export class ProductFormComponent implements OnInit, OnChanges {
       productForm: this.product?.productForm,
       faq: this.faqs.filter(f => f.q || f.qAr),
       offers: this.offers.filter(o => o.text || o.textAr || o.image),
+      comparisonSites: this.comparisonSites.filter(s => s.websiteName && s.price > 0).length
+        ? this.comparisonSites.filter(s => s.websiteName && s.price > 0)
+        : undefined,
       metaTitle: v.metaTitle || undefined,
       metaDescription: v.metaDescription || undefined,
       seoKeywords: v.seoKeywords ? v.seoKeywords.split(',').map((k: string) => k.trim()).filter((k: string) => k) : undefined,

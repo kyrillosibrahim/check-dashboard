@@ -1,0 +1,76 @@
+th {
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--sz-text-secondary);
+  white-space: nowrap;
+}
+
+td {
+  font-size: 0.875rem;
+}
+
+.drop-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  min-height: 100px;
+  border: 2px dashed var(--sz-border-color, #d1d5db);
+  border-radius: 8px;
+  background: var(--sz-bg-card, #fff);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  padding: 12px;
+  text-align: center;
+  user-select: none;
+
+  &:hover, &.drag-over {
+    border-color: var(--sz-accent, #095da6);
+    background: rgba(9, 93, 166, 0.05);
+  }
+
+  &.has-preview {
+    padding: 6px;
+    min-height: unset;
+  }
+
+  .drop-icon { font-size: 1.8rem; color: var(--sz-accent); opacity: 0.7; }
+  .drop-hint { font-size: 0.8rem; color: var(--sz-text-primary); }
+  .drop-preview { max-width: 90px; max-height: 90px; object-fit: contain; }
+}
+
+.site-thumb {
+  width: 60px;
+  height: 40px;
+  object-fit: contain;
+  background: #fff;
+  padding: 4px;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--sz-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 0;
+
+  &.edit-btn:hover { background: rgba(59,130,246,0.15); color: #3b82f6; }
+  &.delete-btn:hover { background: rgba(239,68,68,0.15); color: #ef4444; }
+}
+
+.pstyle {
+  border: 1px solid #00000030;
+  background-color: #0d6efd1f;
+  border-radius: 5px;
+}

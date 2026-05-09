@@ -1,0 +1,69 @@
+<!-- Toggle -->
+<div class="cs-toggle">
+  <label class="toggle-switch" (click)="onToggle()">
+    <span class="toggle-track" [class.active]="enabled">
+      <span class="toggle-thumb"></span>
+    </span>
+  </label>
+  <span class="toggle-label">تفعيل مقارنة الأسعار مع مواقع أخرى؟</span>
+</div>
+
+@if (availableWebsites.length === 0 && enabled) {
+  <div class="alert alert-warning py-2 mt-2">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    لا توجد مواقع خارجية. أضف مواقع أولاً من صفحة
+    <a href="/external-websites" target="_blank">إدارة المواقع الخارجية</a>.
+  </div>
+}
+
+@if (enabled) {
+  @for (site of sites; track $index; let i = $index) {
+    <div class="cs-item">
+      <div class="cs-item-header">
+        <span class="cs-item-num">موقع {{ i + 1 }}</span>
+        <button type="button" class="btn-remove" (click)="removeSite(i)" title="حذف">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="cs-fields">
+        <!-- Website selector -->
+        <div class="cs-field">
+          <label class="form-label">الموقع</label>
+          <div class="d-flex align-items-center gap-2">
+            @if (site.websiteLogo) {
+              <img [src]="site.websiteLogo" [alt]="site.websiteName" class="cs-logo-preview">
+            }
+            <select class="form-select" [value]="site.websiteId ?? ''"
+                    (change)="onWebsiteSelect(i, ($any($event.target)).value)">
+              <option value="">اختر الموقع</option>
+              @for (w of availableWebsites; track w.id) {
+                <option [value]="w.id">{{ w.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Price -->
+        <div class="cs-field">
+          <label class="form-label">السعر (ج.م)</label>
+          <input type="number" class="form-control" [(ngModel)]="site.price"
+                 [name]="'cs-price-' + i" min="0" (ngModelChange)="onFieldChange()"
+                 placeholder="0.00">
+        </div>
+
+        <!-- Link -->
+        <div class="cs-field cs-field--full">
+          <label class="form-label">رابط المنتج على الموقع</label>
+          <input type="url" class="form-control" [(ngModel)]="site.link"
+                 [name]="'cs-link-' + i" dir="ltr" (ngModelChange)="onFieldChange()"
+                 placeholder="https://...">
+        </div>
+      </div>
+    </div>
+  }
+
+  <button type="button" class="btn-add-site" (click)="addSite()">
+    <i class="bi bi-plus-circle me-2"></i>إضافة موقع جديد
+  </button>
+}

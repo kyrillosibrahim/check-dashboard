@@ -1,0 +1,128 @@
+.cs-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.toggle-switch {
+  cursor: pointer;
+  display: inline-block;
+}
+
+.toggle-track {
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--sz-border-color, #d1d5db);
+  position: relative;
+  transition: background 0.2s;
+
+  &.active {
+    background: var(--sz-accent, #095da6);
+  }
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+
+  .toggle-track.active & {
+    transform: translateX(20px);
+  }
+}
+
+.toggle-label {
+  font-size: 0.9rem;
+  color: var(--sz-text-primary);
+}
+
+.cs-item {
+  border: 1px solid var(--sz-border-color, #d1d5db);
+  border-radius: 10px;
+  background: var(--sz-bg-card, #fff);
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.cs-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.cs-item-num {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--sz-accent, #095da6);
+}
+
+.btn-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 6px;
+  background: transparent;
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 0.75rem;
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.12);
+  }
+}
+
+.cs-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.cs-field {
+  &--full {
+    grid-column: 1 / -1;
+  }
+}
+
+.cs-logo-preview {
+  width: 50px;
+  height: 32px;
+  object-fit: contain;
+  border: 1px solid var(--sz-border-color);
+  border-radius: 4px;
+  background: #fff;
+  padding: 2px;
+  flex-shrink: 0;
+}
+
+.btn-add-site {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1.5px dashed var(--sz-accent, #095da6);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--sz-accent, #095da6);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-top: 0.25rem;
+
+  &:hover {
+    background: rgba(9, 93, 166, 0.07);
+  }
+}
