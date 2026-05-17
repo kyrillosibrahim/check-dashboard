@@ -63,6 +63,14 @@ export class BannerManageComponent implements OnInit {
 
   private async processBannerFile(file: File): Promise<void> {
     try {
+      const animated = file.type === 'image/gif' || await this.isAnimatedWebp(file);
+      if (animated) {
+        this.imagePreview = URL.createObjectURL(file);
+        this.compressionInfo = `${Math.round(file.size / 1024)} KB (متحرك - بدون ضغط)`;
+        this.selectedFile = file;
+        this.cdr.markForCheck();
+        return;
+      }
       const result = await this.compressionService.compressImage(file, 1200, 600);
       this.imagePreview = result.dataUrl;
       this.compressionInfo = `${result.originalKB} KB → ${result.compressedKB} KB`;
@@ -70,8 +78,15 @@ export class BannerManageComponent implements OnInit {
       this.selectedFile = new File([blob], 'banner.webp', { type: 'image/webp' });
       this.cdr.markForCheck();
     } catch {
-      Swal.fire('خطأ', 'فشل ضغط الصورة', 'error');
+      Swal.fire('خطأ', 'فشل معالجة الصورة', 'error');
     }
+  }
+
+  private async isAnimatedWebp(file: File): Promise<boolean> {
+    if (file.type !== 'image/webp') return false;
+    const buffer = await file.slice(0, 100).arrayBuffer();
+    const text = String.fromCharCode(...new Uint8Array(buffer));
+    return text.includes('ANIM');
   }
 
   onSave(): void {
