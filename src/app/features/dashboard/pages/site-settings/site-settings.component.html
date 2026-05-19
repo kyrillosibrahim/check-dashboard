@@ -32,24 +32,104 @@
       <h6>لوجو الموقع</h6>
     </div>
     <div class="section-body">
-      <div class="logo-upload-area" (pasteImage)="onLogoPasted($event)">
-        @if (logoPreview) {
-          <div class="logo-preview-box">
-            <img [src]="logoPreview" alt="Logo Preview">
+      <div class="row g-4">
+
+        <!-- لوجو احتياطى (fallback) -->
+        <div class="col-12 col-md-4">
+          <p class="fw-semibold text-center mb-2 small text-secondary">لوجو احتياطى (fallback)</p>
+          <div class="logo-upload-area" (pasteImage)="onLogoPasted($event)">
+            @if (logoPreview) {
+              <div class="logo-preview-box">
+                <img [src]="logoPreview" alt="Logo">
+              </div>
+            } @else {
+              <div class="logo-placeholder">
+                <i class="bi bi-cloud-arrow-up"></i>
+                <span>لم يتم رفع لوجو بعد</span>
+              </div>
+            }
+            <div class="mt-3">
+              <label class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-upload me-1"></i>رفع
+                <input type="file" accept="image/*" hidden (change)="onLogoSelected($event)">
+              </label>
+              <small class="text-secondary ms-2">(Ctrl+V)</small>
+            </div>
           </div>
-        } @else {
-          <div class="logo-placeholder">
-            <i class="bi bi-cloud-arrow-up"></i>
-            <span>لم يتم رفع لوجو بعد</span>
-          </div>
-        }
-        <div class="mt-3">
-          <label class="btn btn-outline-primary btn-sm">
-            <i class="bi bi-upload me-1"></i>رفع لوجو جديد
-            <input type="file" accept="image/*" hidden (change)="onLogoSelected($event)">
-          </label>
-          <small class="text-secondary ms-2">(الصق Ctrl+V)</small>
         </div>
+
+        <!-- لوجو عربى -->
+        <div class="col-12 col-md-4">
+          <p class="fw-semibold text-center mb-2 small">لوجو عربى 🇸🇦</p>
+          <div class="logo-upload-area" (pasteImage)="onLogoArPasted($event)">
+            @if (logoArPreview) {
+              <div class="logo-preview-box">
+                <img [src]="logoArPreview" alt="Logo AR">
+              </div>
+            } @else {
+              <div class="logo-placeholder">
+                <i class="bi bi-cloud-arrow-up"></i>
+                <span>لم يتم رفع لوجو بعد</span>
+              </div>
+            }
+            <div class="mt-3">
+              <label class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-upload me-1"></i>رفع
+                <input type="file" accept="image/*" hidden (change)="onLogoArSelected($event)">
+              </label>
+              <small class="text-secondary ms-2">(Ctrl+V)</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- لوجو إنجليزى -->
+        <div class="col-12 col-md-4">
+          <p class="fw-semibold text-center mb-2 small">لوجو إنجليزى 🇬🇧</p>
+          <div class="logo-upload-area" (pasteImage)="onLogoEnPasted($event)">
+            @if (logoEnPreview) {
+              <div class="logo-preview-box">
+                <img [src]="logoEnPreview" alt="Logo EN">
+              </div>
+            } @else {
+              <div class="logo-placeholder">
+                <i class="bi bi-cloud-arrow-up"></i>
+                <span>لم يتم رفع لوجو بعد</span>
+              </div>
+            }
+            <div class="mt-3">
+              <label class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-upload me-1"></i>رفع
+                <input type="file" accept="image/*" hidden (change)="onLogoEnSelected($event)">
+              </label>
+              <small class="text-secondary ms-2">(Ctrl+V)</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- أيقونة (موبايل سايدبار) -->
+        <div class="col-12 col-md-4">
+          <p class="fw-semibold text-center mb-2 small">أيقونة الموبايل 📱</p>
+          <div class="logo-upload-area" (pasteImage)="onLogoIconPasted($event)">
+            @if (logoIconPreview) {
+              <div class="logo-preview-box">
+                <img [src]="logoIconPreview" alt="Logo Icon">
+              </div>
+            } @else {
+              <div class="logo-placeholder">
+                <i class="bi bi-cloud-arrow-up"></i>
+                <span>لم يتم رفع أيقونة بعد</span>
+              </div>
+            }
+            <div class="mt-3">
+              <label class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-upload me-1"></i>رفع
+                <input type="file" accept="image/*" hidden (change)="onLogoIconSelected($event)">
+              </label>
+              <small class="text-secondary ms-2">(Ctrl+V)</small>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>

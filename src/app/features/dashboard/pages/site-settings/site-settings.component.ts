@@ -41,6 +41,12 @@ export class SiteSettingsComponent implements OnInit {
   // Logo
   logoFile: File | null = null;
   logoPreview: string | null = null;
+  logoArFile: File | null = null;
+  logoArPreview: string | null = null;
+  logoEnFile: File | null = null;
+  logoEnPreview: string | null = null;
+  logoIconFile: File | null = null;
+  logoIconPreview: string | null = null;
 
   // Natural products (videos with links)
   naturalProducts: { video: string; link: string }[] = [];
@@ -86,6 +92,9 @@ export class SiteSettingsComponent implements OnInit {
         if (s.logo) {
           this.logoPreview = s.logo.startsWith('http') ? s.logo : `${API_CONFIG.uploadsUrl}/${s.logo}`;
         }
+        if (s.logoAr)   this.logoArPreview   = s.logoAr.startsWith('http')   ? s.logoAr   : `${API_CONFIG.uploadsUrl}/${s.logoAr}`;
+        if (s.logoEn)   this.logoEnPreview   = s.logoEn.startsWith('http')   ? s.logoEn   : `${API_CONFIG.uploadsUrl}/${s.logoEn}`;
+        if (s.logoIcon) this.logoIconPreview = s.logoIcon.startsWith('http') ? s.logoIcon : `${API_CONFIG.uploadsUrl}/${s.logoIcon}`;
         this.naturalProducts = (s.naturalProducts || []).map(i => ({ video: i.video || '', link: i.link || '' }));
         this.loadCategories();
         this.loadProducts();
@@ -161,18 +170,36 @@ export class SiteSettingsComponent implements OnInit {
   // --- Logo ---
   onLogoSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) this.processLogoFile(input.files[0]);
+    if (input.files?.[0]) this.setLogoFile('main', input.files[0]);
   }
+  onLogoPasted(file: File): void { this.setLogoFile('main', file); }
 
-  onLogoPasted(file: File): void {
-    this.processLogoFile(file);
+  onLogoArSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files?.[0]) this.setLogoFile('ar', input.files[0]);
   }
+  onLogoArPasted(file: File): void { this.setLogoFile('ar', file); }
 
-  private processLogoFile(file: File): void {
-    this.logoFile = file;
+  onLogoEnSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files?.[0]) this.setLogoFile('en', input.files[0]);
+  }
+  onLogoEnPasted(file: File): void { this.setLogoFile('en', file); }
+
+  onLogoIconSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files?.[0]) this.setLogoFile('icon', input.files[0]);
+  }
+  onLogoIconPasted(file: File): void { this.setLogoFile('icon', file); }
+
+  private setLogoFile(slot: 'main' | 'ar' | 'en' | 'icon', file: File): void {
     const reader = new FileReader();
     reader.onload = (e) => {
-      this.logoPreview = e.target?.result as string;
+      const url = e.target?.result as string;
+      if (slot === 'main')  { this.logoFile     = file; this.logoPreview     = url; }
+      if (slot === 'ar')    { this.logoArFile   = file; this.logoArPreview   = url; }
+      if (slot === 'en')    { this.logoEnFile   = file; this.logoEnPreview   = url; }
+      if (slot === 'icon')  { this.logoIconFile = file; this.logoIconPreview = url; }
       this.cdr.markForCheck();
     };
     reader.readAsDataURL(file);
@@ -335,9 +362,10 @@ export class SiteSettingsComponent implements OnInit {
     this.isSaving = true;
     const fd = new FormData();
 
-    if (this.logoFile) {
-      fd.append('logo', this.logoFile);
-    }
+    if (this.logoFile)     fd.append('logo',     this.logoFile);
+    if (this.logoArFile)   fd.append('logoAr',   this.logoArFile);
+    if (this.logoEnFile)   fd.append('logoEn',   this.logoEnFile);
+    if (this.logoIconFile) fd.append('logoIcon', this.logoIconFile);
 
     fd.append('colors', JSON.stringify(this.settings.colors));
     fd.append('social', JSON.stringify(this.settings.social));
@@ -348,6 +376,9 @@ export class SiteSettingsComponent implements OnInit {
     this.settingsService.updateSettings(fd).subscribe({
       next: () => {
         this.logoFile = null;
+        this.logoArFile = null;
+        this.logoEnFile = null;
+        this.logoIconFile = null;
         this.isSaving = false;
         Swal.fire({ title: 'تم حفظ الإعدادات بنجاح!', icon: 'success', timer: 1500, showConfirmButton: false });
         this.loadAll();

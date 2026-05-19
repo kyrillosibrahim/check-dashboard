@@ -1,5 +1,8 @@
 export interface ISiteSettings {
   logo: string;
+  logoAr?: string;
+  logoEn?: string;
+  logoIcon?: string;
   colors: {
     primaryLight: string;
     primaryDark: string;
