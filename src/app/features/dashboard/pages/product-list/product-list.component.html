@@ -111,6 +111,11 @@
     <div class="spinner-border text-primary" role="status"></div>
     <p class="mt-2 text-secondary">جاري تحميل المنتجات...</p>
   </div>
+} @else if (retryMessage) {
+  <div class="alert alert-warning d-flex align-items-center gap-2">
+    <div class="spinner-border spinner-border-sm text-warning" role="status"></div>
+    <span>{{ retryMessage }}</span>
+  </div>
 } @else if (error) {
   <div class="alert alert-danger">
     <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}

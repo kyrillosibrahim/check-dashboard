@@ -51,6 +51,11 @@ export class ProductListComponent implements OnInit {
 
   isLoading = true;
   error = '';
+  retryMessage = '';
+  private retryTimer: ReturnType<typeof setTimeout> | null = null;
+  private retryCount = 0;
+  private readonly MAX_RETRIES = 3;
+  private readonly RETRY_DELAY = 15;
 
   ngOnInit(): void {
     this.categoryService.getAll().subscribe(c => {
@@ -77,8 +82,10 @@ export class ProductListComponent implements OnInit {
   }
 
   loadProducts(): void {
+    this.clearRetryTimer();
     this.isLoading = true;
     this.error = '';
+    this.retryMessage = '';
     this.productService
       .getPaginated({
         page: this.currentPage,
@@ -90,6 +97,7 @@ export class ProductListComponent implements OnInit {
       })
       .subscribe({
         next: ({ products, total }) => {
+          this.retryCount = 0;
           this.products = products;
           this.totalProducts = total;
           this.totalPages = Math.max(1, Math.ceil(total / this.pageSize));
@@ -103,11 +111,45 @@ export class ProductListComponent implements OnInit {
           this.cdr.markForCheck();
         },
         error: () => {
-          this.error = 'فشل تحميل المنتجات. تأكد أن السيرفر شغال.';
-          this.isLoading = false;
-          this.cdr.markForCheck();
+          if (this.retryCount < this.MAX_RETRIES) {
+            this.startRetryCountdown();
+          } else {
+            this.retryCount = 0;
+            this.error = 'فشل تحميل المنتجات. تأكد أن السيرفر شغال.';
+            this.isLoading = false;
+            this.cdr.markForCheck();
+          }
         }
       });
+  }
+
+  private startRetryCountdown(): void {
+    this.retryCount++;
+    this.isLoading = false;
+    let seconds = this.RETRY_DELAY;
+    this.retryMessage = `السيرفر بيصحى... إعادة المحاولة خلال ${seconds} ثانية (${this.retryCount}/${this.MAX_RETRIES})`;
+    this.cdr.markForCheck();
+
+    const tick = setInterval(() => {
+      seconds--;
+      if (seconds <= 0) {
+        clearInterval(tick);
+        this.retryMessage = '';
+        this.loadProducts();
+      } else {
+        this.retryMessage = `السيرفر بيصحى... إعادة المحاولة خلال ${seconds} ثانية (${this.retryCount}/${this.MAX_RETRIES})`;
+      }
+      this.cdr.markForCheck();
+    }, 1000);
+
+    this.retryTimer = setTimeout(() => clearInterval(tick), (this.RETRY_DELAY + 2) * 1000);
+  }
+
+  private clearRetryTimer(): void {
+    if (this.retryTimer) {
+      clearTimeout(this.retryTimer);
+      this.retryTimer = null;
+    }
   }
 
   search(): void {
