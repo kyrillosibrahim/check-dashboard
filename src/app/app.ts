@@ -4,6 +4,7 @@ import { ThemeService } from './core/services/theme.service';
 import { AuthService } from './core/services/auth.service';
 import { GuardianAngelService } from './core/services/guardian-angel.service';
 import { ActivityTrackerService } from './core/services/activity-tracker.service';
+import { KeepAliveService } from './core/services/keep-alive.service';
 
 @Component({
   selector: 'app-root',
@@ -17,10 +18,12 @@ export class App {
   authService = inject(AuthService);
   guardianAngel = inject(GuardianAngelService);
   private activityTracker = inject(ActivityTrackerService);
+  private keepAlive = inject(KeepAliveService);
   sidebarOpen = false;
 
   constructor() {
     this.activityTracker.start();
+    this.keepAlive.start();
   }
 
   toggleTheme(): void {
