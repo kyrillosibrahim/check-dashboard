@@ -23,6 +23,7 @@ export class ProductService {
     category?: string;
     brand?: string;
     merchant?: string;
+    name?: string;
   }): Observable<PaginatedProducts> {
     let httpParams = new HttpParams()
       .set('page', String(params.page))
@@ -30,6 +31,7 @@ export class ProductService {
     if (params.category) httpParams = httpParams.set('category', params.category);
     if (params.brand)    httpParams = httpParams.set('brand', params.brand);
     if (params.merchant) httpParams = httpParams.set('merchant', params.merchant);
+    if (params.name)     httpParams = httpParams.set('search', params.name);
     return this.http.get<PaginatedProducts>(API_CONFIG.productsUrl, { params: httpParams });
   }
 
@@ -121,6 +123,7 @@ export class ProductService {
       fd.append('variantOptionType', product.variantOptionType || '');
       fd.append('variantOptionTypeAr', product.variantOptionTypeAr || '');
       fd.append('baseVariantNameAr', product.baseVariantNameAr || '');
+      if (product.baseColorHex) fd.append('baseColorHex', product.baseColorHex);
       if (product.variants?.length) {
         const meta = product.variants.map(v => ({
           id: v.id,
@@ -129,7 +132,8 @@ export class ProductService {
           wholesalePrice: v.wholesalePrice,
           originalPrice: v.originalPrice,
           discountedPrice: v.discountedPrice,
-          stock: v.stock
+          stock: v.stock,
+          colorHex: v.colorHex
         }));
         fd.append('variants', JSON.stringify(meta));
         for (let i = 0; i < product.variants.length; i++) {

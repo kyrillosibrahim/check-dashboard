@@ -65,9 +65,9 @@
               </td>
               <td class="text-start pe-3">
                 <div class="d-flex gap-2 justify-content-start">
-                  <button class="action-btn edit-btn" (click)="edit.emit(product)" title="تعديل">
+                  <a class="action-btn edit-btn" [routerLink]="getEditUrl(product)" title="تعديل">
                     <i class="bi bi-pencil-fill"></i>
-                  </button>
+                  </a>
                   <button class="action-btn delete-btn" (click)="delete.emit(product)" title="حذف">
                     <i class="bi bi-trash-fill"></i>
                   </button>

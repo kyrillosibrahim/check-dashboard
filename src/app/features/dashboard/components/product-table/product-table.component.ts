@@ -1,11 +1,12 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { IProduct } from '../../../../core/models/product.model';
 import { EgpCurrencyPipe } from '../../../../shared/pipes/egp-currency.pipe';
 import { API_CONFIG } from '../../../../core/config/api.config';
 
 @Component({
   selector: 'app-product-table',
-  imports: [EgpCurrencyPipe],
+  imports: [EgpCurrencyPipe, RouterLink],
   templateUrl: './product-table.component.html',
   styleUrl: './product-table.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -25,6 +26,16 @@ export class ProductTableComponent {
     const w = p.wholesalePrice || 0;
     const d = p.discountedPrice || 0;
     return w > 0 ? Math.round(((d - w) / w) * 100) : 0;
+  }
+
+  getEditUrl(product: IProduct): string[] {
+    const category = product.categoryFolder ||
+      product.category.toLowerCase().trim()
+        .replace(/[^\w\s\u0600-\u06FF-]/g, '')
+        .replace(/[\s_]+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
+    return ['/edit', category, product.slug!];
   }
 
   getImageUrl(product: IProduct): string {

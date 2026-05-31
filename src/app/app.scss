@@ -58,6 +58,12 @@ $header-height: 56px;
       height: 50px;
       object-fit: contain;
     }
+
+    .brand-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--sz-accent);
+    }
   }
 }
 

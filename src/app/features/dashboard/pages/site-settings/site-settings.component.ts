@@ -52,9 +52,12 @@ export class SiteSettingsComponent implements OnInit {
   naturalProducts: { video: string; link: string }[] = [];
   uploadingVideoIndex: number | null = null;
 
-  // Per-row state for the natural-products product picker
+  // Per-row state for the natural-products picker
   naturalProductSelected: (IProduct | null)[] = [];
+  naturalBrandSelected: (IBrand | null)[] = [];
+  naturalLinkType: ('product' | 'brand')[] = [];
   naturalSearch: string[] = [];
+  naturalBrandSearch: string[] = [];
   naturalDropdownIndex: number | null = null;
 
   // All products, brands & categories for selection
@@ -134,13 +137,23 @@ export class SiteSettingsComponent implements OnInit {
     });
   }
 
-  /** Resolve `link` strings (e.g. "/product/prod-abc") back to product objects for display */
+  /** Resolve link strings back to product/brand objects for display */
   private hydrateNaturalSelection(): void {
+    this.naturalLinkType = this.naturalProducts.map(item =>
+      item.link?.includes('/products?brand=') ? 'brand' : 'product'
+    );
     this.naturalProductSelected = this.naturalProducts.map(item => {
+      if (item.link?.includes('/products?brand=')) return null;
       const id = this.extractProductId(item.link);
       return id ? this.allProducts.find(p => p.id === id) || null : null;
     });
+    this.naturalBrandSelected = this.naturalProducts.map(item => {
+      if (!item.link?.includes('/products?brand=')) return null;
+      const name = new URLSearchParams(item.link.split('?')[1] || '').get('brand');
+      return name ? this.allBrands.find(b => b.name === name) || null : null;
+    });
     this.naturalSearch = this.naturalProducts.map(() => '');
+    this.naturalBrandSearch = this.naturalProducts.map(() => '');
   }
 
   private extractProductId(link: string): string | null {
@@ -154,6 +167,7 @@ export class SiteSettingsComponent implements OnInit {
       next: (brands) => {
         this.allBrands = brands;
         this.selectedBrands = brands.filter(b => this.settings.bestSellingBrands.includes(b.id));
+        this.hydrateNaturalSelection();
         this.checkLoaded();
       },
       error: () => this.checkLoaded()
@@ -209,14 +223,20 @@ export class SiteSettingsComponent implements OnInit {
   addNaturalProduct(): void {
     this.naturalProducts = [...this.naturalProducts, { video: '', link: '' }];
     this.naturalProductSelected = [...this.naturalProductSelected, null];
+    this.naturalBrandSelected = [...this.naturalBrandSelected, null];
+    this.naturalLinkType = [...this.naturalLinkType, 'product'];
     this.naturalSearch = [...this.naturalSearch, ''];
+    this.naturalBrandSearch = [...this.naturalBrandSearch, ''];
     this.cdr.markForCheck();
   }
 
   removeNaturalProduct(index: number): void {
     this.naturalProducts = this.naturalProducts.filter((_, i) => i !== index);
     this.naturalProductSelected = this.naturalProductSelected.filter((_, i) => i !== index);
+    this.naturalBrandSelected = this.naturalBrandSelected.filter((_, i) => i !== index);
+    this.naturalLinkType = this.naturalLinkType.filter((_, i) => i !== index);
     this.naturalSearch = this.naturalSearch.filter((_, i) => i !== index);
+    this.naturalBrandSearch = this.naturalBrandSearch.filter((_, i) => i !== index);
     if (this.naturalDropdownIndex === index) this.naturalDropdownIndex = null;
     this.cdr.markForCheck();
   }
@@ -246,6 +266,40 @@ export class SiteSettingsComponent implements OnInit {
   clearNaturalProduct(index: number): void {
     this.naturalProductSelected[index] = null;
     this.naturalProducts[index] = { ...this.naturalProducts[index], link: '' };
+    this.cdr.markForCheck();
+  }
+
+  filteredNaturalBrands(index: number): IBrand[] {
+    const term = (this.naturalBrandSearch[index] || '').trim().toLowerCase();
+    const list = term
+      ? this.allBrands.filter(b => b.name?.toLowerCase().includes(term))
+      : this.allBrands;
+    return list.slice(0, 30);
+  }
+
+  selectNaturalBrand(index: number, brand: IBrand): void {
+    this.naturalBrandSelected[index] = brand;
+    this.naturalProducts[index] = { ...this.naturalProducts[index], link: `/products?brand=${brand.name}` };
+    this.naturalBrandSearch[index] = '';
+    this.naturalDropdownIndex = null;
+    this.cdr.markForCheck();
+  }
+
+  clearNaturalBrand(index: number): void {
+    this.naturalBrandSelected[index] = null;
+    this.naturalProducts[index] = { ...this.naturalProducts[index], link: '' };
+    this.cdr.markForCheck();
+  }
+
+  setNaturalLinkType(index: number, type: 'product' | 'brand'): void {
+    if (this.naturalLinkType[index] === type) return;
+    this.naturalLinkType[index] = type;
+    this.naturalProductSelected[index] = null;
+    this.naturalBrandSelected[index] = null;
+    this.naturalProducts[index] = { ...this.naturalProducts[index], link: '' };
+    this.naturalSearch[index] = '';
+    this.naturalBrandSearch[index] = '';
+    this.naturalDropdownIndex = null;
     this.cdr.markForCheck();
   }
 

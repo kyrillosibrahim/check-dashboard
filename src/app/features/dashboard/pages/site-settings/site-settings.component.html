@@ -383,47 +383,107 @@
           </div>
 
           <div class="natural-product-cell search-dropdown-wrap">
-            @if (naturalProductSelected[i]; as selected) {
-              <div class="natural-selected-product">
-                @if (getProductImage(selected)) {
-                  <img [src]="getProductImage(selected)" [alt]="selected.title" class="dropdown-thumb">
-                } @else {
-                  <div class="dropdown-thumb-placeholder"><i class="bi bi-box"></i></div>
-                }
-                <div class="dropdown-info">
-                  <span class="dropdown-title">{{ selected.titleAr || selected.title }}</span>
-                  <span class="dropdown-sub">{{ selected.price }} ج.م</span>
-                </div>
-                <button type="button" class="btn btn-sm btn-outline-secondary natural-clear-btn"
-                        (click)="clearNaturalProduct(i)" title="تغيير المنتج">
-                  <i class="bi bi-x-lg"></i>
-                </button>
-              </div>
-            } @else {
-              <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-search"></i></span>
-                <input type="text" class="form-control"
-                       [(ngModel)]="naturalSearch[i]" name="naturalSearch-{{i}}"
-                       placeholder="ابحث عن منتج لإضافته..."
-                       (focus)="openNaturalDropdown(i)"
-                       (blur)="onNaturalDropdownBlur()">
-              </div>
-              @if (naturalDropdownIndex === i && filteredNaturalProducts(i).length > 0) {
-                <div class="search-dropdown">
-                  @for (product of filteredNaturalProducts(i); track product.id) {
-                    <div class="dropdown-item-custom" (mousedown)="selectNaturalProduct(i, product)">
-                      @if (getProductImage(product)) {
-                        <img [src]="getProductImage(product)" [alt]="product.title" class="dropdown-thumb">
-                      } @else {
-                        <div class="dropdown-thumb-placeholder"><i class="bi bi-box"></i></div>
-                      }
-                      <div class="dropdown-info">
-                        <span class="dropdown-title">{{ product.titleAr || product.title }}</span>
-                        <span class="dropdown-sub">{{ product.price }} ج.م</span>
-                      </div>
-                    </div>
+            <!-- Toggle: product / brand -->
+            <div class="btn-group btn-group-sm mb-2 w-100">
+              <button type="button" class="btn"
+                      [class.btn-primary]="naturalLinkType[i] === 'product'"
+                      [class.btn-outline-primary]="naturalLinkType[i] !== 'product'"
+                      (click)="setNaturalLinkType(i, 'product')">
+                <i class="bi bi-box me-1"></i>منتج
+              </button>
+              <button type="button" class="btn"
+                      [class.btn-primary]="naturalLinkType[i] === 'brand'"
+                      [class.btn-outline-primary]="naturalLinkType[i] !== 'brand'"
+                      (click)="setNaturalLinkType(i, 'brand')">
+                <i class="bi bi-award me-1"></i>علامة تجارية
+              </button>
+            </div>
+
+            @if (naturalLinkType[i] === 'product') {
+              @if (naturalProductSelected[i]; as selected) {
+                <div class="natural-selected-product">
+                  @if (getProductImage(selected)) {
+                    <img [src]="getProductImage(selected)" [alt]="selected.title" class="dropdown-thumb">
+                  } @else {
+                    <div class="dropdown-thumb-placeholder"><i class="bi bi-box"></i></div>
                   }
+                  <div class="dropdown-info">
+                    <span class="dropdown-title">{{ selected.titleAr || selected.title }}</span>
+                    <span class="dropdown-sub">{{ selected.price }} ج.م</span>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-outline-secondary natural-clear-btn"
+                          (click)="clearNaturalProduct(i)" title="تغيير المنتج">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
                 </div>
+              } @else {
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-search"></i></span>
+                  <input type="text" class="form-control"
+                         [(ngModel)]="naturalSearch[i]" name="naturalSearch-{{i}}"
+                         placeholder="ابحث عن منتج لإضافته..."
+                         (focus)="openNaturalDropdown(i)"
+                         (blur)="onNaturalDropdownBlur()">
+                </div>
+                @if (naturalDropdownIndex === i && filteredNaturalProducts(i).length > 0) {
+                  <div class="search-dropdown">
+                    @for (product of filteredNaturalProducts(i); track product.id) {
+                      <div class="dropdown-item-custom" (mousedown)="selectNaturalProduct(i, product)">
+                        @if (getProductImage(product)) {
+                          <img [src]="getProductImage(product)" [alt]="product.title" class="dropdown-thumb">
+                        } @else {
+                          <div class="dropdown-thumb-placeholder"><i class="bi bi-box"></i></div>
+                        }
+                        <div class="dropdown-info">
+                          <span class="dropdown-title">{{ product.titleAr || product.title }}</span>
+                          <span class="dropdown-sub">{{ product.price }} ج.م</span>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
+              }
+            } @else {
+              @if (naturalBrandSelected[i]; as selectedBrand) {
+                <div class="natural-selected-product">
+                  @if (getBrandImage(selectedBrand)) {
+                    <img [src]="getBrandImage(selectedBrand)" [alt]="selectedBrand.name" class="dropdown-thumb">
+                  } @else {
+                    <div class="dropdown-thumb-placeholder"><i class="bi bi-award"></i></div>
+                  }
+                  <div class="dropdown-info">
+                    <span class="dropdown-title">{{ selectedBrand.name }}</span>
+                  </div>
+                  <button type="button" class="btn btn-sm btn-outline-secondary natural-clear-btn"
+                          (click)="clearNaturalBrand(i)" title="تغيير العلامة التجارية">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                </div>
+              } @else {
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-search"></i></span>
+                  <input type="text" class="form-control"
+                         [(ngModel)]="naturalBrandSearch[i]" name="naturalBrandSearch-{{i}}"
+                         placeholder="ابحث عن علامة تجارية..."
+                         (focus)="openNaturalDropdown(i)"
+                         (blur)="onNaturalDropdownBlur()">
+                </div>
+                @if (naturalDropdownIndex === i && filteredNaturalBrands(i).length > 0) {
+                  <div class="search-dropdown">
+                    @for (brand of filteredNaturalBrands(i); track brand.id) {
+                      <div class="dropdown-item-custom" (mousedown)="selectNaturalBrand(i, brand)">
+                        @if (getBrandImage(brand)) {
+                          <img [src]="getBrandImage(brand)" [alt]="brand.name" class="dropdown-thumb">
+                        } @else {
+                          <div class="dropdown-thumb-placeholder"><i class="bi bi-award"></i></div>
+                        }
+                        <div class="dropdown-info">
+                          <span class="dropdown-title">{{ brand.name }}</span>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                }
               }
             }
           </div>
