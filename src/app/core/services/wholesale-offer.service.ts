@@ -98,8 +98,13 @@ export class WholesaleOfferService {
         try {
           const response = await fetch(src);
           const blob = await response.blob();
-          const ext = src.split('.').pop() || 'webp';
-          const file = new File([blob], `img-${i + 1}.${ext}`, { type: blob.type });
+          const rawExt = src.split('.').pop()?.split('?')[0]?.toLowerCase() || '';
+          const validExts = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif'];
+          const ext = validExts.includes(rawExt) ? rawExt : 'jpg';
+          const mimeType = blob.type && blob.type.startsWith('image/')
+            ? blob.type
+            : `image/${ext === 'jpg' ? 'jpeg' : ext}`;
+          const file = new File([blob], `img-${i + 1}.${ext === 'jpeg' ? 'jpg' : ext}`, { type: mimeType });
           fd.append(fieldName, file);
         } catch {
           console.warn(`Failed to fetch image: ${src}`);

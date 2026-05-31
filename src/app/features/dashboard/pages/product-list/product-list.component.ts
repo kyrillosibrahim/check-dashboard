@@ -43,6 +43,7 @@ export class ProductListComponent implements OnInit {
   selectedCategory = '';
   selectedMerchant = '';
   selectedBrand = '';
+  searchName = '';
 
   currentPage = 1;
   totalProducts = 0;
@@ -70,6 +71,7 @@ export class ProductListComponent implements OnInit {
       this.selectedCategory = params['category'] || '';
       this.selectedMerchant = params['merchant'] || '';
       this.selectedBrand = params['brand'] || '';
+      this.searchName = params['name'] || '';
       this.loadProducts();
     });
   }
@@ -84,6 +86,7 @@ export class ProductListComponent implements OnInit {
         category: this.selectedCategory || undefined,
         brand: this.selectedBrand || undefined,
         merchant: this.selectedMerchant || undefined,
+        name: this.searchName || undefined,
       })
       .subscribe({
         next: ({ products, total }) => {
@@ -113,6 +116,7 @@ export class ProductListComponent implements OnInit {
       category: this.selectedCategory || null,
       merchant: this.selectedMerchant || null,
       brand: this.selectedBrand || null,
+      name: this.searchName || null,
     });
   }
 
@@ -120,7 +124,8 @@ export class ProductListComponent implements OnInit {
     this.selectedCategory = '';
     this.selectedMerchant = '';
     this.selectedBrand = '';
-    this.navigateTo({ page: null, category: null, merchant: null, brand: null });
+    this.searchName = '';
+    this.navigateTo({ page: null, category: null, merchant: null, brand: null, name: null });
   }
 
   goToPage(n: number): void {

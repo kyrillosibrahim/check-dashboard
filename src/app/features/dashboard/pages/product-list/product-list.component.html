@@ -43,6 +43,17 @@
     <span class="fw-semibold">فلترة المنتجات</span>
   </div>
 
+  <!-- Name Search -->
+  <div class="row g-3 mb-3">
+    <div class="col-12">
+      <label class="form-label small mb-1">البحث بالاسم</label>
+      <input type="text" class="form-control" [(ngModel)]="searchName"
+             placeholder="ابحث باسم المنتج..."
+             (keyup.enter)="search()"
+             style="background-color: var(--sz-bg-card); border-color: var(--sz-border-color); color: inherit;" />
+    </div>
+  </div>
+
   <div class="row g-3 align-items-end">
     <!-- Category Dropdown -->
     <div class="col-md-3">
@@ -85,7 +96,7 @@
       <button class="btn btn-primary flex-grow-1" (click)="search()">
         <i class="bi bi-search me-1"></i> بحث
       </button>
-      @if (selectedCategory || selectedMerchant || selectedBrand) {
+      @if (selectedCategory || selectedMerchant || selectedBrand || searchName) {
         <button class="btn btn-outline-secondary" (click)="resetFilters()" title="مسح الفلاتر">
           <i class="bi bi-x-lg"></i>
         </button>

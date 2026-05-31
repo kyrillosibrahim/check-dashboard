@@ -409,3 +409,34 @@ td {
   background-color: #0d6efd1f;
   border-radius: 5px;
 }
+
+// ─── Category row drag & drop ───
+tr[draggable="true"] {
+  cursor: grab;
+  transition: background-color 0.15s, opacity 0.15s, box-shadow 0.15s;
+
+  &:active { cursor: grabbing; }
+
+  &.cat-dragging {
+    opacity: 0.4;
+  }
+
+  &.cat-drag-over {
+    background-color: rgba(13, 110, 253, 0.12);
+    box-shadow: inset 0 3px 0 0 var(--sz-accent, #0d6efd);
+  }
+}
+
+.drag-handle {
+  display: inline-flex;
+  align-items: center;
+  color: var(--sz-text-secondary, #6c757d);
+  margin-inline-end: 6px;
+  cursor: grab;
+  opacity: 0.55;
+  transition: opacity 0.2s;
+
+  &:hover { opacity: 1; }
+
+  i { font-size: 1.1rem; }
+}

@@ -26,7 +26,7 @@ export class CustomerListComponent implements OnInit {
 
   // Edit modal
   editingCustomer: ICustomer | null = null;
-  editForm = { name: '', phone: '', email: '', role: '' };
+  editForm = { name: '', phone: '', role: '' };
 
   // Delete modal
   deletingCustomer: ICustomer | null = null;
@@ -59,7 +59,7 @@ export class CustomerListComponent implements OnInit {
       this.filteredCustomers = [...this.customers];
     } else {
       this.filteredCustomers = this.customers.filter(c =>
-        c.name.toLowerCase().includes(term) || c.phone.includes(term) || c.email?.toLowerCase().includes(term)
+        c.name.toLowerCase().includes(term) || c.phone.includes(term)
       );
     }
   }
@@ -69,7 +69,6 @@ export class CustomerListComponent implements OnInit {
     this.editForm = {
       name: customer.name,
       phone: customer.phone,
-      email: customer.email,
       role: customer.role,
     };
     this.cdr.markForCheck();

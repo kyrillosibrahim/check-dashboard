@@ -72,6 +72,7 @@ export interface IProduct {
   variantOptionTypeAr?: string;
   baseVariantName?: string;
   baseVariantNameAr?: string;
+  baseColorHex?: string;
   variants?: IProductVariant[];
 }
 
@@ -93,4 +94,5 @@ export interface IProductVariant {
   originalPrice?: number;
   discountedPrice?: number;
   stock?: number;
+  colorHex?: string;
 }

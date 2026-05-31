@@ -99,6 +99,6 @@ export class ActivityTrackerService {
   }
 
   private cleanTitle(raw: string): string {
-    return raw.replace(/^KaroKan\s*-\s*/i, '').trim();
+    return raw.replace(/^Kaf\s*-\s*/i, '').trim();
   }
 }

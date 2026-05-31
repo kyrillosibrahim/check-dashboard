@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 
-const STORAGE_KEY = 'karokan-auth-session';
+const STORAGE_KEY = 'kaf-auth-session';
 const MAX_SESSION_MS = 12 * 60 * 60 * 1000; // 12 hours hard cap for any session
 
 interface AdminAccount {

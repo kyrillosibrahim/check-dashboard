@@ -180,6 +180,16 @@
               <small class="text-muted">يستخدم نفس صور وأسعار المنتج الأعلى</small>
             </div>
 
+            @if (isColorVariant) {
+              <div class="col-md-6">
+                <label class="form-label">لون الخيار الأساسى</label>
+                <div class="d-flex align-items-center gap-2">
+                  <input type="color" class="form-control form-control-color" formControlName="baseColorHex" style="width: 60px; height: 38px; padding: 2px;">
+                  <input type="text" class="form-control" formControlName="baseColorHex" placeholder="#124514" dir="ltr">
+                </div>
+              </div>
+            }
+
             <!-- Variants list -->
             <div class="col-12">
               <div formArrayName="variants" class="variants-list">
@@ -198,10 +208,20 @@
                         <label class="form-label">اسم الخيار (عربى) *</label>
                         <input type="text" class="form-control" formControlName="nameAr" placeholder="مثال: شراب أحمر">
                       </div>
-                      <div class="col-md-6">
-                        <label class="form-label">اسم الخيار (EN)</label>
-                        <input type="text" class="form-control" formControlName="name" placeholder="Red Strap" dir="ltr">
-                      </div>
+                      @if (isColorVariant) {
+                        <div class="col-md-6">
+                          <label class="form-label">اللون</label>
+                          <div class="d-flex align-items-center gap-2">
+                            <input type="color" class="form-control form-control-color" formControlName="colorHex" style="width: 60px; height: 38px; padding: 2px;">
+                            <input type="text" class="form-control" formControlName="colorHex" placeholder="#124514" dir="ltr">
+                          </div>
+                        </div>
+                      } @else {
+                        <div class="col-md-6">
+                          <label class="form-label">اسم الخيار (EN)</label>
+                          <input type="text" class="form-control" formControlName="name" placeholder="Red Strap" dir="ltr">
+                        </div>
+                      }
 
                       <div class="col-md-4">
                         <label class="form-label">سعر الجملة</label>

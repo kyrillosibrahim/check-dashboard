@@ -7,7 +7,7 @@ export const routes: Routes = [
     path: 'login',
     loadComponent: () => import('./features/auth/login/login.component')
       .then(c => c.LoginComponent),
-    title: 'KaroKan - تسجيل الدخول'
+    title: 'Kaf - تسجيل الدخول'
   },
   {
     path: '',
@@ -18,133 +18,133 @@ export const routes: Routes = [
     path: 'products',
     loadComponent: () => import('./features/dashboard/pages/product-list/product-list.component')
       .then(c => c.ProductListComponent),
-    title: 'KaroKan - All Products',
+    title: 'Kaf - All Products',
     canActivate: [authGuard]
   },
   {
     path: 'add',
     loadComponent: () => import('./features/dashboard/pages/product-add/product-add.component')
       .then(c => c.ProductAddComponent),
-    title: 'KaroKan - Add Product',
+    title: 'Kaf - Add Product',
     canActivate: [authGuard]
   },
   {
     path: 'wholesale-offers',
     loadComponent: () => import('./features/dashboard/pages/wholesale-offers-list/wholesale-offers-list.component')
       .then(c => c.WholesaleOffersListComponent),
-    title: 'KaroKan - كافة عروض الجملة',
+    title: 'Kaf - كافة عروض الجملة',
     canActivate: [authGuard]
   },
   {
     path: 'categories',
     loadComponent: () => import('./features/dashboard/pages/category-manage/category-manage.component')
       .then(c => c.CategoryManageComponent),
-    title: 'KaroKan - إدارة الأقسام',
+    title: 'Kaf - إدارة الأقسام',
     canActivate: [authGuard]
   },
   {
     path: 'brands',
     loadComponent: () => import('./features/dashboard/pages/brand-manage/brand-manage.component')
       .then(c => c.BrandManageComponent),
-    title: 'KaroKan - إدارة العلامات التجارية',
+    title: 'Kaf - إدارة العلامات التجارية',
     canActivate: [authGuard]
   },
   {
     path: 'banners',
     loadComponent: () => import('./features/dashboard/pages/banner-manage/banner-manage.component')
       .then(c => c.BannerManageComponent),
-    title: 'KaroKan - بنرات العروض',
+    title: 'Kaf - بنرات العروض',
     canActivate: [authGuard]
   },
   {
     path: 'customers',
     loadComponent: () => import('./features/dashboard/pages/customer-list/customer-list.component')
       .then(c => c.CustomerListComponent),
-    title: 'KaroKan - كافة العملاء',
+    title: 'Kaf - كافة العملاء',
     canActivate: [authGuard]
   },
   {
     path: 'invoices',
     loadComponent: () => import('./features/dashboard/pages/invoice-list/invoice-list.component')
       .then(c => c.InvoiceListComponent),
-    title: 'KaroKan - الفواتير',
+    title: 'Kaf - الفواتير',
     canActivate: [authGuard]
   },
   {
     path: 'invoices/:id',
     loadComponent: () => import('./features/dashboard/pages/invoice-detail/invoice-detail.component')
       .then(c => c.InvoiceDetailComponent),
-    title: 'KaroKan - تفاصيل الفاتورة',
+    title: 'Kaf - تفاصيل الفاتورة',
     canActivate: [authGuard]
   },
   {
     path: 'profits',
     loadComponent: () => import('./features/dashboard/pages/profits/profits.component')
       .then(c => c.ProfitsComponent),
-    title: 'KaroKan - الأرباح',
+    title: 'Kaf - الأرباح',
     canActivate: [authGuard, adminGuard]
   },
   {
     path: 'expenses',
     loadComponent: () => import('./features/dashboard/pages/expense-manage/expense-manage.component')
       .then(c => c.ExpenseManageComponent),
-    title: 'KaroKan - الخسائر والخصومات',
+    title: 'Kaf - الخسائر والخصومات',
     canActivate: [authGuard, adminGuard]
   },
   {
     path: 'merchants',
     loadComponent: () => import('./features/dashboard/pages/merchant-manage/merchant-manage.component')
       .then(c => c.MerchantManageComponent),
-    title: 'KaroKan - إدارة التجار',
+    title: 'Kaf - إدارة التجار',
     canActivate: [authGuard]
   },
   {
     path: 'edit/:category/:slug',
     loadComponent: () => import('./features/dashboard/pages/product-edit/product-edit.component')
       .then(c => c.ProductEditComponent),
-    title: 'KaroKan - Edit Product',
+    title: 'Kaf - Edit Product',
     canActivate: [authGuard]
   },
   {
     path: 'external-websites',
     loadComponent: () => import('./features/dashboard/pages/external-websites-manage/external-websites-manage.component')
       .then(c => c.ExternalWebsitesManageComponent),
-    title: 'KaroKan - إدارة المواقع الخارجية',
+    title: 'Kaf - إدارة المواقع الخارجية',
     canActivate: [authGuard]
   },
   {
     path: 'price-compare',
     loadComponent: () => import('./features/dashboard/pages/price-compare/price-compare.component')
       .then(c => c.PriceCompareComponent),
-    title: 'KaroKan - مقارنة اسعار التجار',
+    title: 'Kaf - مقارنة اسعار التجار',
     canActivate: [authGuard]
   },
   {
     path: 'shipping',
     loadComponent: () => import('./features/dashboard/pages/shipping-manage/shipping-manage.component')
       .then(c => c.ShippingManageComponent),
-    title: 'KaroKan - إدارة الشحن',
+    title: 'Kaf - إدارة الشحن',
     canActivate: [authGuard]
   },
   {
     path: 'settings',
     loadComponent: () => import('./features/dashboard/pages/site-settings/site-settings.component')
       .then(c => c.SiteSettingsComponent),
-    title: 'KaroKan - إعدادات الموقع',
+    title: 'Kaf - إعدادات الموقع',
     canActivate: [authGuard]
   },
   {
     path: 'guardian-angel',
     loadComponent: () => import('./features/dashboard/pages/guardian-angel/guardian-angel.component')
       .then(c => c.GuardianAngelComponent),
-    title: 'KaroKan - الملاك الحارس',
+    title: 'Kaf - الملاك الحارس',
     canActivate: [authGuard]
   },
   {
     path: 'admin-activity',
     loadComponent: () => import('./features/dashboard/pages/admin-activity/admin-activity.component')
       .then(c => c.AdminActivityComponent),
-    title: 'KaroKan - حركة الإدارة',
+    title: 'Kaf - حركة الإدارة',
     canActivate: [authGuard, adminGuard]
   },
   {

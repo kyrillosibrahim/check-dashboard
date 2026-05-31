@@ -36,6 +36,10 @@ export class CategoryService {
     return this.http.delete<{ message: string }>(`${API_CONFIG.categoriesUrl}/${id}`);
   }
 
+  reorder(ids: number[]): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${API_CONFIG.categoriesUrl}/reorder`, { ids });
+  }
+
   // Subcategory CRUD
   addSubcategory(categoryId: number, name: string, imageUrl?: string): Observable<ICategory> {
     const fd = new FormData();

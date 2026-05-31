@@ -118,7 +118,7 @@ export class WholesaleOffersListComponent implements OnInit {
   }
 
   getImageUrl(offer: IWholesaleOffer): string {
-    const img = offer.mainImages?.[0] || offer.images?.[0];
+    const img = offer.mainImages?.[0] || offer.images?.[0] || offer.normalImages?.[0] || offer.naturalImages?.[0];
     if (!img) return 'https://via.placeholder.com/45';
     return img;
   }

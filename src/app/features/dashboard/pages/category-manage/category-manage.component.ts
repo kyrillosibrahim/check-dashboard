@@ -56,6 +56,10 @@ export class CategoryManageComponent implements OnInit {
   dragTagIndex = -1;
   dragOverTagIndex = -1;
 
+  // ─── Category drag & drop ───
+  dragCatIndex = -1;
+  dragOverCatIndex = -1;
+
   ngOnInit(): void {
     this.loadAll();
   }
@@ -514,6 +518,55 @@ export class CategoryManageComponent implements OnInit {
     this.dragTagIndex = -1;
     this.dragOverTagIndex = -1;
     this.cdr.markForCheck();
+  }
+
+  // ─── Category drag & drop ───
+
+  onCatDragStart(event: DragEvent, index: number): void {
+    this.dragCatIndex = index;
+    event.dataTransfer?.setData('text/plain', String(index));
+    if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
+  }
+
+  onCatDragOver(event: DragEvent, index: number): void {
+    event.preventDefault();
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
+    if (this.dragOverCatIndex !== index) {
+      this.dragOverCatIndex = index;
+      this.cdr.markForCheck();
+    }
+  }
+
+  onCatDragLeave(): void {
+    this.dragOverCatIndex = -1;
+    this.cdr.markForCheck();
+  }
+
+  onCatDrop(event: DragEvent, targetIndex: number): void {
+    event.preventDefault();
+    const from = this.dragCatIndex;
+    this.dragCatIndex = -1;
+    this.dragOverCatIndex = -1;
+    if (from === -1 || from === targetIndex) { this.cdr.markForCheck(); return; }
+    const list = [...this.categories];
+    const [moved] = list.splice(from, 1);
+    list.splice(targetIndex, 0, moved);
+    this.categories = list;
+    this.cdr.markForCheck();
+    this.persistCategoryOrder();
+  }
+
+  onCatDragEnd(): void {
+    this.dragCatIndex = -1;
+    this.dragOverCatIndex = -1;
+    this.cdr.markForCheck();
+  }
+
+  private persistCategoryOrder(): void {
+    const ids = this.categories.map(c => c.id);
+    this.categoryService.reorder(ids).subscribe({
+      error: () => { Swal.fire('خطأ', 'فشل حفظ الترتيب', 'error'); }
+    });
   }
 
   onBrandBlur(): void {

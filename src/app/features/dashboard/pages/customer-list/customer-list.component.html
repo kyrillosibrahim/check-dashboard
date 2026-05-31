@@ -26,7 +26,7 @@
           <i class="bi bi-search"></i>
         </span>
         <input type="text" class="form-control form-control-sm" [(ngModel)]="searchTerm" (ngModelChange)="applyFilter()"
-               placeholder="بحث بالاسم أو رقم التليفون أو البريد الإلكتروني..."
+               placeholder="بحث بالاسم أو رقم التليفون..."
                style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color); color: var(--sz-text-primary);">
       </div>
     </div>
@@ -63,7 +63,6 @@
                 <th class="ps-3" style="width: 40px;">#</th>
                 <th>الاسم</th>
                 <th>رقم التليفون</th>
-                <th>البريد الإلكتروني</th>
                 <th>العنوان</th>
                 <th>النوع</th>
                 <th>تاريخ التسجيل</th>
@@ -83,7 +82,6 @@
                     </div>
                   </td>
                   <td>{{ customer.phone }}</td>
-                  <td class="text-secondary">{{ customer.email }}</td>
                   <td class="text-secondary">
                     @if (customer.addresses && customer.addresses.length > 0) {
                       <small>{{ customer.addresses[customer.addresses.length - 1].governorate }} - {{ customer.addresses[customer.addresses.length - 1].city }}</small>
@@ -132,11 +130,6 @@
       <div class="mb-3">
         <label class="form-label small">رقم التليفون</label>
         <input type="tel" class="form-control form-control-sm" [(ngModel)]="editForm.phone"
-               style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color); color: var(--sz-text-primary);">
-      </div>
-      <div class="mb-3">
-        <label class="form-label small">البريد الإلكتروني</label>
-        <input type="email" class="form-control form-control-sm" [(ngModel)]="editForm.email"
                style="background-color: var(--sz-bg-secondary); border-color: var(--sz-border-color); color: var(--sz-text-primary);">
       </div>
       <div class="mb-3">

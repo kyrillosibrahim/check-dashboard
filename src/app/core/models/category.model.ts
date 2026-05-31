@@ -16,4 +16,5 @@ export interface ICategory {
   famousBrands?: number[];          // brand IDs (stored)
   famousBrandsData?: IBrand[];      // populated brand objects (from detailed API)
   filterTags?: string[];
+  order?: number;
 }

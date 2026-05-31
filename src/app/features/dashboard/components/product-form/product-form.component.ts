@@ -154,6 +154,7 @@ export class ProductFormComponent implements OnInit, OnChanges {
       hasVariants: [this.product?.hasVariants || false],
       variantOptionType: [this.product?.variantOptionType || ''],
       baseVariantNameAr: [this.product?.baseVariantNameAr || ''],
+      baseColorHex: [this.product?.baseColorHex || '#000000'],
       variants: this.fb.array([])
     });
 
@@ -226,6 +227,10 @@ export class ProductFormComponent implements OnInit, OnChanges {
     return !!this.form.get('hasVariants')?.value;
   }
 
+  get isColorVariant(): boolean {
+    return this.form.get('variantOptionType')?.value === 'color';
+  }
+
   addVariant(): void {
     this.pushVariant();
     this.cdr.markForCheck();
@@ -239,7 +244,8 @@ export class ProductFormComponent implements OnInit, OnChanges {
       wholesalePrice: [seed?.wholesalePrice ?? 0, [Validators.min(0)]],
       originalPrice: [seed?.originalPrice ?? 0, [Validators.required, Validators.min(0.01)]],
       discountedPrice: [seed?.discountedPrice ?? 0, [Validators.min(0)]],
-      stock: [seed?.stock ?? 0, [Validators.min(0)]]
+      stock: [seed?.stock ?? 0, [Validators.min(0)]],
+      colorHex: [seed?.colorHex || '#000000']
     });
     this.variantsArray.push(group);
     this.variantsMainImages.push([...(seed?.mainImages || [])]);
@@ -309,7 +315,7 @@ export class ProductFormComponent implements OnInit, OnChanges {
       categoryId: this.categories.find(c => c.slug === v.category)?.id || 0,
       category: v.category,
       subcategory: v.subcategory || undefined,
-      images: this.mainImages.length > 0 ? this.mainImages : ['https://picsum.photos/seed/new/600/600'],
+      images: this.mainImages.length > 0 ? this.mainImages : (this.hideMainImages ? [] : ['https://picsum.photos/seed/new/600/600']),
       naturalImages: this.realImages.length > 0 ? this.realImages : undefined,
       swiperImages: this.swiperImages.length > 0 ? this.swiperImages : undefined,
       brand: v.brand,
@@ -342,6 +348,7 @@ export class ProductFormComponent implements OnInit, OnChanges {
         ? this.variantTypeOptions.find(o => o.value === v.variantOptionType)?.labelAr
         : undefined,
       baseVariantNameAr: v.hasVariants ? (v.baseVariantNameAr || undefined) : undefined,
+      baseColorHex: v.hasVariants && this.isColorVariant ? (v.baseColorHex || undefined) : undefined,
       variants: v.hasVariants ? this.collectVariants() : undefined
     };
 
@@ -360,7 +367,8 @@ export class ProductFormComponent implements OnInit, OnChanges {
         wholesalePrice: +val.wholesalePrice || 0,
         originalPrice: +val.originalPrice || 0,
         discountedPrice: +val.discountedPrice || 0,
-        stock: +val.stock || 0
+        stock: +val.stock || 0,
+        colorHex: this.isColorVariant ? val.colorHex : undefined
       } as IProductVariant;
     });
   }

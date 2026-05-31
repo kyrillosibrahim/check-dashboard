@@ -104,8 +104,21 @@
           </thead>
           <tbody>
             @for (cat of categories; track cat.id; let i = $index) {
-              <tr [class.expanded-row]="expandedCategoryId === cat.id">
-                <td class="ps-3">{{ i + 1 }}</td>
+              <tr [class.expanded-row]="expandedCategoryId === cat.id"
+                  [class.cat-drag-over]="dragOverCatIndex === i && dragCatIndex !== i"
+                  [class.cat-dragging]="dragCatIndex === i"
+                  [attr.draggable]="true"
+                  (dragstart)="onCatDragStart($event, i)"
+                  (dragover)="onCatDragOver($event, i)"
+                  (dragleave)="onCatDragLeave()"
+                  (drop)="onCatDrop($event, i)"
+                  (dragend)="onCatDragEnd()">
+                <td class="ps-3">
+                  <span class="drag-handle" title="اسحب لتغيير الترتيب">
+                    <i class="bi bi-grip-vertical"></i>
+                  </span>
+                  {{ i + 1 }}
+                </td>
                 <td>
                   @if (cat.image) {
                     <img [src]="getImageUrl(cat.image)" [alt]="cat.name" class="cat-thumb" loading="lazy">
