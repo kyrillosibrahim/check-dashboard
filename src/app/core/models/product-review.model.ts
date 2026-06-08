@@ -10,6 +10,8 @@ export interface IProductReview {
   rating: number;
   comment: string;
   status: 'pending' | 'approved';
+  verifiedPurchase?: boolean;
+  helpfulBy?: string[];
   createdAt?: string;
   updatedAt?: string;
 }
