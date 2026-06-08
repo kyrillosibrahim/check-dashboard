@@ -41,11 +41,40 @@ export class AdminActivityComponent implements OnInit {
     return f === 'all' ? this.logs() : this.logs().filter(l => l.username === f);
   });
 
+  // ── Pagination (50 per page) ──
+  readonly pageSize = 50;
+  currentPage = signal(1);
+
+  totalPages = computed(() => Math.max(1, Math.ceil(this.filteredLogs().length / this.pageSize)));
+
+  pagedLogs = computed(() => {
+    const page = Math.min(this.currentPage(), this.totalPages());
+    const start = (page - 1) * this.pageSize;
+    return this.filteredLogs().slice(start, start + this.pageSize);
+  });
+
+  /** Smart page list: 1 … 4 5 [6] 7 8 … 20 */
+  pages = computed<(number | '...')[]>(() => {
+    const total = this.totalPages();
+    const current = Math.min(this.currentPage(), total);
+    if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+    const out: (number | '...')[] = [1];
+    if (current > 3) out.push('...');
+    for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) out.push(i);
+    if (current < total - 2) out.push('...');
+    out.push(total);
+    return out;
+  });
+
   totalDuration = computed(() =>
     this.filteredLogs().reduce((sum, l) => sum + (l.durationSeconds || 0), 0)
   );
 
   totalDurationLabel = computed(() => formatDuration(this.totalDuration()));
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages()) this.currentPage.set(page);
+  }
 
   ngOnInit(): void {
     this.load();
@@ -59,6 +88,7 @@ export class AdminActivityComponent implements OnInit {
       .subscribe({
         next: data => {
           this.logs.set(data.map(l => decorate(l)));
+          this.currentPage.set(1);
           this.isLoading.set(false);
         },
         error: err => {
@@ -71,6 +101,7 @@ export class AdminActivityComponent implements OnInit {
 
   setFilter(value: 'all' | 'admin' | 'koko'): void {
     this.userFilter.set(value);
+    this.currentPage.set(1);
   }
 
   clearAll(): void {
