@@ -71,6 +71,13 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'product-reviews',
+    loadComponent: () => import('./features/dashboard/pages/product-reviews/product-reviews.component')
+      .then(c => c.ProductReviewsComponent),
+    title: 'Kaf - تقييمات المنتجات',
+    canActivate: [authGuard]
+  },
+  {
     path: 'invoices/:id',
     loadComponent: () => import('./features/dashboard/pages/invoice-detail/invoice-detail.component')
       .then(c => c.InvoiceDetailComponent),

@@ -1,0 +1,178 @@
+<div class="container-fluid py-4">
+  <!-- Header -->
+  <div class="d-flex align-items-center justify-content-between mb-4 pstyle">
+    <div>
+      <h4 class="fw-bold mb-1"><i class="bi bi-star-fill me-2"></i>تقييمات المنتجات</h4>
+      <small class="text-secondary">إجمالي التقييمات: {{ reviews.length }}</small>
+    </div>
+    <button class="btn btn-outline-primary btn-sm" (click)="loadReviews()" [disabled]="isLoading">
+      <i class="bi bi-arrow-clockwise me-1"></i> تحديث
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body py-3">
+      <div class="row g-3">
+        <div class="col-md-8">
+          <div class="input-group input-group-sm">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control form-control-sm" [(ngModel)]="searchTerm"
+                   (ngModelChange)="applyFilter()" placeholder="بحث بالمنتج، المقيّم، أو التعليق...">
+          </div>
+        </div>
+        <div class="col-md-4">
+          <select class="form-select form-select-sm" [(ngModel)]="filterStatus" (ngModelChange)="applyFilter()">
+            <option value="all">جميع التقييمات</option>
+            <option value="pending">قيد المراجعة</option>
+            <option value="approved">منشورة</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (isLoading) {
+    <div class="text-center py-5">
+      <div class="spinner-border spinner-border-sm"></div>
+      <p class="mt-2 text-secondary">جاري التحميل...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error && !isLoading) {
+    <div class="alert alert-danger">
+      <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+      <button class="btn btn-sm btn-outline-danger ms-3" (click)="loadReviews()">إعادة المحاولة</button>
+    </div>
+  }
+
+  <!-- Table -->
+  @if (!isLoading && !error) {
+    @if (filteredReviews.length === 0) {
+      <div class="text-center py-5">
+        <i class="bi bi-star fs-1 text-secondary"></i>
+        <p class="mt-2 text-secondary">لا توجد تقييمات</p>
+      </div>
+    } @else {
+      <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0 small pstyle">
+            <thead>
+              <tr>
+                <th class="ps-3" style="width: 40px;">#</th>
+                <th>المنتج</th>
+                <th>المقيّم</th>
+                <th>التقييم</th>
+                <th>التعليق</th>
+                <th>الحالة</th>
+                <th class="text-center" style="width: 200px;">الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (review of filteredReviews; track review.id; let i = $index) {
+                <tr>
+                  <td class="ps-3 text-secondary">{{ i + 1 }}</td>
+                  <td>{{ review.productTitle || review.productId }}</td>
+                  <td>{{ review.userName || '—' }}</td>
+                  <td>
+                    <div class="d-flex gap-1 review-stars">
+                      @for (star of stars; track star) {
+                        <i class="bi" [class.bi-star-fill]="star <= review.rating"
+                           [class.bi-star]="star > review.rating"></i>
+                      }
+                    </div>
+                  </td>
+                  <td class="comment-cell" [title]="review.comment">{{ review.comment || '—' }}</td>
+                  <td>
+                    <span class="badge"
+                          [class.bg-success]="review.status === 'approved'"
+                          [class.bg-warning]="review.status !== 'approved'"
+                          [class.text-dark]="review.status !== 'approved'">
+                      {{ review.status === 'approved' ? 'منشور' : 'قيد المراجعة' }}
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <button class="btn btn-sm btn-outline-secondary me-1 btn-icon rounded-circle"
+                            (click)="openProduct(review)" title="فتح المنتج في المتجر">
+                      <i class="bi bi-box-arrow-up-right"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-info me-1 btn-icon" (click)="viewReview(review)" title="عرض">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    @if (review.status !== 'approved') {
+                      <button class="btn btn-sm btn-outline-success me-1 btn-icon" (click)="approveReview(review)" title="موافقة ونشر">
+                        <i class="bi bi-check-lg"></i>
+                      </button>
+                    }
+                    <button class="btn btn-sm btn-outline-warning me-1 btn-icon" (click)="disableUser(review)" title="تعطيل المستخدم من التقييم">
+                      <i class="bi bi-slash-circle"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger btn-icon" (click)="deleteReview(review)" title="حذف">
+                      <i class="bi bi-trash3"></i>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+  }
+</div>
+
+<!-- View Modal -->
+@if (viewingReview) {
+  <div class="modal-backdrop" (click)="closeView()"></div>
+  <div class="modal-box">
+    <div class="modal-header-custom">
+      <h6 class="fw-bold mb-0"><i class="bi bi-eye me-2"></i>تفاصيل التقييم</h6>
+      <button class="btn-close btn-close-white" (click)="closeView()"></button>
+    </div>
+    <div class="modal-body-custom">
+      <div class="mb-3">
+        <label class="form-label">المنتج</label>
+        <p class="mb-0">{{ viewingReview.productTitle || viewingReview.productId }}</p>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">المقيّم</label>
+        <p class="mb-0">{{ viewingReview.userName || '—' }}@if (viewingReview.userPhone) { <span class="text-secondary"> ({{ viewingReview.userPhone }})</span> }</p>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">التقييم</label>
+        <div class="d-flex gap-1 review-stars fs-5">
+          @for (star of stars; track star) {
+            <i class="bi" [class.bi-star-fill]="star <= viewingReview.rating"
+               [class.bi-star]="star > viewingReview.rating"></i>
+          }
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">التعليق</label>
+        <p class="mb-0">{{ viewingReview.comment || '—' }}</p>
+      </div>
+      <div class="row g-3">
+        <div class="col-6">
+          <label class="form-label">الحالة</label>
+          <p class="mb-0">
+            <span class="badge"
+                  [class.bg-success]="viewingReview.status === 'approved'"
+                  [class.bg-warning]="viewingReview.status !== 'approved'"
+                  [class.text-dark]="viewingReview.status !== 'approved'">
+              {{ viewingReview.status === 'approved' ? 'منشور' : 'قيد المراجعة' }}
+            </span>
+          </p>
+        </div>
+        <div class="col-6">
+          <label class="form-label">التاريخ</label>
+          <p class="mb-0">{{ (viewingReview.updatedAt || viewingReview.createdAt) | date:'yyyy/MM/dd HH:mm' }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer-custom">
+      <button class="btn btn-sm btn-secondary" (click)="closeView()">إغلاق</button>
+    </div>
+  </div>
+}

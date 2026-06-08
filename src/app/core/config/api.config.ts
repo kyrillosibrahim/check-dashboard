@@ -18,4 +18,5 @@ export const API_CONFIG = {
   governoratesUrl: `${BASE}/api/governorates`,
   wholesaleOffersUrl: `${BASE}/api/wholesale-offers`,
   externalWebsitesUrl: `${BASE}/api/external-websites`,
+  reviewsUrl: `${BASE}/api/reviews`,
 };

@@ -53,6 +53,11 @@
           <i class="bi bi-receipt"></i>
           <span>الفواتير</span>
         </a>
+        <a routerLink="/product-reviews" routerLinkActive="active"
+           class="nav-item" (click)="closeSidebar()">
+          <i class="bi bi-star-fill"></i>
+          <span>تقييمات المنتجات</span>
+        </a>
         @if (authService.isAdmin()) {
           <a routerLink="/profits" routerLinkActive="active"
              class="nav-item" (click)="closeSidebar()">
