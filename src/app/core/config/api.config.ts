@@ -19,4 +19,5 @@ export const API_CONFIG = {
   wholesaleOffersUrl: `${BASE}/api/wholesale-offers`,
   externalWebsitesUrl: `${BASE}/api/external-websites`,
   reviewsUrl: `${BASE}/api/reviews`,
+  storageUrl: `${BASE}/api/storage`,
 };

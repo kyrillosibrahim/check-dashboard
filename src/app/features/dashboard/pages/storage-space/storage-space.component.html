@@ -1,0 +1,118 @@
+<div class="container-fluid py-4">
+  <!-- Header -->
+  <div class="d-flex align-items-center justify-content-between mb-4 pstyle">
+    <div>
+      <h4 class="fw-bold mb-1"><i class="bi bi-hdd-stack me-2"></i>المساحة المتاحة</h4>
+      <small class="text-secondary">متابعة استهلاك مساحة الصور وقاعدة البيانات</small>
+    </div>
+    <button class="btn btn-outline-primary btn-sm" (click)="load()" [disabled]="isLoading">
+      <i class="bi bi-arrow-clockwise me-1"></i> تحديث
+    </button>
+  </div>
+
+  @if (isLoading) {
+    <div class="text-center py-5">
+      <div class="spinner-border spinner-border-sm"></div>
+      <p class="mt-2 text-secondary">جاري التحميل...</p>
+    </div>
+  }
+
+  @if (error && !isLoading) {
+    <div class="alert alert-danger">
+      <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+      <button class="btn btn-sm btn-outline-danger ms-3" (click)="load()">إعادة المحاولة</button>
+    </div>
+  }
+
+  @if (info && !isLoading) {
+    <div class="row g-4">
+      <!-- Cloudinary card -->
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100 storage-card">
+          <div class="card-body">
+            <div class="card-head">
+              <span class="card-icon cloud"><i class="bi bi-images"></i></span>
+              <div>
+                <h6 class="fw-bold mb-0">مساحة الصور (Cloudinary)</h6>
+                <small class="text-secondary">الباقة: {{ info.cloudinary?.plan || '—' }}</small>
+              </div>
+            </div>
+
+            @if (info.cloudinary) {
+              <div class="usage-num mt-3">
+                {{ info.cloudinary.creditsUsed | number:'1.0-2' }}
+                <span class="text-secondary">/ {{ info.cloudinary.creditsLimit }} كريدت</span>
+              </div>
+
+              <div class="bar mt-2">
+                <span class="bar-fill" [class]="barClass(info.cloudinary.creditsUsedPercent)"
+                      [style.width.%]="clamp(info.cloudinary.creditsUsedPercent)"></span>
+              </div>
+              <div class="d-flex justify-content-between mt-1">
+                <small class="text-secondary">{{ info.cloudinary.creditsUsedPercent | number:'1.0-1' }}% مستخدم</small>
+                <small class="fw-semibold text-success">متبقّي {{ creditsRemaining }} كريدت</small>
+              </div>
+
+              <div class="estimate mt-3">
+                <i class="bi bi-info-circle me-1"></i>
+                تقدر ترفع تقريبًا <strong>{{ estimatedImagesLeft | number }}</strong> صورة إضافية
+                <span class="text-secondary">(تقديري)</span>
+              </div>
+
+              <div class="stats-grid mt-3">
+                <div class="stat"><span class="label">التخزين</span><span class="value">{{ formatBytes(info.cloudinary.storageBytes) }}</span></div>
+                <div class="stat"><span class="label">عدد الصور/الملفات</span><span class="value">{{ info.cloudinary.assets | number }}</span></div>
+                <div class="stat"><span class="label">الباندويدث</span><span class="value">{{ formatBytes(info.cloudinary.bandwidthBytes) }}</span></div>
+                <div class="stat"><span class="label">التحويلات</span><span class="value">{{ info.cloudinary.transformations | number }}</span></div>
+              </div>
+            } @else {
+              <div class="alert alert-warning mt-3 mb-0">
+                <i class="bi bi-exclamation-triangle me-2"></i>{{ info.cloudinaryError || 'تعذّر جلب بيانات Cloudinary' }}
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- MongoDB card -->
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100 storage-card">
+          <div class="card-body">
+            <div class="card-head">
+              <span class="card-icon mongo"><i class="bi bi-database"></i></span>
+              <div>
+                <h6 class="fw-bold mb-0">قاعدة البيانات (MongoDB)</h6>
+                <small class="text-secondary">حد الباقة المجانية</small>
+              </div>
+            </div>
+
+            @if (info.mongo) {
+              <div class="usage-num mt-3">
+                {{ formatBytes(info.mongo.usedBytes) }}
+                <span class="text-secondary">/ {{ formatBytes(info.mongo.limitBytes) }}</span>
+              </div>
+
+              <div class="bar mt-2">
+                <span class="bar-fill" [class]="barClass(info.mongo.usedPercent)"
+                      [style.width.%]="clamp(info.mongo.usedPercent)"></span>
+              </div>
+              <div class="d-flex justify-content-between mt-1">
+                <small class="text-secondary">{{ info.mongo.usedPercent | number:'1.0-1' }}% مستخدم</small>
+                <small class="fw-semibold text-success">متبقّي {{ formatBytes(mongoRemainingBytes) }}</small>
+              </div>
+
+              <div class="stats-grid mt-3">
+                <div class="stat"><span class="label">حجم البيانات</span><span class="value">{{ formatBytes(info.mongo.dataBytes) }}</span></div>
+                <div class="stat"><span class="label">الحد الأقصى</span><span class="value">{{ formatBytes(info.mongo.limitBytes) }}</span></div>
+              </div>
+            } @else {
+              <div class="alert alert-warning mt-3 mb-0">
+                <i class="bi bi-exclamation-triangle me-2"></i>{{ info.mongoError || 'تعذّر جلب بيانات قاعدة البيانات' }}
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

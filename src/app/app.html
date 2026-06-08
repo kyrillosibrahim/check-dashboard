@@ -64,6 +64,11 @@
             <span class="nav-badge">{{ badges.pendingReviews() }}</span>
           }
         </a>
+        <a routerLink="/storage-space" routerLinkActive="active"
+           class="nav-item" (click)="closeSidebar()">
+          <i class="bi bi-hdd-stack"></i>
+          <span>المساحة المتاحة</span>
+        </a>
         @if (authService.isAdmin()) {
           <a routerLink="/profits" routerLinkActive="active"
              class="nav-item" (click)="closeSidebar()">

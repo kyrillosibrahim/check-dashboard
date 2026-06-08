@@ -78,6 +78,13 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'storage-space',
+    loadComponent: () => import('./features/dashboard/pages/storage-space/storage-space.component')
+      .then(c => c.StorageSpaceComponent),
+    title: 'Kaf - المساحة المتاحة',
+    canActivate: [authGuard]
+  },
+  {
     path: 'invoices/:id',
     loadComponent: () => import('./features/dashboard/pages/invoice-detail/invoice-detail.component')
       .then(c => c.InvoiceDetailComponent),
