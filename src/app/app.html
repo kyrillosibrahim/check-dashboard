@@ -52,11 +52,17 @@
            class="nav-item" (click)="closeSidebar()">
           <i class="bi bi-receipt"></i>
           <span>الفواتير</span>
+          @if (badges.pendingOrders() > 0) {
+            <span class="nav-badge">{{ badges.pendingOrders() }}</span>
+          }
         </a>
         <a routerLink="/product-reviews" routerLinkActive="active"
            class="nav-item" (click)="closeSidebar()">
           <i class="bi bi-star-fill"></i>
           <span>تقييمات المنتجات</span>
+          @if (badges.pendingReviews() > 0) {
+            <span class="nav-badge">{{ badges.pendingReviews() }}</span>
+          }
         </a>
         @if (authService.isAdmin()) {
           <a routerLink="/profits" routerLinkActive="active"
