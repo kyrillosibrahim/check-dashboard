@@ -78,6 +78,20 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'customer-notifications',
+    loadComponent: () => import('./features/dashboard/pages/customer-notifications/customer-notifications.component')
+      .then(c => c.CustomerNotificationsComponent),
+    title: 'Kaf - إرسال إشعارات للعملاء',
+    canActivate: [authGuard, adminGuard]
+  },
+  {
+    path: 'sent-notifications',
+    loadComponent: () => import('./features/dashboard/pages/sent-notifications/sent-notifications.component')
+      .then(c => c.SentNotificationsComponent),
+    title: 'Kaf - الإشعارات المُرسلة',
+    canActivate: [authGuard, adminGuard]
+  },
+  {
     path: 'storage-space',
     loadComponent: () => import('./features/dashboard/pages/storage-space/storage-space.component')
       .then(c => c.StorageSpaceComponent),

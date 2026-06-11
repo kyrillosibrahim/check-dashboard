@@ -1,0 +1,15 @@
+.notif-send {
+  max-width: 720px;
+}
+
+.page-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+
+  i { color: var(--bs-primary, #0d6efd); }
+}
+
+.btn-group .btn i { margin-inline-end: .25rem; }

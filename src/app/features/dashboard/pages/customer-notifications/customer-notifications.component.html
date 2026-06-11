@@ -1,0 +1,90 @@
+<div class="notif-send container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <h1 class="page-title mb-0"><i class="bi bi-bell"></i> إرسال إشعارات للعملاء</h1>
+    <a routerLink="/sent-notifications" class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-clock-history"></i> سجل الإشعارات المُرسلة
+    </a>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+
+      <!-- Type switch -->
+      <div class="btn-group mb-4" role="group">
+        <button type="button" class="btn" [class.btn-primary]="type === 'general'"
+                [class.btn-outline-primary]="type !== 'general'" (click)="setType('general')">
+          <i class="bi bi-megaphone"></i> رسالة عامة
+        </button>
+        <button type="button" class="btn" [class.btn-primary]="type === 'coupon'"
+                [class.btn-outline-primary]="type !== 'coupon'" (click)="setType('coupon')">
+          <i class="bi bi-ticket-perforated"></i> كود خصم
+        </button>
+      </div>
+
+      <!-- Title -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold">عنوان الرسالة</label>
+        <input type="text" class="form-control" [(ngModel)]="title" placeholder="مثال: عرض خاص لك">
+      </div>
+
+      <!-- Body -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold">نص الرسالة</label>
+        <textarea class="form-control" rows="3" [(ngModel)]="body" placeholder="اكتب الرسالة التى ستظهر للعميل"></textarea>
+      </div>
+
+      @if (type === 'general') {
+        <!-- Optional link -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">رابط عند الضغط (اختيارى)</label>
+          <input type="text" class="form-control" [(ngModel)]="link" placeholder="/offers أو https://...">
+          <small class="text-muted">عند ضغط العميل على الرسالة سينتقل لهذا الرابط.</small>
+        </div>
+      } @else {
+        <!-- Coupon fields -->
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">كود الخصم</label>
+            <input type="text" class="form-control text-uppercase" [(ngModel)]="couponCode" placeholder="SUMMER10">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">نسبة الخصم (%)</label>
+            <input type="number" min="1" max="100" class="form-control" [(ngModel)]="couponPercentage" placeholder="10">
+          </div>
+        </div>
+        <div class="alert alert-info py-2 small">
+          <i class="bi bi-info-circle"></i>
+          الكود صالح لمدة 24 ساعة، ويُستخدم مرة واحدة فقط لكل عميل/متصفح.
+        </div>
+      }
+
+      <!-- Audience -->
+      <div class="mb-3">
+        <label class="form-label fw-semibold">إرسال إلى</label>
+        <select class="form-select" [(ngModel)]="audience">
+          <option value="all">كل العملاء</option>
+          <option value="orderStatus">عملاء حسب حالة الطلب</option>
+        </select>
+      </div>
+
+      @if (audience === 'orderStatus') {
+        <div class="mb-3">
+          <label class="form-label fw-semibold">حالة الطلب</label>
+          <select class="form-select" [(ngModel)]="orderStatus">
+            @for (s of statuses; track s.value) {
+              <option [value]="s.value">{{ s.label }}</option>
+            }
+          </select>
+        </div>
+      }
+
+      <button class="btn btn-primary w-100 mt-2" (click)="send()" [disabled]="isSending">
+        @if (isSending) {
+          <span class="spinner-border spinner-border-sm me-1"></span> جارٍ الإرسال...
+        } @else {
+          <i class="bi bi-send"></i> إرسال
+        }
+      </button>
+    </div>
+  </div>
+</div>

@@ -56,6 +56,16 @@
             <span class="nav-badge">{{ badges.pendingOrders() }}</span>
           }
         </a>
+        <a routerLink="/customer-notifications" routerLinkActive="active"
+           class="nav-item" (click)="closeSidebar()">
+          <i class="bi bi-bell"></i>
+          <span>إرسال إشعارات</span>
+        </a>
+        <a routerLink="/sent-notifications" routerLinkActive="active"
+           class="nav-item" (click)="closeSidebar()">
+          <i class="bi bi-send"></i>
+          <span>الإشعارات المُرسلة</span>
+        </a>
         <a routerLink="/product-reviews" routerLinkActive="active"
            class="nav-item" (click)="closeSidebar()">
           <i class="bi bi-star-fill"></i>

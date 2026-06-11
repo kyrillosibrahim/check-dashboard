@@ -1,0 +1,56 @@
+<div class="sent-notif container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <h1 class="page-title mb-0"><i class="bi bi-clock-history"></i> الإشعارات المُرسلة</h1>
+    <a routerLink="/customer-notifications" class="btn btn-primary btn-sm">
+      <i class="bi bi-plus-lg"></i> إرسال إشعار جديد
+    </a>
+  </div>
+
+  @if (loading()) {
+    <div class="text-center py-5"><span class="spinner-border"></span></div>
+  } @else if (campaigns().length === 0) {
+    <div class="text-center text-muted py-5">
+      <i class="bi bi-inbox d-block" style="font-size:2.5rem;"></i>
+      لا توجد إشعارات مُرسلة بعد
+    </div>
+  } @else {
+    <div class="table-responsive card shadow-sm">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th>النوع</th>
+            <th>الرسالة</th>
+            <th>الجمهور</th>
+            <th>عدد المستلمين</th>
+            <th>التاريخ</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of campaigns(); track c.id) {
+            <tr>
+              <td>
+                <span class="badge" [class.bg-warning]="c.type === 'coupon'" [class.bg-secondary]="c.type !== 'coupon'">
+                  {{ typeLabel(c.type) }}
+                </span>
+              </td>
+              <td>
+                <div class="fw-semibold">{{ c.title }}</div>
+                <div class="small text-muted">{{ c.body }}</div>
+                @if (c.type === 'coupon' && c.coupon?.code) {
+                  <div class="small mt-1">
+                    <span class="badge bg-light text-dark border">{{ c.coupon!.code }}</span>
+                    خصم {{ c.coupon!.discountPercentage }}%
+                  </div>
+                }
+                @if (c.link) { <div class="small text-primary">{{ c.link }}</div> }
+              </td>
+              <td>{{ c.audience }}</td>
+              <td><span class="badge bg-info">{{ c.recipientsCount }}</span></td>
+              <td class="small text-nowrap">{{ c.createdAt | date:'short' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

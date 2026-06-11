@@ -20,4 +20,5 @@ export const API_CONFIG = {
   externalWebsitesUrl: `${BASE}/api/external-websites`,
   reviewsUrl: `${BASE}/api/reviews`,
   storageUrl: `${BASE}/api/storage`,
+  notificationsUrl: `${BASE}/api/notifications`,
 };
