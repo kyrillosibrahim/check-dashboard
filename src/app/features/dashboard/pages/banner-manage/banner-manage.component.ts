@@ -23,7 +23,7 @@ export class BannerManageComponent implements OnInit {
 
   banners: IBanner[] = [];
   bannerLink = '';
-  bannerPage: 'home' | 'offers' | 'home-below' = 'home';
+  bannerPage: 'home' | 'offers' | 'home-below' | 'below-categories' | 'below-bestselling' | 'below-brands' = 'home';
   selectedFile: File | null = null;
   imagePreview: string | null = null;
   compressionInfo = '';
@@ -142,6 +142,9 @@ export class BannerManageComponent implements OnInit {
   getPageLabel(page: string): string {
     if (page === 'offers') return 'صفحة العروض';
     if (page === 'home-below') return 'أسفل السلايدر';
+    if (page === 'below-bestselling') return 'تحت المنتجات الأكثر مبيعاً';
+    if (page === 'below-categories') return 'تحت تسوق حسب الأقسام';
+    if (page === 'below-brands') return 'تحت العلامات التجارية';
     return 'الصفحة الرئيسية';
   }
 
