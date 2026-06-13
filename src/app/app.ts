@@ -7,6 +7,8 @@ import { GuardianAngelService } from './core/services/guardian-angel.service';
 import { ActivityTrackerService } from './core/services/activity-tracker.service';
 import { KeepAliveService } from './core/services/keep-alive.service';
 import { BadgeService } from './core/services/badge.service';
+import { SidebarStateService } from './core/services/sidebar-state.service';
+import { PinnedShortcutsService, PinnedItem } from './core/services/pinned-shortcuts.service';
 
 @Component({
   selector: 'app-root',
@@ -20,6 +22,8 @@ export class App {
   authService = inject(AuthService);
   guardianAngel = inject(GuardianAngelService);
   badges = inject(BadgeService);
+  sidebarState = inject(SidebarStateService);
+  pinned = inject(PinnedShortcutsService);
   private activityTracker = inject(ActivityTrackerService);
   private keepAlive = inject(KeepAliveService);
   private router = inject(Router);
@@ -47,6 +51,12 @@ export class App {
 
   closeSidebar(): void {
     this.sidebarOpen = false;
+  }
+
+  togglePin(event: Event, item: PinnedItem): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.pinned.toggle(item);
   }
 
   logout(): void {

@@ -42,17 +42,21 @@ $header-height: 56px;
   display: flex;
   flex-direction: column;
   z-index: 1040;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, width 0.3s ease;
 }
 
 .sidebar-header {
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--sz-border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 
   .brand {
     display: flex;
     align-items: center;
-    justify-content: center;;
+    justify-content: center;
 
     .brand-logo {
       height: 50px;
@@ -63,7 +67,25 @@ $header-height: 56px;
       font-size: 1.2rem;
       font-weight: 700;
       color: var(--sz-accent);
+      white-space: nowrap;
     }
+  }
+}
+
+.sidebar-collapse-btn {
+  border: none;
+  background: none;
+  color: var(--sz-text-secondary);
+  font-size: 1.1rem;
+  padding: 4px 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  line-height: 1;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: var(--sz-bg-secondary);
+    color: var(--sz-accent);
   }
 }
 
@@ -129,6 +151,41 @@ $header-height: 56px;
   }
 }
 
+// ── Pin button (per sidebar row) ──
+.nav-item-wrap {
+  position: relative;
+}
+
+.nav-pin-btn {
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: none;
+  color: var(--sz-text-muted);
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease;
+  cursor: pointer;
+  padding: 2px 4px;
+  font-size: 0.95rem;
+  line-height: 1;
+  z-index: 2;
+
+  &:hover {
+    color: var(--sz-accent);
+  }
+
+  &.pinned {
+    opacity: 1;
+    color: var(--sz-accent);
+  }
+}
+
+.nav-item-wrap:hover .nav-pin-btn {
+  opacity: 1;
+}
+
 .sidebar-footer {
   padding: 0.75rem;
   border-top: 1px solid var(--sz-border-color);
@@ -163,6 +220,63 @@ $header-height: 56px;
     color: var(--sz-text-primary);
     padding: 4px 8px;
     text-decoration: none;
+  }
+}
+
+// ── Pinned Shortcuts Bar (sticky, follows across pages) ──
+.pinned-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  gap: 8px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 8px 12px;
+  background: var(--sz-bg-card);
+  border-bottom: 1px solid var(--sz-border-color);
+}
+
+.pinned-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: var(--sz-bg-secondary);
+  color: var(--sz-text-secondary);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+
+  &.active {
+    background: var(--sz-accent);
+    color: #fff;
+  }
+
+  &:hover {
+    color: var(--sz-accent);
+  }
+
+  &.active:hover {
+    color: #fff;
+  }
+}
+
+.pinned-remove {
+  border: none;
+  background: none;
+  color: inherit;
+  opacity: 0.6;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  display: inline-flex;
+
+  &:hover {
+    opacity: 1;
   }
 }
 
@@ -201,6 +315,41 @@ $header-height: 56px;
 @media (min-width: 992px) {
   .sidebar {
     transform: translateX(0) !important;
+  }
+
+  // ── Collapsed (icon-only) sidebar ──
+  .sidebar-collapsed {
+    .sidebar {
+      width: 72px;
+    }
+
+    .main-content {
+      margin-right: 72px;
+    }
+
+    .brand-title {
+      display: none;
+    }
+
+    .sidebar-header {
+      justify-content: center;
+      padding: 1.25rem 0;
+    }
+
+    .nav-item {
+      justify-content: center;
+      gap: 0;
+      padding: 11px 0;
+    }
+
+    .nav-item span,
+    .nav-badge {
+      display: none;
+    }
+
+    .nav-pin-btn {
+      display: none;
+    }
   }
 }
 

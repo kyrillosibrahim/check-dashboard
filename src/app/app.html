@@ -1,134 +1,310 @@
 @if (authService.isLoggedIn()) {
-  <div class="dashboard-layout" [class.sidebar-open]="sidebarOpen">
+  <div class="dashboard-layout"
+       [class.sidebar-open]="sidebarOpen"
+       [class.sidebar-collapsed]="sidebarState.collapsed()">
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-header">
         <a routerLink="/" class="brand" (click)="closeSidebar()">
           <span class="brand-title">لوحة التحكم</span>
         </a>
+        <button class="sidebar-collapse-btn d-none d-lg-inline-flex" (click)="sidebarState.toggle()"
+                [title]="sidebarState.collapsed() ? 'فتح القائمة' : 'طي القائمة'">
+          <i class="bi" [class.bi-chevron-double-right]="!sidebarState.collapsed()"
+                        [class.bi-chevron-double-left]="sidebarState.collapsed()"></i>
+        </button>
       </div>
 
       <nav class="sidebar-nav">
-        <button class="nav-item theme-toggle" (click)="toggleTheme()">
+        <button class="nav-item theme-toggle" (click)="toggleTheme()"
+                [title]="themeService.isDark() ? 'الوضع الفاتح' : 'الوضع الداكن'">
           <i class="bi" [class.bi-moon-fill]="!themeService.isDark()" [class.bi-sun-fill]="themeService.isDark()"></i>
           <span>{{ themeService.isDark() ? 'الوضع الفاتح' : 'الوضع الداكن' }}</span>
         </button>
-        <a routerLink="/products" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
-           class="nav-item" (click)="closeSidebar()">
-          <i class="bi bi-box-seam"></i>
-          <span>جميع المنتجات</span>
-        </a>
-        <a routerLink="/add" routerLinkActive="active"
-           class="nav-item" (click)="closeSidebar()">
-          <i class="bi bi-plus-circle"></i>
-          <span>إضافة منتج</span>
-        </a>
-        <a routerLink="/wholesale-offers" routerLinkActive="active"
-           class="nav-item" (click)="closeSidebar()">
-          <i class="bi bi-cart-plus"></i>
-          <span>كافة عروض الجملة</span>
-        </a>
-        <a routerLink="/categories" routerLinkActive="active"
-           class="nav-item" (click)="closeSidebar()">
-          <i class="bi bi-grid"></i>
-          <span>إدارة الأقسام</span>
-        </a>
-        <a routerLink="/brands" routerLinkActive="active"
-           class="nav-item" (click)="closeSidebar()">
-          <i class="bi bi-award"></i>
-          <span>إدارة العلامات التجارية</span>
-        </a>
-        <a routerLink="/banners" routerLinkActive="active"
-           class="nav-item" (click)="closeSidebar()">
-          <i class="bi bi-image"></i>
-          <span>بنرات العروض</span>
-        </a>
-        <a routerLink="/customers" routerLinkActive="active"
-           class="nav-item" (click)="closeSidebar()">
-          <i class="bi bi-people"></i>
-          <span>كافة العملاء</span>
-        </a>
-        <a routerLink="/invoices" routerLinkActive="active"
-           class="nav-item" (click)="closeSidebar()">
-          <i class="bi bi-receipt"></i>
-          <span>الفواتير</span>
-          @if (badges.pendingOrders() > 0) {
-            <span class="nav-badge">{{ badges.pendingOrders() }}</span>
-          }
-        </a>
-        <a routerLink="/customer-notifications" routerLinkActive="active"
-           class="nav-item" (click)="closeSidebar()">
-          <i class="bi bi-bell"></i>
-          <span>إرسال إشعارات</span>
-        </a>
-        <a routerLink="/sent-notifications" routerLinkActive="active"
-           class="nav-item" (click)="closeSidebar()">
-          <i class="bi bi-send"></i>
-          <span>الإشعارات المُرسلة</span>
-        </a>
-        <a routerLink="/product-reviews" routerLinkActive="active"
-           class="nav-item" (click)="closeSidebar()">
-          <i class="bi bi-star-fill"></i>
-          <span>تقييمات المنتجات</span>
-          @if (badges.pendingReviews() > 0) {
-            <span class="nav-badge">{{ badges.pendingReviews() }}</span>
-          }
-        </a>
-        <a routerLink="/storage-space" routerLinkActive="active"
-           class="nav-item" (click)="closeSidebar()">
-          <i class="bi bi-hdd-stack"></i>
-          <span>المساحة المتاحة</span>
-        </a>
+
+        <div class="nav-item-wrap">
+          <a routerLink="/products" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+             class="nav-item" (click)="closeSidebar()" title="جميع المنتجات">
+            <i class="bi bi-box-seam"></i>
+            <span>جميع المنتجات</span>
+          </a>
+          <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/products')"
+                  (click)="togglePin($event, {path:'/products', icon:'bi-box-seam', label:'جميع المنتجات'})"
+                  title="تثبيت في الأعلى">
+            <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/products')" [class.bi-pin-angle-fill]="pinned.isPinned('/products')"></i>
+          </button>
+        </div>
+
+        <div class="nav-item-wrap">
+          <a routerLink="/add" routerLinkActive="active"
+             class="nav-item" (click)="closeSidebar()" title="إضافة منتج">
+            <i class="bi bi-plus-circle"></i>
+            <span>إضافة منتج</span>
+          </a>
+          <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/add')"
+                  (click)="togglePin($event, {path:'/add', icon:'bi-plus-circle', label:'إضافة منتج'})"
+                  title="تثبيت في الأعلى">
+            <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/add')" [class.bi-pin-angle-fill]="pinned.isPinned('/add')"></i>
+          </button>
+        </div>
+
+        <div class="nav-item-wrap">
+          <a routerLink="/wholesale-offers" routerLinkActive="active"
+             class="nav-item" (click)="closeSidebar()" title="كافة عروض الجملة">
+            <i class="bi bi-cart-plus"></i>
+            <span>كافة عروض الجملة</span>
+          </a>
+          <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/wholesale-offers')"
+                  (click)="togglePin($event, {path:'/wholesale-offers', icon:'bi-cart-plus', label:'عروض الجملة'})"
+                  title="تثبيت في الأعلى">
+            <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/wholesale-offers')" [class.bi-pin-angle-fill]="pinned.isPinned('/wholesale-offers')"></i>
+          </button>
+        </div>
+
+        <div class="nav-item-wrap">
+          <a routerLink="/categories" routerLinkActive="active"
+             class="nav-item" (click)="closeSidebar()" title="إدارة الأقسام">
+            <i class="bi bi-grid"></i>
+            <span>إدارة الأقسام</span>
+          </a>
+          <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/categories')"
+                  (click)="togglePin($event, {path:'/categories', icon:'bi-grid', label:'الأقسام'})"
+                  title="تثبيت في الأعلى">
+            <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/categories')" [class.bi-pin-angle-fill]="pinned.isPinned('/categories')"></i>
+          </button>
+        </div>
+
+        <div class="nav-item-wrap">
+          <a routerLink="/brands" routerLinkActive="active"
+             class="nav-item" (click)="closeSidebar()" title="إدارة العلامات التجارية">
+            <i class="bi bi-award"></i>
+            <span>إدارة العلامات التجارية</span>
+          </a>
+          <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/brands')"
+                  (click)="togglePin($event, {path:'/brands', icon:'bi-award', label:'العلامات التجارية'})"
+                  title="تثبيت في الأعلى">
+            <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/brands')" [class.bi-pin-angle-fill]="pinned.isPinned('/brands')"></i>
+          </button>
+        </div>
+
+        <div class="nav-item-wrap">
+          <a routerLink="/banners" routerLinkActive="active"
+             class="nav-item" (click)="closeSidebar()" title="بنرات العروض">
+            <i class="bi bi-image"></i>
+            <span>بنرات العروض</span>
+          </a>
+          <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/banners')"
+                  (click)="togglePin($event, {path:'/banners', icon:'bi-image', label:'بنرات العروض'})"
+                  title="تثبيت في الأعلى">
+            <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/banners')" [class.bi-pin-angle-fill]="pinned.isPinned('/banners')"></i>
+          </button>
+        </div>
+
+        <div class="nav-item-wrap">
+          <a routerLink="/customers" routerLinkActive="active"
+             class="nav-item" (click)="closeSidebar()" title="كافة العملاء">
+            <i class="bi bi-people"></i>
+            <span>كافة العملاء</span>
+          </a>
+          <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/customers')"
+                  (click)="togglePin($event, {path:'/customers', icon:'bi-people', label:'العملاء'})"
+                  title="تثبيت في الأعلى">
+            <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/customers')" [class.bi-pin-angle-fill]="pinned.isPinned('/customers')"></i>
+          </button>
+        </div>
+
+        <div class="nav-item-wrap">
+          <a routerLink="/invoices" routerLinkActive="active"
+             class="nav-item" (click)="closeSidebar()" title="الفواتير">
+            <i class="bi bi-receipt"></i>
+            <span>الفواتير</span>
+            @if (badges.pendingOrders() > 0) {
+              <span class="nav-badge">{{ badges.pendingOrders() }}</span>
+            }
+          </a>
+          <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/invoices')"
+                  (click)="togglePin($event, {path:'/invoices', icon:'bi-receipt', label:'الفواتير'})"
+                  title="تثبيت في الأعلى">
+            <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/invoices')" [class.bi-pin-angle-fill]="pinned.isPinned('/invoices')"></i>
+          </button>
+        </div>
+
+        <div class="nav-item-wrap">
+          <a routerLink="/customer-notifications" routerLinkActive="active"
+             class="nav-item" (click)="closeSidebar()" title="إرسال إشعارات">
+            <i class="bi bi-bell"></i>
+            <span>إرسال إشعارات</span>
+          </a>
+          <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/customer-notifications')"
+                  (click)="togglePin($event, {path:'/customer-notifications', icon:'bi-bell', label:'إرسال إشعارات'})"
+                  title="تثبيت في الأعلى">
+            <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/customer-notifications')" [class.bi-pin-angle-fill]="pinned.isPinned('/customer-notifications')"></i>
+          </button>
+        </div>
+
+        <div class="nav-item-wrap">
+          <a routerLink="/sent-notifications" routerLinkActive="active"
+             class="nav-item" (click)="closeSidebar()" title="الإشعارات المُرسلة">
+            <i class="bi bi-send"></i>
+            <span>الإشعارات المُرسلة</span>
+          </a>
+          <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/sent-notifications')"
+                  (click)="togglePin($event, {path:'/sent-notifications', icon:'bi-send', label:'الإشعارات المُرسلة'})"
+                  title="تثبيت في الأعلى">
+            <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/sent-notifications')" [class.bi-pin-angle-fill]="pinned.isPinned('/sent-notifications')"></i>
+          </button>
+        </div>
+
+        <div class="nav-item-wrap">
+          <a routerLink="/product-reviews" routerLinkActive="active"
+             class="nav-item" (click)="closeSidebar()" title="تقييمات المنتجات">
+            <i class="bi bi-star-fill"></i>
+            <span>تقييمات المنتجات</span>
+            @if (badges.pendingReviews() > 0) {
+              <span class="nav-badge">{{ badges.pendingReviews() }}</span>
+            }
+          </a>
+          <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/product-reviews')"
+                  (click)="togglePin($event, {path:'/product-reviews', icon:'bi-star-fill', label:'التقييمات'})"
+                  title="تثبيت في الأعلى">
+            <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/product-reviews')" [class.bi-pin-angle-fill]="pinned.isPinned('/product-reviews')"></i>
+          </button>
+        </div>
+
+        <div class="nav-item-wrap">
+          <a routerLink="/storage-space" routerLinkActive="active"
+             class="nav-item" (click)="closeSidebar()" title="المساحة المتاحة">
+            <i class="bi bi-hdd-stack"></i>
+            <span>المساحة المتاحة</span>
+          </a>
+          <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/storage-space')"
+                  (click)="togglePin($event, {path:'/storage-space', icon:'bi-hdd-stack', label:'المساحة المتاحة'})"
+                  title="تثبيت في الأعلى">
+            <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/storage-space')" [class.bi-pin-angle-fill]="pinned.isPinned('/storage-space')"></i>
+          </button>
+        </div>
+
         @if (authService.isAdmin()) {
-          <a routerLink="/profits" routerLinkActive="active"
-             class="nav-item" (click)="closeSidebar()">
-            <i class="bi bi-graph-up-arrow"></i>
-            <span>الأرباح</span>
-          </a>
-          <a routerLink="/expenses" routerLinkActive="active"
-             class="nav-item" (click)="closeSidebar()">
-            <i class="bi bi-arrow-down-circle"></i>
-            <span>الخسائر</span>
-          </a>
-          <a routerLink="/admin-activity" routerLinkActive="active"
-             class="nav-item" (click)="closeSidebar()">
-            <i class="bi bi-activity"></i>
-            <span>حركة الإدارة</span>
-          </a>
+          <div class="nav-item-wrap">
+            <a routerLink="/profits" routerLinkActive="active"
+               class="nav-item" (click)="closeSidebar()" title="الأرباح">
+              <i class="bi bi-graph-up-arrow"></i>
+              <span>الأرباح</span>
+            </a>
+            <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/profits')"
+                    (click)="togglePin($event, {path:'/profits', icon:'bi-graph-up-arrow', label:'الأرباح'})"
+                    title="تثبيت في الأعلى">
+              <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/profits')" [class.bi-pin-angle-fill]="pinned.isPinned('/profits')"></i>
+            </button>
+          </div>
+
+          <div class="nav-item-wrap">
+            <a routerLink="/expenses" routerLinkActive="active"
+               class="nav-item" (click)="closeSidebar()" title="الخسائر">
+              <i class="bi bi-arrow-down-circle"></i>
+              <span>الخسائر</span>
+            </a>
+            <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/expenses')"
+                    (click)="togglePin($event, {path:'/expenses', icon:'bi-arrow-down-circle', label:'الخسائر'})"
+                    title="تثبيت في الأعلى">
+              <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/expenses')" [class.bi-pin-angle-fill]="pinned.isPinned('/expenses')"></i>
+            </button>
+          </div>
+
+          <div class="nav-item-wrap">
+            <a routerLink="/admin-activity" routerLinkActive="active"
+               class="nav-item" (click)="closeSidebar()" title="حركة الإدارة">
+              <i class="bi bi-activity"></i>
+              <span>حركة الإدارة</span>
+            </a>
+            <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/admin-activity')"
+                    (click)="togglePin($event, {path:'/admin-activity', icon:'bi-activity', label:'حركة الإدارة'})"
+                    title="تثبيت في الأعلى">
+              <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/admin-activity')" [class.bi-pin-angle-fill]="pinned.isPinned('/admin-activity')"></i>
+            </button>
+          </div>
         }
-        <a routerLink="/merchants" routerLinkActive="active"
-           class="nav-item" (click)="closeSidebar()">
-          <i class="bi bi-shop"></i>
-          <span>التجار</span>
-        </a>
-        <a routerLink="/external-websites" routerLinkActive="active"
-           class="nav-item" (click)="closeSidebar()">
-          <i class="bi bi-globe"></i>
-          <span>المواقع الخارجية</span>
-        </a>
-        <a routerLink="/price-compare" routerLinkActive="active"
-           class="nav-item" (click)="closeSidebar()">
-          <i class="bi bi-graph-up"></i>
-          <span>مقارنة الاسعار</span>
-        </a>
-        <a routerLink="/shipping" routerLinkActive="active"
-           class="nav-item" (click)="closeSidebar()">
-          <i class="bi bi-truck"></i>
-          <span>الشحن</span>
-        </a>
-        <a routerLink="/settings" routerLinkActive="active"
-           class="nav-item" (click)="closeSidebar()">
-          <i class="bi bi-gear"></i>
-          <span>الإعدادات</span>
-        </a>
-        <a routerLink="/guardian-angel" routerLinkActive="active"
-           class="nav-item" (click)="closeSidebar()">
-          <i class="bi bi-shield-fill-check"></i>
-          <span>الملاك الحارس</span>
-        </a>
+
+        <div class="nav-item-wrap">
+          <a routerLink="/merchants" routerLinkActive="active"
+             class="nav-item" (click)="closeSidebar()" title="التجار">
+            <i class="bi bi-shop"></i>
+            <span>التجار</span>
+          </a>
+          <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/merchants')"
+                  (click)="togglePin($event, {path:'/merchants', icon:'bi-shop', label:'التجار'})"
+                  title="تثبيت في الأعلى">
+            <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/merchants')" [class.bi-pin-angle-fill]="pinned.isPinned('/merchants')"></i>
+          </button>
+        </div>
+
+        <div class="nav-item-wrap">
+          <a routerLink="/external-websites" routerLinkActive="active"
+             class="nav-item" (click)="closeSidebar()" title="المواقع الخارجية">
+            <i class="bi bi-globe"></i>
+            <span>المواقع الخارجية</span>
+          </a>
+          <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/external-websites')"
+                  (click)="togglePin($event, {path:'/external-websites', icon:'bi-globe', label:'المواقع الخارجية'})"
+                  title="تثبيت في الأعلى">
+            <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/external-websites')" [class.bi-pin-angle-fill]="pinned.isPinned('/external-websites')"></i>
+          </button>
+        </div>
+
+        <div class="nav-item-wrap">
+          <a routerLink="/price-compare" routerLinkActive="active"
+             class="nav-item" (click)="closeSidebar()" title="مقارنة الاسعار">
+            <i class="bi bi-graph-up"></i>
+            <span>مقارنة الاسعار</span>
+          </a>
+          <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/price-compare')"
+                  (click)="togglePin($event, {path:'/price-compare', icon:'bi-graph-up', label:'مقارنة الاسعار'})"
+                  title="تثبيت في الأعلى">
+            <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/price-compare')" [class.bi-pin-angle-fill]="pinned.isPinned('/price-compare')"></i>
+          </button>
+        </div>
+
+        <div class="nav-item-wrap">
+          <a routerLink="/shipping" routerLinkActive="active"
+             class="nav-item" (click)="closeSidebar()" title="الشحن">
+            <i class="bi bi-truck"></i>
+            <span>الشحن</span>
+          </a>
+          <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/shipping')"
+                  (click)="togglePin($event, {path:'/shipping', icon:'bi-truck', label:'الشحن'})"
+                  title="تثبيت في الأعلى">
+            <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/shipping')" [class.bi-pin-angle-fill]="pinned.isPinned('/shipping')"></i>
+          </button>
+        </div>
+
+        <div class="nav-item-wrap">
+          <a routerLink="/settings" routerLinkActive="active"
+             class="nav-item" (click)="closeSidebar()" title="الإعدادات">
+            <i class="bi bi-gear"></i>
+            <span>الإعدادات</span>
+          </a>
+          <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/settings')"
+                  (click)="togglePin($event, {path:'/settings', icon:'bi-gear', label:'الإعدادات'})"
+                  title="تثبيت في الأعلى">
+            <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/settings')" [class.bi-pin-angle-fill]="pinned.isPinned('/settings')"></i>
+          </button>
+        </div>
+
+        <div class="nav-item-wrap">
+          <a routerLink="/guardian-angel" routerLinkActive="active"
+             class="nav-item" (click)="closeSidebar()" title="الملاك الحارس">
+            <i class="bi bi-shield-fill-check"></i>
+            <span>الملاك الحارس</span>
+          </a>
+          <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/guardian-angel')"
+                  (click)="togglePin($event, {path:'/guardian-angel', icon:'bi-shield-fill-check', label:'الملاك الحارس'})"
+                  title="تثبيت في الأعلى">
+            <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/guardian-angel')" [class.bi-pin-angle-fill]="pinned.isPinned('/guardian-angel')"></i>
+          </button>
+        </div>
 
         <!-- Logout Button -->
-        <button class="nav-item logout-btn" (click)="logout()">
+        <button class="nav-item logout-btn" (click)="logout()" title="تسجيل الخروج">
           <i class="bi bi-box-arrow-right"></i>
           <span>تسجيل الخروج</span>
         </button>
@@ -161,6 +337,21 @@
           <i class="bi bi-box-arrow-right fs-5"></i>
         </button>
       </header>
+
+      <!-- Pinned Shortcuts Bar -->
+      @if (pinned.items().length > 0) {
+        <div class="pinned-bar">
+          @for (s of pinned.items(); track s.path) {
+            <a class="pinned-chip" [routerLink]="s.path" routerLinkActive="active">
+              <i class="bi {{ s.icon }}"></i>
+              <span>{{ s.label }}</span>
+              <button class="pinned-remove" (click)="togglePin($event, s)" title="إزالة">
+                <i class="bi bi-x"></i>
+              </button>
+            </a>
+          }
+        </div>
+      }
 
       <!-- Page Content -->
       <main class="page-content">
