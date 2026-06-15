@@ -37,8 +37,8 @@ $header-height: 56px;
   right: 0;
   width: $sidebar-width;
   height: 100vh;
-  background-color: var(--sz-bg-card);
-  border-left: 1px solid var(--sz-border-color);
+  background-color: var(--sz-sidebar-bg);
+  border-left: 1px solid var(--sz-sidebar-border);
   display: flex;
   flex-direction: column;
   z-index: 1040;
@@ -47,7 +47,7 @@ $header-height: 56px;
 
 .sidebar-header {
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--sz-border-color);
+  border-bottom: 1px solid var(--sz-sidebar-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -66,7 +66,7 @@ $header-height: 56px;
     .brand-title {
       font-size: 1.2rem;
       font-weight: 700;
-      color: var(--sz-accent);
+      color: var(--sz-sidebar-heading);
       white-space: nowrap;
     }
   }
@@ -75,7 +75,7 @@ $header-height: 56px;
 .sidebar-collapse-btn {
   border: none;
   background: none;
-  color: var(--sz-text-secondary);
+  color: var(--sz-sidebar-text);
   font-size: 1.1rem;
   padding: 4px 6px;
   border-radius: 8px;
@@ -84,8 +84,8 @@ $header-height: 56px;
   transition: all 0.2s ease;
 
   &:hover {
-    background-color: var(--sz-bg-secondary);
-    color: var(--sz-accent);
+    background-color: var(--sz-sidebar-hover-bg);
+    color: #fff;
   }
 }
 
@@ -104,7 +104,7 @@ $header-height: 56px;
   gap: 12px;
   padding: 11px 16px;
   border-radius: 10px;
-  color: var(--sz-text-secondary);
+  color: var(--sz-sidebar-text);
   text-decoration: none;
   font-weight: 500;
   font-size: 0.925rem;
@@ -118,13 +118,14 @@ $header-height: 56px;
   i { font-size: 1.15rem; }
 
   &:hover {
-    background-color: var(--sz-bg-secondary);
-    color: var(--sz-accent);
+    background-color: var(--sz-sidebar-hover-bg);
+    color: #fff;
   }
 
   &.active {
     background-color: var(--sz-accent);
     color: #fff;
+    box-shadow: 0 4px 12px rgba(232, 132, 58, 0.35);
   }
 }
 
@@ -163,7 +164,7 @@ $header-height: 56px;
   transform: translateY(-50%);
   border: none;
   background: none;
-  color: var(--sz-text-muted);
+  color: var(--sz-sidebar-text);
   opacity: 0;
   transition: opacity 0.15s ease, color 0.15s ease;
   cursor: pointer;
@@ -173,7 +174,7 @@ $header-height: 56px;
   z-index: 2;
 
   &:hover {
-    color: var(--sz-accent);
+    color: #fff;
   }
 
   &.pinned {
@@ -188,10 +189,10 @@ $header-height: 56px;
 
 .sidebar-footer {
   padding: 0.75rem;
-  border-top: 1px solid var(--sz-border-color);
+  border-top: 1px solid var(--sz-sidebar-border);
 
   .theme-toggle:hover {
-    background-color: var(--sz-bg-secondary);
+    background-color: var(--sz-sidebar-hover-bg);
   }
 }
 

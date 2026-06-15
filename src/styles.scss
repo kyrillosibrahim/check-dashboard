@@ -6,17 +6,24 @@
 /* ---------- Theme Variables ---------- */
 :root,
 [data-bs-theme="light"] {
-  --sz-bg-primary: #ffffff;
-  --sz-bg-secondary: #f1f3f5;
+  --sz-bg-primary: #eceef3;
+  --sz-bg-secondary: #e2e6ee;
   --sz-bg-card: #ffffff;
-  --sz-text-primary: #1a1a2e;
-  --sz-text-secondary: #495057;
-  --sz-text-muted: #6c757d;
-  --sz-border-color: #ced4da;
-  --sz-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  --sz-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.15);
-  --sz-accent: #0d6efd;
-  --sz-accent-hover: #0a58ca;
+  --sz-text-primary: #1f2d4a;
+  --sz-text-secondary: #5b6678;
+  --sz-text-muted: #8a93a4;
+  --sz-border-color: #dde2ea;
+  --sz-shadow: 0 2px 12px rgba(27, 42, 74, 0.08);
+  --sz-shadow-hover: 0 8px 24px rgba(27, 42, 74, 0.14);
+  --sz-accent: #e8843a;
+  --sz-accent-hover: #d4742c;
+
+  /* Sidebar (dark navy in light mode) */
+  --sz-sidebar-bg: #16243f;
+  --sz-sidebar-text: #c2cad9;
+  --sz-sidebar-hover-bg: rgba(255, 255, 255, 0.08);
+  --sz-sidebar-border: rgba(255, 255, 255, 0.08);
+  --sz-sidebar-heading: #ffffff;
 }
 
 [data-bs-theme="dark"] {
@@ -29,8 +36,15 @@
   --sz-border-color: #333333;
   --sz-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
   --sz-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.5);
-  --sz-accent: #4dabf7;
-  --sz-accent-hover: #339af0;
+  --sz-accent: #e8843a;
+  --sz-accent-hover: #d4742c;
+
+  /* Sidebar */
+  --sz-sidebar-bg: #18181b;
+  --sz-sidebar-text: #a0a0a0;
+  --sz-sidebar-hover-bg: rgba(255, 255, 255, 0.06);
+  --sz-sidebar-border: #2b2b2b;
+  --sz-sidebar-heading: var(--sz-accent);
 }
 
 * {
@@ -57,6 +71,42 @@ a {
   text-decoration: none;
   transition: color 0.2s ease;
   &:hover { color: var(--sz-accent-hover); }
+}
+
+/* ---------- Accent (orange) — Bootstrap recolor ---------- */
+.btn-primary {
+  --bs-btn-bg: var(--sz-accent);
+  --bs-btn-border-color: var(--sz-accent);
+  --bs-btn-hover-bg: var(--sz-accent-hover);
+  --bs-btn-hover-border-color: var(--sz-accent-hover);
+  --bs-btn-active-bg: var(--sz-accent-hover);
+  --bs-btn-active-border-color: var(--sz-accent-hover);
+  --bs-btn-disabled-bg: var(--sz-accent);
+  --bs-btn-disabled-border-color: var(--sz-accent);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--sz-accent);
+  --bs-btn-border-color: var(--sz-accent);
+  --bs-btn-hover-bg: var(--sz-accent);
+  --bs-btn-hover-border-color: var(--sz-accent);
+  --bs-btn-active-bg: var(--sz-accent);
+  --bs-btn-active-border-color: var(--sz-accent);
+}
+
+.text-primary { color: var(--sz-accent) !important; }
+.bg-primary { background-color: var(--sz-accent) !important; }
+.btn-link { color: var(--sz-accent); }
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--sz-accent);
+  box-shadow: 0 0 0 0.2rem rgba(232, 132, 58, 0.2);
+}
+
+.form-check-input:checked {
+  background-color: var(--sz-accent);
+  border-color: var(--sz-accent);
 }
 
 /* ---------- Light Mode — Bootstrap Overrides ---------- */
