@@ -71,7 +71,9 @@ export class BannerManageComponent implements OnInit {
         this.cdr.markForCheck();
         return;
       }
-      const result = await this.compressionService.compressImage(file, 1200, 600);
+      // Banners are full-width hero images — keep them crisp: up to 1920px wide
+      // and high quality (≤500KB) instead of the aggressive 1200px/80KB default.
+      const result = await this.compressionService.compressImage(file, 1920, 1080, 500, 0.9);
       this.imagePreview = result.dataUrl;
       this.compressionInfo = `${result.originalKB} KB → ${result.compressedKB} KB`;
       const blob = this.dataUrlToBlob(result.dataUrl);

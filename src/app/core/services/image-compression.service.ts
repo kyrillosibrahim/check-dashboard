@@ -3,7 +3,13 @@ import { Injectable } from '@angular/core';
 @Injectable({ providedIn: 'root' })
 export class ImageCompressionService {
 
-  async compressImage(file: File, maxWidth = 600, maxHeight = 600): Promise<{ dataUrl: string; originalKB: number; compressedKB: number }> {
+  async compressImage(
+    file: File,
+    maxWidth = 600,
+    maxHeight = 600,
+    targetKB = 80,
+    startQuality = 0.6,
+  ): Promise<{ dataUrl: string; originalKB: number; compressedKB: number }> {
     const originalKB = Math.round(file.size / 1024);
 
     return new Promise((resolve, reject) => {
@@ -25,8 +31,7 @@ export class ImageCompressionService {
           const ctx = canvas.getContext('2d')!;
           ctx.drawImage(img, 0, 0, w, h);
 
-          const targetKB = 80;
-          let quality = 0.6;
+          let quality = startQuality;
           let dataUrl = canvas.toDataURL('image/webp', quality);
 
           while (this.getBase64SizeKB(dataUrl) > targetKB && quality > 0.15) {
@@ -34,12 +39,13 @@ export class ImageCompressionService {
             dataUrl = canvas.toDataURL('image/webp', quality);
           }
 
+          // Last-resort downscale only when still way over target at min quality.
           if (this.getBase64SizeKB(dataUrl) > targetKB) {
             const scale = 0.6;
             canvas.width = Math.round(w * scale);
             canvas.height = Math.round(h * scale);
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            dataUrl = canvas.toDataURL('image/webp', 0.5);
+            dataUrl = canvas.toDataURL('image/webp', Math.max(startQuality - 0.1, 0.5));
           }
 
           const compressedKB = this.getBase64SizeKB(dataUrl);
