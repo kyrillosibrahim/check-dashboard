@@ -11,6 +11,15 @@ th {
   white-space: nowrap;
 }
 
+.profit-sort-th {
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    color: var(--sz-accent);
+  }
+}
+
 td {
   font-size: 0.875rem;
 }

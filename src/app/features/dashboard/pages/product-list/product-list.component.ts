@@ -6,7 +6,7 @@ import { CategoryService } from '../../../../core/services/category.service';
 import { MerchantService } from '../../../../core/services/merchant.service';
 import { BrandService } from '../../../../core/services/brand.service';
 import { IProduct } from '../../../../core/models/product.model';
-import { ICategory } from '../../../../core/models/category.model';
+import { ICategory, ISubcategory } from '../../../../core/models/category.model';
 import { IMerchant } from '../../../../core/models/merchant.model';
 import { IBrand } from '../../../../core/models/brand.model';
 import { ProductTableComponent } from '../../components/product-table/product-table.component';
@@ -41,9 +41,13 @@ export class ProductListComponent implements OnInit {
   brands: IBrand[] = [];
 
   selectedCategory = '';
+  selectedSubcategory = '';
   selectedMerchant = '';
   selectedBrand = '';
   searchName = '';
+  selectedSort = '';
+  /** Subcategories of the currently selected main category (cascading filter). */
+  filteredSubcategories: ISubcategory[] = [];
 
   currentPage = 1;
   totalProducts = 0;
@@ -58,8 +62,9 @@ export class ProductListComponent implements OnInit {
   private readonly RETRY_DELAY = 15;
 
   ngOnInit(): void {
-    this.categoryService.getAll().subscribe(c => {
+    this.categoryService.getDetailed().subscribe(c => {
       this.categories = c;
+      this.syncSubcategories();
       this.cdr.markForCheck();
     });
     this.merchantService.getAll().subscribe(m => {
@@ -74,11 +79,36 @@ export class ProductListComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       this.currentPage = Math.max(1, parseInt(params['page'], 10) || 1);
       this.selectedCategory = params['category'] || '';
+      this.selectedSubcategory = params['subcategory'] || '';
       this.selectedMerchant = params['merchant'] || '';
       this.selectedBrand = params['brand'] || '';
       this.searchName = params['name'] || '';
+      this.selectedSort = params['sort'] || '';
+      this.syncSubcategories();
       this.loadProducts();
     });
+  }
+
+  /** Recompute the subcategory list for the currently selected category. */
+  private syncSubcategories(): void {
+    const cat = this.categories.find(c => c.slug === this.selectedCategory);
+    this.filteredSubcategories = cat?.subcategories || [];
+  }
+
+  /** When the main category changes, refresh subcategories and clear the chosen one. */
+  onCategoryChange(): void {
+    this.selectedSubcategory = '';
+    this.syncSubcategories();
+  }
+
+  /** Sort select / column header set the sort and reload from page 1. */
+  onSortChange(): void {
+    this.search();
+  }
+
+  sortByProfit(dir: 'high' | 'low'): void {
+    this.selectedSort = dir === 'high' ? 'profit-high' : 'profit-low';
+    this.search();
   }
 
   loadProducts(): void {
@@ -91,9 +121,11 @@ export class ProductListComponent implements OnInit {
         page: this.currentPage,
         limit: this.pageSize,
         category: this.selectedCategory || undefined,
+        subcategory: this.selectedSubcategory || undefined,
         brand: this.selectedBrand || undefined,
         merchant: this.selectedMerchant || undefined,
         name: this.searchName || undefined,
+        sort: this.selectedSort || undefined,
       })
       .subscribe({
         next: ({ products, total }) => {
@@ -156,18 +188,23 @@ export class ProductListComponent implements OnInit {
     this.navigateTo({
       page: 1,
       category: this.selectedCategory || null,
+      subcategory: this.selectedSubcategory || null,
       merchant: this.selectedMerchant || null,
       brand: this.selectedBrand || null,
       name: this.searchName || null,
+      sort: this.selectedSort || null,
     });
   }
 
   resetFilters(): void {
     this.selectedCategory = '';
+    this.selectedSubcategory = '';
     this.selectedMerchant = '';
     this.selectedBrand = '';
     this.searchName = '';
-    this.navigateTo({ page: null, category: null, merchant: null, brand: null, name: null });
+    this.selectedSort = '';
+    this.filteredSubcategories = [];
+    this.navigateTo({ page: null, category: null, subcategory: null, merchant: null, brand: null, name: null, sort: null });
   }
 
   goToPage(n: number): void {

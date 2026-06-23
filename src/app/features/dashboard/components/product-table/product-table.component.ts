@@ -13,8 +13,10 @@ import { API_CONFIG } from '../../../../core/config/api.config';
 })
 export class ProductTableComponent {
   @Input({ required: true }) products: IProduct[] = [];
+  @Input() sort = '';
   @Output() edit = new EventEmitter<IProduct>();
   @Output() delete = new EventEmitter<IProduct>();
+  @Output() sortProfit = new EventEmitter<'high' | 'low'>();
 
   getDiscountPercent(p: IProduct): number {
     const orig = p.originalPrice || p.price;
@@ -26,6 +28,18 @@ export class ProductTableComponent {
     const w = p.wholesalePrice || 0;
     const d = p.discountedPrice || 0;
     return w > 0 ? Math.round(((d - w) / w) * 100) : 0;
+  }
+
+  /** Profit in EGP = selling price − wholesale (cost). Null when no wholesale price set. */
+  getProfitEgp(p: IProduct): number | null {
+    if (!p.wholesalePrice) return null;
+    const selling = p.discountedPrice || p.price || 0;
+    return selling - p.wholesalePrice;
+  }
+
+  /** Toggle profit sort direction and notify the parent. */
+  toggleProfitSort(): void {
+    this.sortProfit.emit(this.sort === 'profit-high' ? 'low' : 'high');
   }
 
   getEditUrl(product: IProduct): string[] {

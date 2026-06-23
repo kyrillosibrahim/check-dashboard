@@ -11,6 +11,16 @@
             <th>بعد الخصم</th>
             <th>نسبة الخصم</th>
             <th>نسبة الربح</th>
+            <th class="profit-sort-th" (click)="toggleProfitSort()" title="اضغط للترتيب حسب المكسب">
+              مكسبي (ج.م)
+              @if (sort === 'profit-high') {
+                <i class="bi bi-sort-down ms-1"></i>
+              } @else if (sort === 'profit-low') {
+                <i class="bi bi-sort-up ms-1"></i>
+              } @else {
+                <i class="bi bi-arrow-down-up ms-1 text-secondary"></i>
+              }
+            </th>
             <th>التاجر</th>
             <th class="text-start pe-3">الإجراءات</th>
           </tr>
@@ -57,6 +67,15 @@
                 }
               </td>
               <td>
+                @if (getProfitEgp(product) !== null) {
+                  <span class="badge" [class.bg-success]="getProfitEgp(product)! > 0" [class.bg-danger]="getProfitEgp(product)! <= 0">
+                    {{ getProfitEgp(product) | egpCurrency }}
+                  </span>
+                } @else {
+                  <span class="text-secondary">&mdash;</span>
+                }
+              </td>
+              <td>
                 @if (product.merchant) {
                   <span class="fw-semibold">{{ product.merchant }}</span>
                 } @else {
@@ -76,7 +95,7 @@
             </tr>
           } @empty {
             <tr>
-              <td colspan="9" class="text-center py-4 text-secondary">لا توجد منتجات</td>
+              <td colspan="10" class="text-center py-4 text-secondary">لا توجد منتجات</td>
             </tr>
           }
         </tbody>

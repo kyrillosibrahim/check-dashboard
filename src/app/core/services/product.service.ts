@@ -21,17 +21,21 @@ export class ProductService {
     page: number;
     limit: number;
     category?: string;
+    subcategory?: string;
     brand?: string;
     merchant?: string;
     name?: string;
+    sort?: string;
   }): Observable<PaginatedProducts> {
     let httpParams = new HttpParams()
       .set('page', String(params.page))
       .set('limit', String(params.limit));
-    if (params.category) httpParams = httpParams.set('category', params.category);
-    if (params.brand)    httpParams = httpParams.set('brand', params.brand);
-    if (params.merchant) httpParams = httpParams.set('merchant', params.merchant);
-    if (params.name)     httpParams = httpParams.set('search', params.name);
+    if (params.category)    httpParams = httpParams.set('category', params.category);
+    if (params.subcategory) httpParams = httpParams.set('subcategory', params.subcategory);
+    if (params.brand)       httpParams = httpParams.set('brand', params.brand);
+    if (params.merchant)    httpParams = httpParams.set('merchant', params.merchant);
+    if (params.name)        httpParams = httpParams.set('search', params.name);
+    if (params.sort)        httpParams = httpParams.set('sort', params.sort);
     return this.http.get<PaginatedProducts>(API_CONFIG.productsUrl, { params: httpParams });
   }
 

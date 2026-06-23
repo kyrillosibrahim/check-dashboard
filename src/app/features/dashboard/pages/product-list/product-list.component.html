@@ -58,12 +58,37 @@
     <!-- Category Dropdown -->
     <div class="col-md-3">
       <label class="form-label small mb-1">القسم</label>
-      <select class="form-select" [(ngModel)]="selectedCategory"
+      <select class="form-select" [(ngModel)]="selectedCategory" (ngModelChange)="onCategoryChange()"
               style="background-color: var(--sz-bg-card); border-color: var(--sz-border-color); color: inherit;">
         <option value="">كل الأقسام</option>
         @for (cat of categories; track cat.id) {
           <option [value]="cat.slug">{{ cat.name }}</option>
         }
+      </select>
+    </div>
+
+    <!-- Subcategory Dropdown (cascades from the selected main category) -->
+    @if (filteredSubcategories.length > 0) {
+      <div class="col-md-3">
+        <label class="form-label small mb-1">القسم الفرعى</label>
+        <select class="form-select" [(ngModel)]="selectedSubcategory"
+                style="background-color: var(--sz-bg-card); border-color: var(--sz-border-color); color: inherit;">
+          <option value="">كل الأقسام الفرعية</option>
+          @for (sub of filteredSubcategories; track sub.id) {
+            <option [value]="sub.slug">{{ sub.name }}</option>
+          }
+        </select>
+      </div>
+    }
+
+    <!-- Sort by profit -->
+    <div class="col-md-3">
+      <label class="form-label small mb-1">ترتيب حسب المكسب</label>
+      <select class="form-select" [(ngModel)]="selectedSort" (change)="onSortChange()"
+              style="background-color: var(--sz-bg-card); border-color: var(--sz-border-color); color: inherit;">
+        <option value="">بدون ترتيب</option>
+        <option value="profit-high">المكسب: الأعلى للأقل</option>
+        <option value="profit-low">المكسب: الأقل للأعلى</option>
       </select>
     </div>
 
@@ -96,7 +121,7 @@
       <button class="btn btn-primary flex-grow-1" (click)="search()">
         <i class="bi bi-search me-1"></i> بحث
       </button>
-      @if (selectedCategory || selectedMerchant || selectedBrand || searchName) {
+      @if (selectedCategory || selectedSubcategory || selectedMerchant || selectedBrand || searchName || selectedSort) {
         <button class="btn btn-outline-secondary" (click)="resetFilters()" title="مسح الفلاتر">
           <i class="bi bi-x-lg"></i>
         </button>
@@ -124,6 +149,8 @@
 } @else {
   <app-product-table
     [products]="products"
+    [sort]="selectedSort"
+    (sortProfit)="sortByProfit($event)"
     (edit)="onEdit($event)"
     (delete)="onDelete($event)" />
 
