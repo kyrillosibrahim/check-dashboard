@@ -1,0 +1,113 @@
+<div class="cv-page">
+  <div class="cv-header">
+    <h1 class="cv-title">
+      <i class="bi bi-people-fill"></i>
+      سجل دخول العملاء
+    </h1>
+    <p class="cv-subtitle">الزيارات اليومية للموقع — اسم الجهاز وعدد مرات الفتح</p>
+  </div>
+
+  <!-- Filters -->
+  <div class="cv-filters card">
+    <div class="filter-row">
+      <div class="filter-group">
+        <label>من تاريخ</label>
+        <input type="date" class="form-control" [ngModel]="fromDate()" (ngModelChange)="fromDate.set($event)" />
+      </div>
+      <div class="filter-group">
+        <label>إلى تاريخ</label>
+        <input type="date" class="form-control" [ngModel]="toDate()" (ngModelChange)="toDate.set($event)" />
+      </div>
+      <button class="btn btn-primary" (click)="load()">
+        <i class="bi bi-search"></i>
+        بحث
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  @if (!loading() && !error()) {
+    <div class="cv-summary">
+      <div class="summary-card">
+        <i class="bi bi-display"></i>
+        <div>
+          <span class="summary-num">{{ visits().length }}</span>
+          <span class="summary-label">أجهزة فريدة</span>
+        </div>
+      </div>
+      <div class="summary-card">
+        <i class="bi bi-eye-fill"></i>
+        <div>
+          <span class="summary-num">{{ totalVisits }}</span>
+          <span class="summary-label">إجمالي الزيارات</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="cv-loading">
+      <div class="spinner-border text-primary"></div>
+      <span>جارٍ التحميل...</span>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  }
+
+  <!-- Table -->
+  @if (!loading() && !error() && visits().length > 0) {
+    <div class="cv-table-wrap card">
+      <table class="cv-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>اسم الجهاز</th>
+            <th>عدد الزيارات</th>
+            <th>التاريخ</th>
+            <th>آخر زيارة</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (v of paged; track v._id; let i = $index) {
+            <tr>
+              <td class="cv-num">{{ (page() - 1) * 20 + i + 1 }}</td>
+              <td class="cv-device">
+                <i class="bi" [class]="v.deviceName.includes('iPhone') || v.deviceName.includes('Android') || v.deviceName.includes('iPad') ? 'bi-phone-fill' : 'bi-pc-display'"></i>
+                {{ v.deviceName }}
+              </td>
+              <td class="cv-count">
+                <span class="badge-count">{{ v.visitCount }}</span>
+              </td>
+              <td>{{ v.date }}</td>
+              <td class="cv-time">{{ formatDate(v.lastVisitAt) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    @if (totalPages > 1) {
+      <div class="cv-pagination">
+        <button class="btn btn-outline-secondary btn-sm" (click)="prevPage()" [disabled]="page() === 1">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+        <span>{{ page() }} / {{ totalPages }}</span>
+        <button class="btn btn-outline-secondary btn-sm" (click)="nextPage()" [disabled]="page() === totalPages">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+      </div>
+    }
+  }
+
+  @if (!loading() && !error() && visits().length === 0) {
+    <div class="cv-empty">
+      <i class="bi bi-inbox"></i>
+      <p>لا توجد زيارات في هذه الفترة</p>
+    </div>
+  }
+</div>

@@ -21,4 +21,5 @@ export const API_CONFIG = {
   reviewsUrl: `${BASE}/api/reviews`,
   storageUrl: `${BASE}/api/storage`,
   notificationsUrl: `${BASE}/api/notifications`,
+  siteVisitsUrl: `${BASE}/api/site-visits`,
 };

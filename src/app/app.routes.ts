@@ -176,6 +176,13 @@ export const routes: Routes = [
     canActivate: [authGuard, adminGuard]
   },
   {
+    path: 'customer-visits',
+    loadComponent: () => import('./features/dashboard/pages/customer-visits/customer-visits.component')
+      .then(c => c.CustomerVisitsComponent),
+    title: 'Kaf - سجل دخول العملاء',
+    canActivate: [authGuard, adminGuard]
+  },
+  {
     path: '**',
     redirectTo: 'products'
   }

@@ -223,6 +223,19 @@
               <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/admin-activity')" [class.bi-pin-angle-fill]="pinned.isPinned('/admin-activity')"></i>
             </button>
           </div>
+
+          <div class="nav-item-wrap">
+            <a routerLink="/customer-visits" routerLinkActive="active"
+               class="nav-item" (click)="closeSidebar()" title="سجل دخول العملاء">
+              <i class="bi bi-people-fill"></i>
+              <span>سجل دخول العملاء</span>
+            </a>
+            <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/customer-visits')"
+                    (click)="togglePin($event, {path:'/customer-visits', icon:'bi-people-fill', label:'سجل دخول العملاء'})"
+                    title="تثبيت في الأعلى">
+              <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/customer-visits')" [class.bi-pin-angle-fill]="pinned.isPinned('/customer-visits')"></i>
+            </button>
+          </div>
         }
 
         <div class="nav-item-wrap">
