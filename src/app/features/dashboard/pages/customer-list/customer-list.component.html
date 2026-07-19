@@ -6,10 +6,10 @@
       <small class="text-secondary">إجمالي العملاء المسجلين: {{ customers.length }}</small>
     </div>
     <div class="d-flex gap-2">
-      <button class="btn btn-outline-success btn-sm" (click)="downloadBackup()">
+      <button class="btn btn-backup btn-sm" (click)="downloadBackup()">
         <i class="bi bi-download me-1"></i> تحميل البيانات
       </button>
-      <button class="btn btn-outline-primary btn-sm" (click)="restoreBackup()">
+      <button class="btn btn-backup btn-sm" (click)="restoreBackup()">
         <i class="bi bi-upload me-1"></i> استرجاع البيانات
       </button>
       <button class="btn btn-outline-primary btn-sm" (click)="loadCustomers()" [disabled]="isLoading">

@@ -16,6 +16,7 @@
   --sz-shadow: 0 2px 12px rgba(27, 42, 74, 0.08);
   --sz-shadow-hover: 0 8px 24px rgba(27, 42, 74, 0.14);
   --sz-accent: #e8843a;
+  --sz-accent-rgb: 232, 132, 58;
   --sz-accent-hover: #d4742c;
 
   /* Sidebar (dark navy in light mode) */
@@ -37,6 +38,7 @@
   --sz-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
   --sz-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.5);
   --sz-accent: #e8843a;
+  --sz-accent-rgb: 232, 132, 58;
   --sz-accent-hover: #d4742c;
 
   /* Sidebar */
@@ -92,6 +94,22 @@ a {
   --bs-btn-hover-border-color: var(--sz-accent);
   --bs-btn-active-bg: var(--sz-accent);
   --bs-btn-active-border-color: var(--sz-accent);
+}
+
+/* ---------- Backup / restore — neutral actions ---------- */
+.btn-backup {
+  --bs-btn-color: var(--sz-text-secondary);
+  --bs-btn-bg: transparent;
+  /* Tinted from the text colour so the outline stays visible on either theme */
+  --bs-btn-border-color: color-mix(in srgb, var(--sz-text-secondary) 38%, transparent);
+  --bs-btn-hover-color: var(--sz-accent);
+  --bs-btn-hover-bg: rgba(var(--sz-accent-rgb), 0.08);
+  --bs-btn-hover-border-color: var(--sz-accent);
+  --bs-btn-active-color: var(--sz-accent);
+  --bs-btn-active-bg: rgba(var(--sz-accent-rgb), 0.14);
+  --bs-btn-active-border-color: var(--sz-accent);
+  --bs-btn-focus-shadow-rgb: var(--sz-accent-rgb);
+  font-weight: 500;
 }
 
 .text-primary { color: var(--sz-accent) !important; }
