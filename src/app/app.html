@@ -224,17 +224,50 @@
             </button>
           </div>
 
-          <div class="nav-item-wrap">
-            <a routerLink="/customer-visits" routerLinkActive="active"
-               class="nav-item" (click)="closeSidebar()" title="سجل دخول العملاء">
+          <!-- سجل دخول العملاء — expandable group -->
+          <div class="nav-group" [class.open]="customerGroupOpen()">
+            <button type="button" class="nav-item nav-group-toggle"
+                    [class.child-active]="customerGroupActive()"
+                    [attr.aria-expanded]="customerGroupOpen()"
+                    aria-controls="customer-group-panel"
+                    (click)="toggleCustomerGroup()"
+                    title="سجل دخول العملاء">
               <i class="bi bi-people-fill"></i>
               <span>سجل دخول العملاء</span>
-            </a>
-            <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/customer-visits')"
-                    (click)="togglePin($event, {path:'/customer-visits', icon:'bi-people-fill', label:'سجل دخول العملاء'})"
-                    title="تثبيت في الأعلى">
-              <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/customer-visits')" [class.bi-pin-angle-fill]="pinned.isPinned('/customer-visits')"></i>
+              <i class="bi nav-group-chevron"
+                 [class.bi-chevron-down]="!customerGroupOpen()"
+                 [class.bi-chevron-up]="customerGroupOpen()"></i>
             </button>
+
+            @if (customerGroupOpen()) {
+              <div class="nav-group-panel" id="customer-group-panel">
+                <div class="nav-item-wrap">
+                  <a routerLink="/customer-visits" routerLinkActive="active"
+                     class="nav-item nav-subitem" (click)="closeSidebar()" title="سجل الدخول">
+                    <i class="bi bi-box-arrow-in-left"></i>
+                    <span>سجل الدخول</span>
+                  </a>
+                  <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/customer-visits')"
+                          (click)="togglePin($event, {path:'/customer-visits', icon:'bi-people-fill', label:'سجل دخول العملاء'})"
+                          title="تثبيت في الأعلى">
+                    <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/customer-visits')" [class.bi-pin-angle-fill]="pinned.isPinned('/customer-visits')"></i>
+                  </button>
+                </div>
+
+                <div class="nav-item-wrap">
+                  <a routerLink="/customer-activity" routerLinkActive="active"
+                     class="nav-item nav-subitem" (click)="closeSidebar()" title="تحركات العملاء">
+                    <i class="bi bi-signpost-split"></i>
+                    <span>تحركات العملاء</span>
+                  </a>
+                  <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/customer-activity')"
+                          (click)="togglePin($event, {path:'/customer-activity', icon:'bi-signpost-split', label:'تحركات العملاء'})"
+                          title="تثبيت في الأعلى">
+                    <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/customer-activity')" [class.bi-pin-angle-fill]="pinned.isPinned('/customer-activity')"></i>
+                  </button>
+                </div>
+              </div>
+            }
           </div>
         }
 

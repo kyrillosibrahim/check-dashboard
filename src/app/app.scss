@@ -187,6 +187,57 @@ $header-height: 56px;
   opacity: 1;
 }
 
+// ── Expandable nav group (parent header + child routes) ──
+.nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-group-toggle {
+  // routerLinkActive cannot bind to a <button>, so App derives this from the URL.
+  // Tinted rather than solid so an actually-active child still reads as the
+  // strongest element in the group.
+  &.child-active {
+    color: #fff;
+    background-color: rgba(var(--sz-accent-rgb), 0.18);
+  }
+
+  .nav-group-chevron {
+    margin-inline-start: auto;      // pushes to the left edge in RTL, like .nav-badge
+    font-size: 0.8rem !important;   // beats the .nav-item i { font-size: 1.15rem } rule
+    opacity: 0.7;
+  }
+}
+
+.nav-group-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  // Logical properties: in dir="rtl" inline-start resolves to the RIGHT edge, so
+  // children indent inward and the rail draws on the right — no [dir] overrides.
+  margin-inline-start: 10px;
+  padding-inline-start: 12px;
+  border-inline-start: 2px solid var(--sz-sidebar-border);
+  animation: navGroupSlide 0.22s ease-out;
+}
+
+.nav-subitem {
+  font-size: 0.875rem;
+  padding: 9px 12px;
+
+  i { font-size: 1rem; }
+}
+
+@keyframes navGroupSlide {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-group-panel { animation: none; }
+}
+
 .sidebar-footer {
   padding: 0.75rem;
   border-top: 1px solid var(--sz-sidebar-border);
@@ -350,6 +401,21 @@ $header-height: 56px;
 
     .nav-pin-btn {
       display: none;
+    }
+
+    // 72px icon rail: drop the chevron and the indent rail; children become a
+    // plain icon stack under the parent icon.
+    .nav-group-chevron { display: none; }
+
+    .nav-group-panel {
+      margin-inline-start: 0;
+      padding-inline-start: 0;
+      border-inline-start: none;
+    }
+
+    .nav-subitem {
+      padding: 9px 0;
+      opacity: 0.85;
     }
   }
 }

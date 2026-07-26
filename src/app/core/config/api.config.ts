@@ -22,4 +22,5 @@ export const API_CONFIG = {
   storageUrl: `${BASE}/api/storage`,
   notificationsUrl: `${BASE}/api/notifications`,
   siteVisitsUrl: `${BASE}/api/site-visits`,
+  customerActivityUrl: `${BASE}/api/customer-activity`,
 };

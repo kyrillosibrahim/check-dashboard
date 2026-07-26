@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, computed, signal } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { ThemeService } from './core/services/theme.service';
@@ -27,7 +27,15 @@ export class App {
   private activityTracker = inject(ActivityTrackerService);
   private keepAlive = inject(KeepAliveService);
   private router = inject(Router);
+  private readonly CUSTOMER_GROUP_PATHS = ['/customer-visits', '/customer-activity'];
+  private currentUrl = signal('/');
   sidebarOpen = false;
+  customerGroupOpen = signal(false);
+
+  /** routerLinkActive only binds to anchors, so the group's <button> header
+   *  derives its highlight from the current URL instead. */
+  customerGroupActive = computed(() =>
+    this.CUSTOMER_GROUP_PATHS.some(p => this.currentUrl().startsWith(p)));
 
   constructor() {
     this.activityTracker.start();
@@ -37,7 +45,13 @@ export class App {
     this.badges.refresh();
     this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
-      .subscribe(() => this.badges.refresh());
+      .subscribe(e => {
+        this.badges.refresh();
+        const url = (e as NavigationEnd).urlAfterRedirects;
+        this.currentUrl.set(url);
+        // Deep link / hard refresh onto a child route: reveal it automatically.
+        if (this.CUSTOMER_GROUP_PATHS.some(p => url.startsWith(p))) this.customerGroupOpen.set(true);
+      });
     setInterval(() => this.badges.refresh(), 60_000);
   }
 
@@ -51,6 +65,10 @@ export class App {
 
   closeSidebar(): void {
     this.sidebarOpen = false;
+  }
+
+  toggleCustomerGroup(): void {
+    this.customerGroupOpen.update(v => !v);
   }
 
   togglePin(event: Event, item: PinnedItem): void {

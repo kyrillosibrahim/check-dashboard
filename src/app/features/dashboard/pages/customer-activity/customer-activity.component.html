@@ -1,0 +1,175 @@
+<div class="ca-page">
+  <div class="ca-header">
+    <h1 class="ca-title">
+      <i class="bi bi-signpost-split"></i>
+      تحركات العملاء
+    </h1>
+    <p class="ca-subtitle">الصفحات التي فتحها كل عميل ومدة بقائه فيها</p>
+  </div>
+
+  <!-- Filters -->
+  <form class="ca-filters card" (ngSubmit)="page.set(1); load()">
+    <div class="filter-row">
+      <div class="filter-group">
+        <label>من تاريخ</label>
+        <input type="date" name="fromDate" class="form-control" [ngModel]="fromDate()" (ngModelChange)="fromDate.set($event)" />
+      </div>
+      <div class="filter-group">
+        <label>إلى تاريخ</label>
+        <input type="date" name="toDate" class="form-control" [ngModel]="toDate()" (ngModelChange)="toDate.set($event)" />
+      </div>
+      <div class="filter-group">
+        <label>بحث</label>
+        <input type="text" name="search" class="form-control" placeholder="بحث بالاسم أو الرقم أو الجهاز"
+               [ngModel]="search()" (ngModelChange)="search.set($event)" />
+      </div>
+      <div class="form-check mb-2">
+        <input type="checkbox" name="onlyRegistered" id="onlyRegistered" class="form-check-input"
+               [ngModel]="onlyRegistered()" (ngModelChange)="onlyRegistered.set($event)" />
+        <label class="form-check-label" for="onlyRegistered">العملاء المسجلين فقط</label>
+      </div>
+      <button type="submit" class="btn btn-primary">
+        <i class="bi bi-search"></i>
+        بحث
+      </button>
+      <button type="button" class="btn btn-outline-danger" (click)="clearAll()">
+        <i class="bi bi-trash"></i>
+        مسح السجل
+      </button>
+    </div>
+  </form>
+
+  <!-- Summary Cards -->
+  @if (!loading() && !error()) {
+    <div class="ca-summary">
+      <div class="summary-card">
+        <i class="bi bi-eye-fill"></i>
+        <div>
+          <span class="summary-num">{{ summary()?.totalEvents ?? 0 }}</span>
+          <span class="summary-label">إجمالي المشاهدات</span>
+        </div>
+      </div>
+      <div class="summary-card">
+        <i class="bi bi-display"></i>
+        <div>
+          <span class="summary-num">{{ summary()?.uniqueDevices ?? 0 }}</span>
+          <span class="summary-label">أجهزة فريدة</span>
+        </div>
+      </div>
+      <div class="summary-card">
+        <i class="bi bi-person-check-fill"></i>
+        <div>
+          <span class="summary-num">{{ summary()?.uniqueCustomers ?? 0 }}</span>
+          <span class="summary-label">عملاء مسجلين</span>
+        </div>
+      </div>
+      <div class="summary-card">
+        <i class="bi bi-clock-history"></i>
+        <div>
+          <span class="summary-num">{{ totalDurationLabel() }}</span>
+          <span class="summary-label">إجمالي وقت التصفح</span>
+        </div>
+      </div>
+      <div class="summary-card">
+        <i class="bi bi-speedometer2"></i>
+        <div>
+          <span class="summary-num">{{ avgDurationLabel() }}</span>
+          <span class="summary-label">متوسط مدة الصفحة</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="ca-loading">
+      <div class="spinner-border text-primary"></div>
+      <span>جارٍ التحميل...</span>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  }
+
+  <!-- Table -->
+  @if (!loading() && !error() && rows().length > 0) {
+    <div class="ca-table-wrap card">
+      <table class="ca-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>العميل</th>
+            <th>الجهاز</th>
+            <th>اليوم</th>
+            <th>التاريخ</th>
+            <th>الوقت</th>
+            <th>الصفحة</th>
+            <th>المسار</th>
+            <th>المدة</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of rows(); track r._id; let i = $index) {
+            <tr>
+              <td class="ca-num">{{ (page() - 1) * pageSize + i + 1 }}</td>
+              <td>
+                @if (r.userName) {
+                  <span>{{ r.userName }}</span>
+                  <small class="d-block" dir="ltr">{{ r.userPhone }}</small>
+                } @else {
+                  <span class="ca-guest">زائر</span>
+                }
+              </td>
+              <td class="ca-device" [title]="r.deviceId.slice(-6)">
+                <i class="bi" [class]="r.deviceName.includes('iPhone') || r.deviceName.includes('Android') || r.deviceName.includes('iPad') ? 'bi-phone-fill' : 'bi-pc-display'"></i>
+                {{ r.deviceName }}
+              </td>
+              <td>{{ r.dayName }}</td>
+              <td>{{ r.dateLabel }}</td>
+              <td class="ca-time">{{ r.timeLabel }}</td>
+              <td>{{ r.title }}</td>
+              <td><code dir="ltr">{{ r.path }}</code></td>
+              <td>{{ r.durationLabel }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    @if (totalPages() > 1) {
+      <nav class="ca-pagination">
+        <ul class="pagination mb-0">
+          <li class="page-item" [class.disabled]="page() === 1">
+            <a class="page-link cursor-pointer" (click)="goToPage(page() - 1)">
+              <i class="bi bi-chevron-right"></i>
+            </a>
+          </li>
+          @for (p of pages(); track $index) {
+            @if (p === '...') {
+              <li class="page-item disabled"><span class="page-link">...</span></li>
+            } @else {
+              <li class="page-item" [class.active]="p === page()">
+                <a class="page-link cursor-pointer" (click)="goToPage(+p)">{{ p }}</a>
+              </li>
+            }
+          }
+          <li class="page-item" [class.disabled]="page() === totalPages()">
+            <a class="page-link cursor-pointer" (click)="goToPage(page() + 1)">
+              <i class="bi bi-chevron-left"></i>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    }
+  }
+
+  @if (!loading() && !error() && rows().length === 0) {
+    <div class="ca-empty">
+      <i class="bi bi-inbox"></i>
+      <p>لا توجد بيانات في هذه الفترة — يبدأ التسجيل بعد نشر تحديث المتجر</p>
+    </div>
+  }
+</div>
