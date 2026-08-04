@@ -95,13 +95,30 @@ export class CategoryManageComponent implements OnInit {
   }
 
   getImageUrl(image: string): string {
-    if (!image) return '';
-    return image;
+    return this.cloudinaryThumb(image, 120);
   }
 
   getBrandImageUrl(brand: IBrand): string {
     if (!brand.image) return '';
     return brand.image;
+  }
+
+  getBrandThumbUrl(brand: IBrand): string {
+    return this.cloudinaryThumb(brand.image, 96);
+  }
+
+  // Uploads keep the original file, but every thumbnail here renders at 32-48px.
+  // Asking Cloudinary for a fitted copy turns ~30kB logos into ~2kB ones.
+  private cloudinaryThumb(url: string, size: number): string {
+    if (!url) return '';
+    const marker = '/image/upload/';
+    const at = url.indexOf(marker);
+    if (at === -1) return url;
+    const rest = url.slice(at + marker.length);
+    // Only plain `.../upload/v1234/...` urls are safe to rewrite; anything else
+    // already carries transformations and is left alone.
+    if (!/^v\d+\//.test(rest)) return url;
+    return `${url.slice(0, at)}${marker}f_auto,q_auto,w_${size},h_${size},c_fit/${rest}`;
   }
 
   // ─── Category image upload ───

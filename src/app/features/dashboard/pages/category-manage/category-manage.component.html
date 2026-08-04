@@ -121,7 +121,7 @@
                 </td>
                 <td>
                   @if (cat.image) {
-                    <img [src]="getImageUrl(cat.image)" [alt]="cat.name" class="cat-thumb" loading="lazy">
+                    <img [src]="getImageUrl(cat.image)" [alt]="cat.name" class="cat-thumb" loading="lazy" decoding="async">
                   } @else {
                     <div class="cat-thumb-placeholder">
                       <i class="bi bi-image"></i>
@@ -234,7 +234,7 @@
                             @for (sub of cat.subcategories; track sub.id) {
                               <div class="sub-card">
                                 @if (sub.image) {
-                                  <img [src]="getImageUrl(sub.image)" [alt]="sub.name" class="sub-card-img">
+                                  <img [src]="getImageUrl(sub.image)" [alt]="sub.name" class="sub-card-img" loading="lazy" decoding="async">
                                 } @else {
                                   <div class="sub-card-img-placeholder">
                                     <i class="bi bi-image"></i>
@@ -279,7 +279,8 @@
                               @for (brand of getAvailableBrands(cat); track brand.id) {
                                 <div class="dropdown-item-custom" (mousedown)="addBrandToCategory(cat, brand)">
                                   @if (getBrandImageUrl(brand)) {
-                                    <img [src]="getBrandImageUrl(brand)" [alt]="brand.name" class="dropdown-thumb">
+                                    <img [src]="getBrandThumbUrl(brand)" [alt]="brand.name" class="dropdown-thumb"
+                                         width="32" height="32" loading="lazy" decoding="async">
                                   } @else {
                                     <div class="dropdown-thumb-placeholder"><i class="bi bi-award"></i></div>
                                   }
@@ -296,7 +297,8 @@
                             @for (brand of getSelectedBrands(cat); track brand.id) {
                               <div class="brand-card">
                                 @if (getBrandImageUrl(brand)) {
-                                  <img [src]="getBrandImageUrl(brand)" [alt]="brand.name" class="brand-card-img">
+                                  <img [src]="getBrandThumbUrl(brand)" [alt]="brand.name" class="brand-card-img"
+                                       width="32" height="32" loading="lazy" decoding="async">
                                 } @else {
                                   <div class="brand-card-img-placeholder"><i class="bi bi-award"></i></div>
                                 }
