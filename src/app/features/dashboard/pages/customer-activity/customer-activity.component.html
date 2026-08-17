@@ -127,7 +127,7 @@
                 {{ r.deviceName }}
               </td>
               <td>{{ r.dayName }}</td>
-              <td>{{ r.dateLabel }}</td>
+              <td [title]="r.dateFull">{{ r.dateLabel }}</td>
               <td class="ca-time">{{ r.timeLabel }}</td>
               <td>{{ r.title }}</td>
               <td>

@@ -11,6 +11,7 @@ import {
 interface DisplayCustomerActivity extends ICustomerActivity {
   dayName: string;
   dateLabel: string;
+  dateFull: string;
   timeLabel: string;
   durationLabel: string;
 }
@@ -136,6 +137,7 @@ const dateFmt = new Intl.DateTimeFormat('ar-EG', {
   month: 'long',
   day: 'numeric',
 });
+const numFmt = new Intl.NumberFormat('ar-EG');
 const timeFmt = new Intl.DateTimeFormat('ar-EG', {
   hour: '2-digit',
   minute: '2-digit',
@@ -147,10 +149,26 @@ function decorate(row: ICustomerActivity): DisplayCustomerActivity {
   return {
     ...row,
     dayName: DAYS_AR[d.getDay()],
-    dateLabel: dateFmt.format(d),
+    dateLabel: formatRelativeDate(d, new Date()),
+    dateFull: dateFmt.format(d),
     timeLabel: timeFmt.format(d),
     durationLabel: formatDuration(row.durationSeconds || 0),
   };
+}
+
+/** Formats a date relative to the current local calendar day. */
+function formatRelativeDate(d: Date, now: Date): string {
+  const a = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const b = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const days = Math.round((b.getTime() - a.getTime()) / 86400000);
+
+  if (days < 0) return dateFmt.format(d);
+  if (days === 0) return 'النهاردة';
+  if (days === 1) return 'منذ يوم';
+  if (days === 2) return 'منذ يومين';
+  if (days <= 10) return `منذ ${numFmt.format(days)} أيام`;
+  if (days <= 30) return `منذ ${numFmt.format(days)} يومًا`;
+  return dateFmt.format(d);
 }
 
 function formatDuration(totalSeconds: number): string {
