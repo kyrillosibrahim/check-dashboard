@@ -190,6 +190,13 @@ export const routes: Routes = [
     canActivate: [authGuard, adminGuard]
   },
   {
+    path: 'customer-funnel',
+    loadComponent: () => import('./features/dashboard/pages/customer-funnel/customer-funnel.component')
+      .then(c => c.CustomerFunnelComponent),
+    title: 'Kaf - رحلة العميل',
+    canActivate: [authGuard, adminGuard]
+  },
+  {
     path: '**',
     redirectTo: 'products'
   }

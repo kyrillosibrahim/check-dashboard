@@ -27,7 +27,7 @@ export class App {
   private activityTracker = inject(ActivityTrackerService);
   private keepAlive = inject(KeepAliveService);
   private router = inject(Router);
-  private readonly CUSTOMER_GROUP_PATHS = ['/customer-visits', '/customer-activity'];
+  private readonly CUSTOMER_GROUP_PATHS = ['/customer-visits', '/customer-activity', '/customer-funnel'];
   private currentUrl = signal('/');
   sidebarOpen = false;
   customerGroupOpen = signal(false);

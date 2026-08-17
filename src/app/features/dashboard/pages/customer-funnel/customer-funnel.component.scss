@@ -1,0 +1,241 @@
+.ca-page {
+  padding: 1.5rem;
+  max-width: 1180px;
+}
+
+.ca-header {
+  margin-bottom: 1.5rem;
+
+  .ca-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    color: var(--sz-accent);
+
+    i { font-size: 1.4rem; }
+  }
+
+  .ca-subtitle {
+    color: var(--bs-secondary-color);
+    font-size: .9rem;
+    margin-top: .25rem;
+  }
+}
+
+.ca-filters.card {
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  border-radius: .75rem;
+
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1rem;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+    min-width: 160px;
+
+    label { font-size: .85rem; font-weight: 600; }
+  }
+}
+
+.ca-loading {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  color: var(--bs-secondary-color);
+}
+
+.funnel-note.card {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  border: 2px solid var(--sz-accent);
+  border-radius: .75rem;
+  background: var(--bs-tertiary-bg);
+
+  > i {
+    color: var(--sz-accent);
+    font-size: 1.5rem;
+  }
+
+  strong { display: block; margin-bottom: .35rem; }
+  p { margin: .15rem 0; font-size: .9rem; }
+}
+
+.funnel-card.card {
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  border-radius: .75rem;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.funnel-stages {
+  margin-top: 1.25rem;
+}
+
+.funnel-stage {
+  .stage-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: .4rem;
+    font-size: .92rem;
+
+    strong { font-size: 1.1rem; }
+  }
+
+  .stage-bar-track {
+    height: 1rem;
+    overflow: hidden;
+    background: var(--bs-tertiary-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 20px;
+  }
+
+  // The page is RTL, so the bar has to grow from the right edge. A physical
+  // margin-left:auto pushed the fill to the left, away from its own label.
+  .stage-bar-fill {
+    height: 100%;
+    margin-inline-start: 0;
+    margin-inline-end: auto;
+    background: var(--sz-accent);
+    border-radius: inherit;
+  }
+
+  .stage-ips {
+    display: block;
+    margin-top: .3rem;
+    color: var(--bs-secondary-color);
+    font-size: .75rem;
+  }
+}
+
+.stage-drop {
+  min-height: 2.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  color: var(--bs-secondary-color);
+  font-size: .8rem;
+
+  strong { color: var(--bs-body-color); }
+  .drop-empty { font-size: 1.2rem; }
+}
+
+.raw-traffic-card.card {
+  padding: 1.25rem;
+  margin: 2rem 0 1.25rem;
+  border: 1px dashed var(--bs-border-color);
+  border-radius: .75rem;
+
+  .raw-traffic-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: .75rem;
+
+    > i { color: var(--sz-accent); font-size: 1.5rem; }
+    p { margin: .3rem 0 0; color: var(--bs-secondary-color); font-size: .85rem; }
+  }
+
+  .raw-traffic-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+
+    div {
+      min-width: 120px;
+      padding-inline-start: 1rem;
+      border-inline-start: 2px solid var(--bs-border-color);
+      display: flex;
+      flex-direction: column;
+    }
+
+    strong { font-size: 1.35rem; line-height: 1; }
+    span { margin-top: .25rem; color: var(--bs-secondary-color); font-size: .8rem; }
+  }
+}
+
+.ca-summary {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.summary-card {
+  background: var(--bs-body-bg);
+  border: 1px solid var(--bs-border-color);
+  border-radius: .75rem;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 220px;
+
+  > i { font-size: 2rem; color: var(--sz-accent); }
+
+  > div {
+    display: flex;
+    flex-direction: column;
+
+    .summary-num {
+      font-size: 1.6rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .summary-label {
+      font-size: .8rem;
+      color: var(--bs-secondary-color);
+      margin-top: .15rem;
+    }
+
+    small {
+      margin-top: .35rem;
+      color: var(--bs-secondary-color);
+      font-size: .72rem;
+    }
+  }
+}
+
+.ca-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--bs-secondary-color);
+
+  i { font-size: 3rem; display: block; margin-bottom: .75rem; }
+  p { margin: 0; }
+}
+
+@media (max-width: 600px) {
+  .ca-page { padding: 1rem; }
+
+  .ca-filters.card .filter-group { width: 100%; }
+
+  .summary-card { width: 100%; }
+
+  .stage-drop {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: .15rem;
+    padding: .5rem 1rem;
+  }
+}

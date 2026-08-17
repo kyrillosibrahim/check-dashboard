@@ -1,0 +1,123 @@
+<div class="ca-page" dir="rtl">
+  <div class="ca-header">
+    <h1 class="ca-title">
+      <i class="bi bi-funnel"></i>
+      رحلة العميل
+    </h1>
+    <p class="ca-subtitle">مراحل انتقال الزوار من تصفح المتجر حتى إتمام الطلب</p>
+  </div>
+
+  <form class="ca-filters card" (ngSubmit)="load()">
+    <div class="filter-row">
+      <div class="filter-group">
+        <label>من تاريخ</label>
+        <input type="date" name="fromDate" class="form-control" [ngModel]="fromDate()" (ngModelChange)="fromDate.set($event)" />
+      </div>
+      <div class="filter-group">
+        <label>إلى تاريخ</label>
+        <input type="date" name="toDate" class="form-control" [ngModel]="toDate()" (ngModelChange)="toDate.set($event)" />
+      </div>
+      <button type="submit" class="btn btn-primary">
+        <i class="bi bi-search"></i>
+        عرض
+      </button>
+    </div>
+  </form>
+
+  @if (loading()) {
+    <div class="ca-loading">
+      <div class="spinner-border text-primary"></div>
+      <span>جارٍ التحميل...</span>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="alert alert-danger">{{ error() }}</div>
+  }
+
+  @if (!loading() && !error()) {
+    @if (funnel(); as data) {
+      <div class="funnel-note card">
+        <i class="bi bi-info-circle-fill"></i>
+        <div>
+          <strong>اقرأ هذه الأرقام بحذر</strong>
+          <p>مرحلة «زوار» تحسب الأجهزة التي بقيت في المتجر {{ data.minDwellSeconds }} ثانية على الأقل.</p>
+          <p>يُنشأ معرّف الجهاز لكل جلسة متصفح، لذلك قد يزيد عدد الأجهزة عن عدد الأشخاص، وقد يزيد عدد عناوين IP أيضًا عندما يغيّر الهاتف الشبكة.</p>
+        </div>
+      </div>
+
+      @if (empty()) {
+        <div class="ca-empty">
+          <i class="bi bi-inbox"></i>
+          <p>لا توجد بيانات لرحلة العميل في هذه الفترة</p>
+        </div>
+      } @else {
+        <section class="funnel-card card" aria-labelledby="funnel-heading">
+          <h2 id="funnel-heading" class="section-title">مراحل رحلة العميل</h2>
+          <div class="funnel-stages">
+            @for (stage of stages(); track stage.key; let i = $index) {
+              @if (i > 0) {
+                <div class="stage-drop">
+                  @if (stage.continuedPercent !== null) {
+                    <span><strong>{{ stage.continuedPercent }}٪</strong> استمروا</span>
+                    <span>فُقد <strong>{{ stage.lost }}</strong></span>
+                  } @else {
+                    <span class="drop-empty">—</span>
+                  }
+                </div>
+              }
+
+              <div class="funnel-stage">
+                <div class="stage-heading">
+                  <span>{{ stage.label }}</span>
+                  <strong>{{ stage.value }}</strong>
+                </div>
+                <div class="stage-bar-track" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+                     [attr.aria-valuenow]="stage.width" [attr.aria-label]="stage.label">
+                  <div class="stage-bar-fill" [style.width.%]="stage.width"></div>
+                </div>
+                @if (stage.unit === 'device') {
+                  <small class="stage-ips">{{ stage.ips ?? 0 }} عنوان IP</small>
+                }
+              </div>
+            }
+          </div>
+        </section>
+      }
+
+      <section class="raw-traffic-card card" aria-labelledby="raw-traffic-heading">
+        <div class="raw-traffic-heading">
+          <i class="bi bi-window-stack"></i>
+          <div>
+            <h2 id="raw-traffic-heading" class="section-title">الزيارات الخام</h2>
+            <p>عدّ أوسع لأي فتح صفحة، لذلك لا يُقارن بمراحل رحلة العميل.</p>
+          </div>
+        </div>
+        <div class="raw-traffic-values">
+          <div><strong>{{ data.rawTraffic.devices }}</strong><span>أجهزة</span></div>
+          <div><strong>{{ data.rawTraffic.ips }}</strong><span>عناوين IP</span></div>
+          <div><strong>{{ data.rawTraffic.records }}</strong><span>مرات فتح</span></div>
+        </div>
+      </section>
+
+      <div class="ca-summary secondary-summary">
+        <div class="summary-card">
+          <i class="bi bi-cart-x-fill"></i>
+          <div>
+            <span class="summary-num">{{ data.abandonedCarts.carts }}</span>
+            <span class="summary-label">سلات متروكة</span>
+            <small>{{ data.abandonedCarts.items }} عناصر · {{ data.abandonedCarts.guestCarts }} سلات زوار</small>
+          </div>
+        </div>
+        <div class="summary-card">
+          <i class="bi bi-shield-check"></i>
+          <div>
+            <span class="summary-num">{{ data.excluded.botDevices }}</span>
+            <span class="summary-label">أجهزة آلية مستبعدة</span>
+            <small>{{ data.excluded.botHits }} زيارات آلية مستبعدة</small>
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>

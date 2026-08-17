@@ -23,4 +23,5 @@ export const API_CONFIG = {
   notificationsUrl: `${BASE}/api/notifications`,
   siteVisitsUrl: `${BASE}/api/site-visits`,
   customerActivityUrl: `${BASE}/api/customer-activity`,
+  customerActivityFunnelUrl: `${BASE}/api/customer-activity/funnel`,
 };
