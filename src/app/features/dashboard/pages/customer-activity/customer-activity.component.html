@@ -133,12 +133,14 @@
               <td>
                 @if (r.path) {
                   <a class="ca-path-link" [href]="storefrontUrl + r.path" target="_blank" rel="noopener"
-                     [title]="storefrontUrl + r.path"><code dir="ltr">{{ r.path }}</code></a>
+                     [title]="storefrontUrl + r.path">
+                    <i class="bi bi-box-arrow-up-left"></i>شاهد
+                  </a>
                 } @else {
-                  <code dir="ltr">{{ r.path }}</code>
+                  <span class="ca-guest">—</span>
                 }
               </td>
-              <td>{{ r.durationLabel }}</td>
+              <td class="ca-duration">{{ r.durationLabel }}</td>
             </tr>
           }
         </tbody>
