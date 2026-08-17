@@ -130,7 +130,14 @@
               <td>{{ r.dateLabel }}</td>
               <td class="ca-time">{{ r.timeLabel }}</td>
               <td>{{ r.title }}</td>
-              <td><code dir="ltr">{{ r.path }}</code></td>
+              <td>
+                @if (r.path) {
+                  <a class="ca-path-link" [href]="storefrontUrl + r.path" target="_blank" rel="noopener"
+                     [title]="storefrontUrl + r.path"><code dir="ltr">{{ r.path }}</code></a>
+                } @else {
+                  <code dir="ltr">{{ r.path }}</code>
+                }
+              </td>
               <td>{{ r.durationLabel }}</td>
             </tr>
           }

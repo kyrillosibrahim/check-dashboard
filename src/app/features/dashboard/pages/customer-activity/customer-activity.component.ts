@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { environment } from '../../../../../environments/environment';
 import Swal from 'sweetalert2';
 import {
   CustomerActivityService,
@@ -37,6 +38,8 @@ export class CustomerActivityComponent implements OnInit {
   page = signal(1);
 
   readonly pageSize = 50;
+  /** Storefront origin, used to turn a tracked path into an openable link. */
+  readonly storefrontUrl = environment.storefrontUrl;
 
   totalPages = computed(() => Math.max(1, Math.ceil(this.total() / this.pageSize)));
 
