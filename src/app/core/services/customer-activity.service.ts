@@ -98,4 +98,17 @@ export class CustomerActivityService {
   deleteAll(): Observable<{ success: boolean }> {
     return this.http.delete<{ success: boolean }>(API_CONFIG.customerActivityUrl);
   }
+
+  deleteOne(id: string): Observable<{ success: boolean; deleted: number }> {
+    return this.http.delete<{ success: boolean; deleted: number }>(
+      `${API_CONFIG.customerActivityUrl}/${id}`
+    );
+  }
+
+  deleteMany(ids: string[]): Observable<{ success: boolean; deleted: number }> {
+    return this.http.post<{ success: boolean; deleted: number }>(
+      `${API_CONFIG.customerActivityUrl}/delete-many`,
+      { ids }
+    );
+  }
 }

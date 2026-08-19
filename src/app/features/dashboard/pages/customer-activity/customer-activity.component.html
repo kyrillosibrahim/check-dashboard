@@ -32,6 +32,12 @@
         <i class="bi bi-search"></i>
         بحث
       </button>
+      @if (selectedCount() > 0) {
+        <button type="button" class="btn btn-danger" (click)="deleteSelected()">
+          <i class="bi bi-trash"></i>
+          حذف المحدد ({{ selectedCount() }})
+        </button>
+      }
       <button type="button" class="btn btn-outline-danger" (click)="clearAll()">
         <i class="bi bi-trash"></i>
         مسح السجل
@@ -99,6 +105,10 @@
       <table class="ca-table">
         <thead>
           <tr>
+            <th class="ca-select">
+              <input type="checkbox" class="form-check-input" [checked]="allSelected()"
+                     [indeterminate]="someSelected()" (change)="toggleAll()" title="تحديد الكل" />
+            </th>
             <th>#</th>
             <th>العميل</th>
             <th>الجهاز</th>
@@ -108,11 +118,16 @@
             <th>الصفحة</th>
             <th>المسار</th>
             <th>المدة</th>
+            <th class="ca-actions-col">حذف</th>
           </tr>
         </thead>
         <tbody>
           @for (r of rows(); track r._id; let i = $index) {
-            <tr>
+            <tr [class.is-selected]="isSelected(r._id)">
+              <td class="ca-select">
+                <input type="checkbox" class="form-check-input" [checked]="isSelected(r._id)"
+                       (change)="toggleRow(r._id)" />
+              </td>
               <td class="ca-num">{{ (page() - 1) * pageSize + i + 1 }}</td>
               <td>
                 @if (r.userName) {
@@ -141,6 +156,11 @@
                 }
               </td>
               <td class="ca-duration">{{ r.durationLabel }}</td>
+              <td class="ca-actions-col">
+                <button type="button" class="ca-row-delete" (click)="deleteRow(r)" title="حذف هذا السجل">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
             </tr>
           }
         </tbody>

@@ -37,6 +37,7 @@ export class CustomerActivityComponent implements OnInit {
   search = signal('');
   onlyRegistered = signal(false);
   page = signal(1);
+  selectedIds = signal<Set<string>>(new Set<string>());
 
   readonly pageSize = 50;
   /** Storefront origin, used to turn a tracked path into an openable link. */
@@ -56,6 +57,15 @@ export class CustomerActivityComponent implements OnInit {
     out.push(total);
     return out;
   });
+
+  selectedCount = computed(() => this.selectedIds().size);
+
+  allSelected = computed(() => {
+    const rows = this.rows();
+    return rows.length > 0 && rows.every(r => this.selectedIds().has(r._id));
+  });
+
+  someSelected = computed(() => this.selectedCount() > 0 && !this.allSelected());
 
   totalDurationLabel = computed(() =>
     formatDuration(this.summary()?.totalDurationSeconds || 0)
@@ -90,6 +100,9 @@ export class CustomerActivityComponent implements OnInit {
         this.rows.set(response.items.map(row => decorate(row)));
         this.summary.set(response.summary);
         this.total.set(response.total);
+        // Selection is per rendered page: ids kept across a page or filter change
+        // would make the counter lie and delete rows the admin cannot see.
+        this.selectedIds.set(new Set<string>());
         this.loading.set(false);
       },
       error: () => {
@@ -104,6 +117,76 @@ export class CustomerActivityComponent implements OnInit {
       this.page.set(page);
       this.load();
     }
+  }
+
+  isSelected(id: string): boolean {
+    return this.selectedIds().has(id);
+  }
+
+  toggleRow(id: string): void {
+    const next = new Set(this.selectedIds());
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    this.selectedIds.set(next);
+  }
+
+  toggleAll(): void {
+    if (this.allSelected()) {
+      this.selectedIds.set(new Set<string>());
+      return;
+    }
+    this.selectedIds.set(new Set(this.rows().map(r => r._id)));
+  }
+
+  deleteRow(row: DisplayCustomerActivity): void {
+    Swal.fire({
+      title: 'حذف هذا السجل؟',
+      text: row.title || row.path,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'نعم، احذف',
+      cancelButtonText: 'إلغاء',
+      confirmButtonColor: '#dc3545',
+    }).then(res => {
+      if (!res.isConfirmed) return;
+      this.activityService.deleteOne(row._id).subscribe({
+        next: () => {
+          this.afterDelete([row._id]);
+          Swal.fire('تم', 'تم حذف السجل', 'success');
+        },
+        error: () => Swal.fire('خطأ', 'فشل حذف السجل', 'error'),
+      });
+    });
+  }
+
+  deleteSelected(): void {
+    if (this.selectedCount() === 0) return;
+    const ids = [...this.selectedIds()];
+    Swal.fire({
+      title: 'حذف السجلات المحددة؟',
+      text: `سيتم حذف ${ids.length} سجل. هذا الإجراء لا يمكن التراجع عنه.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'نعم، احذف',
+      cancelButtonText: 'إلغاء',
+      confirmButtonColor: '#dc3545',
+    }).then(res => {
+      if (!res.isConfirmed) return;
+      this.activityService.deleteMany(ids).subscribe({
+        next: response => {
+          this.afterDelete(ids);
+          Swal.fire('تم', `تم حذف ${response.deleted} سجل`, 'success');
+        },
+        error: () => Swal.fire('خطأ', 'فشل حذف السجلات', 'error'),
+      });
+    });
+  }
+
+  /** Steps back a page when the last row on it was removed, then reloads. */
+  private afterDelete(deletedIds: string[]): void {
+    const remaining = this.rows().filter(r => !deletedIds.includes(r._id)).length;
+    if (remaining === 0 && this.page() > 1) this.page.set(this.page() - 1);
+    this.load();
   }
 
   clearAll(): void {
@@ -123,6 +206,7 @@ export class CustomerActivityComponent implements OnInit {
           this.summary.set(null);
           this.total.set(0);
           this.page.set(1);
+          this.selectedIds.set(new Set<string>());
           Swal.fire('تم', 'تم مسح السجل', 'success');
         },
         error: () => Swal.fire('خطأ', 'فشل مسح السجل', 'error'),
