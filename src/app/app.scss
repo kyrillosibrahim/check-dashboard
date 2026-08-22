@@ -451,9 +451,12 @@ $header-height: 56px;
   }
 
   .sidebar,
+  .sidebar-overlay,
   .top-header,
   .logout-mobile,
-  .hamburger {
+  .hamburger,
+  .pinned-bar,
+  .ga-alert-banner {
     display: none !important;
   }
 
