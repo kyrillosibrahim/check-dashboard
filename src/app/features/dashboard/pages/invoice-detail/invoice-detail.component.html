@@ -135,18 +135,18 @@
 
       <div class="form-row">
         <label>المحافظة :</label>
-        <span class="form-value">{{ order.shippingAddress.governorate || '---' }}</span>
+        <span class="form-value">{{ governorateAr || '---' }}</span>
       </div>
 
       <div class="form-row">
         <label>المدينة :</label>
-        <span class="form-value">{{ order.shippingAddress.city || '---' }}</span>
+        <span class="form-value">{{ cityAr || '---' }}</span>
       </div>
 
       @if (order.shippingAddress.district) {
         <div class="form-row">
           <label>الحي :</label>
-          <span class="form-value">{{ order.shippingAddress.district }}</span>
+          <span class="form-value">{{ districtAr }}</span>
         </div>
       }
 
@@ -263,16 +263,16 @@
             </div>
             <div class="info-item">
               <span class="info-label">المحافظة</span>
-              <span class="info-value">{{ order.shippingAddress.governorate || '---' }}</span>
+              <span class="info-value">{{ governorateAr || '---' }}</span>
             </div>
             <div class="info-item">
               <span class="info-label">المدينة</span>
-              <span class="info-value">{{ order.shippingAddress.city || '---' }}</span>
+              <span class="info-value">{{ cityAr || '---' }}</span>
             </div>
             @if (order.shippingAddress.district) {
               <div class="info-item">
                 <span class="info-label">الحي</span>
-                <span class="info-value">{{ order.shippingAddress.district }}</span>
+                <span class="info-value">{{ districtAr }}</span>
               </div>
             }
             <div class="info-item">

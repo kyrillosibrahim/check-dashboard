@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { IGovernorate } from '../models/governorate.model';
+import { ICity, IGovernorate } from '../models/governorate.model';
 import { API_CONFIG } from '../config/api.config';
 
 @Injectable({ providedIn: 'root' })
@@ -10,6 +10,10 @@ export class GovernorateService {
 
   getAll(): Observable<IGovernorate[]> {
     return this.http.get<IGovernorate[]>(API_CONFIG.governoratesUrl);
+  }
+
+  getCities(governorateId: number): Observable<ICity[]> {
+    return this.http.get<ICity[]>(`${API_CONFIG.governoratesUrl}/${governorateId}/cities`);
   }
 
   updateShippingCost(id: number, shippingCost: number, extraShippingCost?: number): Observable<IGovernorate> {

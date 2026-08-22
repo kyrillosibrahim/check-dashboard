@@ -7,6 +7,7 @@ import { OrderService } from '../../../../core/services/order.service';
 import { SettingsService } from '../../../../core/services/settings.service';
 import { ProductService } from '../../../../core/services/product.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { GovernorateService } from '../../../../core/services/governorate.service';
 import { IOrder } from '../../../../core/models/order.model';
 import { IProduct } from '../../../../core/models/product.model';
 import { DatePipe } from '@angular/common';
@@ -26,10 +27,14 @@ export class InvoiceDetailComponent implements OnInit, OnDestroy {
   private orderService = inject(OrderService);
   private settingsService = inject(SettingsService);
   private productService = inject(ProductService);
+  private governorateService = inject(GovernorateService);
   private cdr = inject(ChangeDetectorRef);
   authService = inject(AuthService);
 
   order: IOrder | null = null;
+  governorateAr = '';
+  cityAr = '';
+  districtAr = '';
   showModal = false;
   siteLogo: string | null = null;
   private products: IProduct[] = [];
@@ -47,6 +52,7 @@ export class InvoiceDetailComponent implements OnInit, OnDestroy {
             image: item.image ? item.image.replace(/https?:\/\/localhost:\d+/, API_CONFIG.baseUrl) : item.image
           }))
         };
+        this.loadLocalizedAddress();
         this.updatePrintTitle();
         this.cdr.markForCheck();
       },
@@ -69,6 +75,55 @@ export class InvoiceDetailComponent implements OnInit, OnDestroy {
     if (!this.order) return;
     const customerName = (this.order.customer.name || 'عميل').trim();
     document.title = `${customerName} - ${this.order.id}`;
+  }
+
+  private loadLocalizedAddress(): void {
+    if (!this.order) return;
+    const a = this.order.shippingAddress;
+    if (!a) return;
+
+    this.governorateAr = a.governorate || '';
+    this.cityAr = a.city || '';
+    this.districtAr = a.district || '';
+
+    const matches = (value: string | undefined, target: string | undefined) =>
+      (value || '').trim().toLowerCase() === (target || '').trim().toLowerCase();
+
+    this.governorateService.getAll().subscribe({
+      next: (governorates) => {
+        const governorate = governorates.find(gov =>
+          matches(gov.governorate_name_en, a.governorate) || matches(gov.governorate_name_ar, a.governorate)
+        );
+        if (!governorate) return;
+
+        this.governorateAr = governorate.governorate_name_ar || a.governorate;
+        this.cdr.markForCheck();
+
+        this.governorateService.getCities(governorate.id).subscribe({
+          next: (cities) => {
+            const city = cities.find(item =>
+              matches(item.city_name_en, a.city) || matches(item.city_name_ar, a.city)
+            );
+            if (!city) return;
+
+            this.cityAr = city.city_name_ar || a.city;
+            this.cdr.markForCheck();
+
+            if (a.district) {
+              const district = city.districts?.find(item =>
+                matches(item.district_name_en, a.district) || matches(item.district_name_ar, a.district)
+              );
+              if (district) {
+                this.districtAr = district.district_name_ar || a.district;
+                this.cdr.markForCheck();
+              }
+            }
+          },
+          error: () => {}
+        });
+      },
+      error: () => {}
+    });
   }
 
   private loadSiteLogo(): void {
