@@ -23,6 +23,7 @@
             <th>الجمهور</th>
             <th>عدد المستلمين</th>
             <th>التاريخ</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -47,6 +48,11 @@
               <td>{{ c.audience }}</td>
               <td><span class="badge bg-info">{{ c.recipientsCount }}</span></td>
               <td class="small text-nowrap">{{ c.createdAt | date:'short' }}</td>
+              <td>
+                <button type="button" class="btn btn-sm btn-outline-danger" aria-label="حذف الإشعار" (click)="remove(c)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </td>
             </tr>
           }
         </tbody>

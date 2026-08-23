@@ -24,6 +24,14 @@ export interface SentCampaign {
   createdAt: string;
 }
 
+export interface DeleteCampaignResult {
+  message: string;
+  notificationsDeleted: number;
+  couponCode: string;
+  couponRemoved: boolean;
+  otherCampaignsWithSameCode: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
   private http = inject(HttpClient);
@@ -37,5 +45,9 @@ export class NotificationService {
 
   getSent(): Observable<SentCampaign[]> {
     return this.http.get<SentCampaign[]>(`${API_CONFIG.notificationsUrl}/admin/sent`);
+  }
+
+  deleteSent(id: string): Observable<DeleteCampaignResult> {
+    return this.http.delete<DeleteCampaignResult>(`${API_CONFIG.notificationsUrl}/admin/sent/${id}`);
   }
 }
