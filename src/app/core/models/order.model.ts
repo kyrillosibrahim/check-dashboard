@@ -33,6 +33,8 @@ export interface IOrder {
   shippingCompany: string;
   subtotal: number;
   discount: number;
+  couponCode?: string;
+  couponDiscount?: number;
   total: number;
   status: 'pending' | 'processing' | 'shipped' | 'delivered';
   paymentStatus: string;

@@ -95,6 +95,14 @@
           <span>التخفيضات :</span>
           <span>( {{ order.discount | egpCurrency }} )</span>
         </div>
+      }
+      @if (couponDiscount) {
+        <div class="summary-row">
+          <span>خصم الكوبون@if (order.couponCode) { ({{ order.couponCode }}) } :</span>
+          <span>( {{ couponDiscount | egpCurrency }} )</span>
+        </div>
+      }
+      @if (order.discount || couponDiscount) {
         <div class="summary-row">
           <span>السعر الكلي بعد التخفيضات :</span>
           <span>( {{ totalAfterDiscounts | egpCurrency }} )</span>
@@ -330,6 +338,12 @@
                 <div class="invoice-summary-row">
                   <span>التخفيضات :</span>
                   <span>{{ order.discount | egpCurrency }}</span>
+                </div>
+              }
+              @if (couponDiscount) {
+                <div class="invoice-summary-row">
+                  <span>خصم الكوبون@if (order.couponCode) { ({{ order.couponCode }}) } :</span>
+                  <span>{{ couponDiscount | egpCurrency }}</span>
                 </div>
               }
               <div class="invoice-summary-row">

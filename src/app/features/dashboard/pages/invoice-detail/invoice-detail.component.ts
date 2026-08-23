@@ -146,8 +146,12 @@ export class InvoiceDetailComponent implements OnInit, OnDestroy {
     return this.order?.subtotal || this.order?.items.reduce((s, i) => s + i.total, 0) || 0;
   }
 
+  get couponDiscount(): number {
+    return this.order?.couponDiscount || 0;
+  }
+
   get totalAfterDiscounts(): number {
-    return this.subtotal - (this.order?.discount || 0);
+    return this.subtotal - (this.order?.discount || 0) - this.couponDiscount;
   }
 
   get grandTotal(): number {
