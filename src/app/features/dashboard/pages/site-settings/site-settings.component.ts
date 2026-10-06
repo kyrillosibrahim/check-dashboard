@@ -10,7 +10,6 @@ import { IBrand } from '../../../../core/models/brand.model';
 import { ICategory } from '../../../../core/models/category.model';
 import { API_CONFIG } from '../../../../core/config/api.config';
 import { BackupService } from '../../../../core/services/backup.service';
-import { CloudinaryService } from '../../../../core/services/cloudinary.service';
 import { PasteImageDirective } from '../../../../core/directives/paste-image.directive';
 import Swal from 'sweetalert2';
 
@@ -28,7 +27,6 @@ export class SiteSettingsComponent implements OnInit {
   private categoryService = inject(CategoryService);
   private cdr = inject(ChangeDetectorRef);
   private backupService = inject(BackupService);
-  private cloudinaryService = inject(CloudinaryService);
 
   settings: ISiteSettings = {
     logo: '',
@@ -47,18 +45,6 @@ export class SiteSettingsComponent implements OnInit {
   logoEnPreview: string | null = null;
   logoIconFile: File | null = null;
   logoIconPreview: string | null = null;
-
-  // Natural products (videos with links)
-  naturalProducts: { video: string; link: string }[] = [];
-  uploadingVideoIndex: number | null = null;
-
-  // Per-row state for the natural-products picker
-  naturalProductSelected: (IProduct | null)[] = [];
-  naturalBrandSelected: (IBrand | null)[] = [];
-  naturalLinkType: ('product' | 'brand')[] = [];
-  naturalSearch: string[] = [];
-  naturalBrandSearch: string[] = [];
-  naturalDropdownIndex: number | null = null;
 
   // All products, brands & categories for selection
   allProducts: IProduct[] = [];
@@ -98,7 +84,6 @@ export class SiteSettingsComponent implements OnInit {
         if (s.logoAr)   this.logoArPreview   = s.logoAr.startsWith('http')   ? s.logoAr   : `${API_CONFIG.uploadsUrl}/${s.logoAr}`;
         if (s.logoEn)   this.logoEnPreview   = s.logoEn.startsWith('http')   ? s.logoEn   : `${API_CONFIG.uploadsUrl}/${s.logoEn}`;
         if (s.logoIcon) this.logoIconPreview = s.logoIcon.startsWith('http') ? s.logoIcon : `${API_CONFIG.uploadsUrl}/${s.logoIcon}`;
-        this.naturalProducts = (s.naturalProducts || []).map(i => ({ video: i.video || '', link: i.link || '' }));
         this.loadCategories();
         this.loadProducts();
         this.loadBrands();
@@ -130,36 +115,10 @@ export class SiteSettingsComponent implements OnInit {
           item => typeof item === 'object' ? item.id : item
         );
         this.selectedProducts = products.filter(p => bestIds.includes(p.id));
-        this.hydrateNaturalSelection();
         this.checkLoaded();
       },
       error: () => this.checkLoaded()
     });
-  }
-
-  /** Resolve link strings back to product/brand objects for display */
-  private hydrateNaturalSelection(): void {
-    this.naturalLinkType = this.naturalProducts.map(item =>
-      item.link?.includes('/products?brand=') ? 'brand' : 'product'
-    );
-    this.naturalProductSelected = this.naturalProducts.map(item => {
-      if (item.link?.includes('/products?brand=')) return null;
-      const id = this.extractProductId(item.link);
-      return id ? this.allProducts.find(p => p.id === id) || null : null;
-    });
-    this.naturalBrandSelected = this.naturalProducts.map(item => {
-      if (!item.link?.includes('/products?brand=')) return null;
-      const name = new URLSearchParams(item.link.split('?')[1] || '').get('brand');
-      return name ? this.allBrands.find(b => b.name === name) || null : null;
-    });
-    this.naturalSearch = this.naturalProducts.map(() => '');
-    this.naturalBrandSearch = this.naturalProducts.map(() => '');
-  }
-
-  private extractProductId(link: string): string | null {
-    if (!link) return null;
-    const match = link.match(/\/product\/([^/?#]+)/);
-    return match ? decodeURIComponent(match[1]) : null;
   }
 
   private loadBrands(): void {
@@ -167,7 +126,6 @@ export class SiteSettingsComponent implements OnInit {
       next: (brands) => {
         this.allBrands = brands;
         this.selectedBrands = brands.filter(b => this.settings.bestSellingBrands.includes(b.id));
-        this.hydrateNaturalSelection();
         this.checkLoaded();
       },
       error: () => this.checkLoaded()
@@ -217,135 +175,6 @@ export class SiteSettingsComponent implements OnInit {
       this.cdr.markForCheck();
     };
     reader.readAsDataURL(file);
-  }
-
-  // --- Natural Products (videos with links) ---
-  addNaturalProduct(): void {
-    this.naturalProducts = [...this.naturalProducts, { video: '', link: '' }];
-    this.naturalProductSelected = [...this.naturalProductSelected, null];
-    this.naturalBrandSelected = [...this.naturalBrandSelected, null];
-    this.naturalLinkType = [...this.naturalLinkType, 'product'];
-    this.naturalSearch = [...this.naturalSearch, ''];
-    this.naturalBrandSearch = [...this.naturalBrandSearch, ''];
-    this.cdr.markForCheck();
-  }
-
-  removeNaturalProduct(index: number): void {
-    this.naturalProducts = this.naturalProducts.filter((_, i) => i !== index);
-    this.naturalProductSelected = this.naturalProductSelected.filter((_, i) => i !== index);
-    this.naturalBrandSelected = this.naturalBrandSelected.filter((_, i) => i !== index);
-    this.naturalLinkType = this.naturalLinkType.filter((_, i) => i !== index);
-    this.naturalSearch = this.naturalSearch.filter((_, i) => i !== index);
-    this.naturalBrandSearch = this.naturalBrandSearch.filter((_, i) => i !== index);
-    if (this.naturalDropdownIndex === index) this.naturalDropdownIndex = null;
-    this.cdr.markForCheck();
-  }
-
-  filteredNaturalProducts(index: number): IProduct[] {
-    const term = (this.naturalSearch[index] || '').trim().toLowerCase();
-    const list = term
-      ? this.allProducts.filter(p =>
-          (p.title?.toLowerCase().includes(term)) ||
-          (p.titleAr?.toLowerCase().includes(term))
-        )
-      : this.allProducts;
-    return list.slice(0, 30);
-  }
-
-  selectNaturalProduct(index: number, product: IProduct): void {
-    this.naturalProductSelected[index] = product;
-    this.naturalProducts[index] = {
-      ...this.naturalProducts[index],
-      link: `/product/${product.id}`
-    };
-    this.naturalSearch[index] = '';
-    this.naturalDropdownIndex = null;
-    this.cdr.markForCheck();
-  }
-
-  clearNaturalProduct(index: number): void {
-    this.naturalProductSelected[index] = null;
-    this.naturalProducts[index] = { ...this.naturalProducts[index], link: '' };
-    this.cdr.markForCheck();
-  }
-
-  filteredNaturalBrands(index: number): IBrand[] {
-    const term = (this.naturalBrandSearch[index] || '').trim().toLowerCase();
-    const list = term
-      ? this.allBrands.filter(b => b.name?.toLowerCase().includes(term))
-      : this.allBrands;
-    return list.slice(0, 30);
-  }
-
-  selectNaturalBrand(index: number, brand: IBrand): void {
-    this.naturalBrandSelected[index] = brand;
-    this.naturalProducts[index] = { ...this.naturalProducts[index], link: `/products?brand=${brand.name}` };
-    this.naturalBrandSearch[index] = '';
-    this.naturalDropdownIndex = null;
-    this.cdr.markForCheck();
-  }
-
-  clearNaturalBrand(index: number): void {
-    this.naturalBrandSelected[index] = null;
-    this.naturalProducts[index] = { ...this.naturalProducts[index], link: '' };
-    this.cdr.markForCheck();
-  }
-
-  setNaturalLinkType(index: number, type: 'product' | 'brand'): void {
-    if (this.naturalLinkType[index] === type) return;
-    this.naturalLinkType[index] = type;
-    this.naturalProductSelected[index] = null;
-    this.naturalBrandSelected[index] = null;
-    this.naturalProducts[index] = { ...this.naturalProducts[index], link: '' };
-    this.naturalSearch[index] = '';
-    this.naturalBrandSearch[index] = '';
-    this.naturalDropdownIndex = null;
-    this.cdr.markForCheck();
-  }
-
-  openNaturalDropdown(index: number): void {
-    this.naturalDropdownIndex = index;
-    this.cdr.markForCheck();
-  }
-
-  onNaturalDropdownBlur(): void {
-    setTimeout(() => {
-      this.naturalDropdownIndex = null;
-      this.cdr.markForCheck();
-    }, 200);
-  }
-
-  onNaturalVideoSelected(event: Event, index: number): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (file) this.processNaturalVideo(file, index);
-    input.value = '';
-  }
-
-  onNaturalVideoPasted(file: File, index: number): void {
-    this.processNaturalVideo(file, index);
-  }
-
-  private async processNaturalVideo(file: File, index: number): Promise<void> {
-    const isVideo = file.type.startsWith('video/');
-    const isImage = file.type.startsWith('image/');
-    if (!isVideo && !isImage) {
-      Swal.fire('خطأ', 'الملف لازم يكون فيديو أو صورة', 'error');
-      return;
-    }
-    this.uploadingVideoIndex = index;
-    this.cdr.markForCheck();
-    try {
-      const url = isVideo
-        ? await this.cloudinaryService.uploadVideo(file, 'natural-products')
-        : await this.cloudinaryService.uploadImage(file, 'natural-products');
-      this.naturalProducts[index] = { ...this.naturalProducts[index], video: url };
-    } catch (e: any) {
-      Swal.fire('خطأ', e?.message || 'فشل رفع الملف', 'error');
-    } finally {
-      this.uploadingVideoIndex = null;
-      this.cdr.markForCheck();
-    }
   }
 
   // --- Product selection ---
@@ -425,7 +254,6 @@ export class SiteSettingsComponent implements OnInit {
     fd.append('social', JSON.stringify(this.settings.social));
     fd.append('bestSellingProducts', JSON.stringify(this.selectedProducts.map(p => p.id)));
     fd.append('bestSellingBrands', JSON.stringify(this.selectedBrands.map(b => b.id)));
-    fd.append('naturalProducts', JSON.stringify(this.naturalProducts.filter(i => i.video || i.link)));
 
     this.settingsService.updateSettings(fd).subscribe({
       next: () => {

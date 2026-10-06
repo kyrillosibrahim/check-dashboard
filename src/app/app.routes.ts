@@ -162,6 +162,13 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   {
+    path: 'natural-products',
+    loadComponent: () => import('./features/dashboard/pages/natural-products/natural-products.component')
+      .then(c => c.NaturalProductsComponent),
+    title: 'Kaf - منتجات على الطبيعة',
+    canActivate: [authGuard]
+  },
+  {
     path: 'guardian-angel',
     loadComponent: () => import('./features/dashboard/pages/guardian-angel/guardian-angel.component')
       .then(c => c.GuardianAngelComponent),
