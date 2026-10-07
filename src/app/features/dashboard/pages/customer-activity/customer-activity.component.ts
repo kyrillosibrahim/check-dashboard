@@ -10,6 +10,7 @@ import {
 import { formatArDate, formatDateTime, formatTimeAgo } from '../../../../shared/utils/date-format';
 
 interface DisplayCustomerActivity extends ICustomerActivity {
+  isPhone: boolean;
   dayName: string;
   dateLabel: string;
   dateFull: string;
@@ -67,16 +68,6 @@ export class CustomerActivityComponent implements OnInit {
   });
 
   someSelected = computed(() => this.selectedCount() > 0 && !this.allSelected());
-
-  totalDurationLabel = computed(() =>
-    formatDuration(this.summary()?.totalDurationSeconds || 0)
-  );
-
-  avgDurationLabel = computed(() => {
-    const summary = this.summary();
-    if (!summary?.totalEvents) return formatDuration(0);
-    return formatDuration(Math.round(summary.totalDurationSeconds / summary.totalEvents));
-  });
 
   ngOnInit(): void {
     const today = new Date().toISOString().slice(0, 10);
@@ -222,6 +213,7 @@ function decorate(row: ICustomerActivity): DisplayCustomerActivity {
   const d = new Date(row.enteredAt);
   return {
     ...row,
+    isPhone: /iPhone|iPad|iPod|Android|Mobile/i.test(row.deviceName || ''),
     dayName: DAYS_AR[d.getDay()],
     dateLabel: formatArDate(d),
     dateFull: formatDateTime(d),

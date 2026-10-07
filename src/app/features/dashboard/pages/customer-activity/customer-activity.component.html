@@ -69,20 +69,6 @@
           <span class="summary-label">عملاء مسجلين</span>
         </div>
       </div>
-      <div class="summary-card">
-        <i class="bi bi-clock-history"></i>
-        <div>
-          <span class="summary-num">{{ totalDurationLabel() }}</span>
-          <span class="summary-label">إجمالي وقت التصفح</span>
-        </div>
-      </div>
-      <div class="summary-card">
-        <i class="bi bi-speedometer2"></i>
-        <div>
-          <span class="summary-num">{{ avgDurationLabel() }}</span>
-          <span class="summary-label">متوسط مدة الصفحة</span>
-        </div>
-      </div>
     </div>
   }
 
@@ -137,9 +123,9 @@
                   <span class="ca-guest">زائر</span>
                 }
               </td>
-              <td class="ca-device" [title]="r.deviceId.slice(-6)">
-                <i class="bi" [class]="r.deviceName.includes('iPhone') || r.deviceName.includes('Android') || r.deviceName.includes('iPad') ? 'bi-phone-fill' : 'bi-pc-display'"></i>
-                {{ r.deviceName }}
+              <td class="ca-device" [title]="r.deviceName + ' · ' + r.deviceId.slice(-6)">
+                <i class="bi" [class]="r.isPhone ? 'bi-phone-fill' : 'bi-pc-display'"></i>
+                {{ r.isPhone ? 'تليفون' : 'متصفح' }}
               </td>
               <td>{{ r.dayName }}</td>
               <td [title]="r.dateFull">{{ r.dateLabel }}</td>
