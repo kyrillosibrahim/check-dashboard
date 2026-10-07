@@ -17,11 +17,18 @@
 <div class="card border-0 shadow-sm mb-4 pstyle" >
   <div class="card-body p-4">
     <h6 class="fw-bold mb-3">
-      <i class="bi bi-plus-circle me-2" style="color: var(--sz-accent);"></i>إضافة بنر جديد
+      @if (editingBanner) {
+        <i class="bi bi-pencil-square me-2" style="color: var(--sz-accent);"></i>تعديل البنر
+      } @else {
+        <i class="bi bi-plus-circle me-2" style="color: var(--sz-accent);"></i>إضافة بنر جديد
+      }
     </h6>
     <form (ngSubmit)="onSave()" class="d-flex gap-3 align-items-end flex-wrap">
       <div style="min-width: 250px;" (pasteImage)="onPastedImage($event)">
-        <label class="form-label">صورة البنر * <small class="text-secondary">(الصق Ctrl+V)</small></label>
+        <label class="form-label">
+          صورة البنر {{ editingBanner ? '(اختياري لتغييرها)' : '*' }}
+          <small class="text-secondary">(الصق Ctrl+V)</small>
+        </label>
         <input type="file" class="form-control" accept="image/*" (change)="onFileSelected($event)">
         @if (compressionInfo) {
           <small class="text-success d-block mt-1">
@@ -45,9 +52,18 @@
         <input type="text" class="form-control" [(ngModel)]="bannerLink" name="bannerLink"
                placeholder="/products أو /offers" dir="ltr">
       </div>
-      <button type="submit" class="btn btn-primary px-4" [disabled]="!selectedFile || isSaving">
-        <i class="bi bi-upload me-1"></i>رفع البنر
-      </button>
+      @if (editingBanner) {
+        <button type="submit" class="btn btn-primary px-4" [disabled]="isSaving">
+          <i class="bi bi-check-lg me-1"></i>حفظ التعديل
+        </button>
+        <button type="button" class="btn btn-outline-secondary px-4" (click)="cancelEdit()" [disabled]="isSaving">
+          إلغاء
+        </button>
+      } @else {
+        <button type="submit" class="btn btn-primary px-4" [disabled]="!selectedFile || isSaving">
+          <i class="bi bi-upload me-1"></i>رفع البنر
+        </button>
+      }
     </form>
 
     @if (imagePreview) {
@@ -76,18 +92,39 @@
   </div>
 } @else {
   <div class="row g-3">
-    @for (banner of banners; track banner.id) {
+    @for (banner of banners; track banner.id; let i = $index) {
       <div class="col-12 col-md-6 col-lg-4">
-        <div class="card border-0 shadow-sm overflow-hidden" style="background-color: var(--sz-bg-card);">
+        <div class="card border-0 shadow-sm overflow-hidden banner-card" style="background-color: var(--sz-bg-card);"
+             [attr.draggable]="true"
+             [class.banner-dragging]="dragIndex === i"
+             [class.banner-drag-over]="dragOverIndex === i && dragIndex !== i"
+             [class.banner-editing]="editingBanner?.id === banner.id"
+             (dragstart)="onDragStart($event, i)"
+             (dragover)="onDragOver($event, i)"
+             (dragleave)="onDragLeave(i)"
+             (drop)="onDrop($event, i)"
+             (dragend)="onDragEnd()">
+          <span class="banner-order-badge"><i class="bi bi-grip-vertical"></i>{{ i + 1 }}</span>
           <img [src]="getImageUrl(banner)" [alt]="'بنر ' + banner.id" class="banner-card-img" loading="lazy">
           <div class="card-body py-2 px-3">
             <div class="d-flex justify-content-between align-items-center mb-1">
               <span class="badge" [class]="banner.page === 'offers' ? 'bg-warning text-dark' : banner.page === 'home-below' ? 'bg-success' : 'bg-info'">
                 <i class="bi me-1" [class]="banner.page === 'offers' ? 'bi-tags' : banner.page === 'home-below' ? 'bi-arrow-down-circle' : 'bi-house'"></i>{{ getPageLabel(banner.page) }}
               </span>
-              <button class="action-btn delete-btn" (click)="onDelete(banner)" title="حذف">
-                <i class="bi bi-trash-fill"></i>
-              </button>
+              <div class="d-flex gap-1">
+                <button class="action-btn" (click)="moveBy(i, -1)" [disabled]="i === 0" title="تقديم">
+                  <i class="bi bi-arrow-up"></i>
+                </button>
+                <button class="action-btn" (click)="moveBy(i, 1)" [disabled]="i === banners.length - 1" title="تأخير">
+                  <i class="bi bi-arrow-down"></i>
+                </button>
+                <button class="action-btn edit-btn" (click)="onEdit(banner)" title="تعديل">
+                  <i class="bi bi-pencil-fill"></i>
+                </button>
+                <button class="action-btn delete-btn" (click)="onDelete(banner)" title="حذف">
+                  <i class="bi bi-trash-fill"></i>
+                </button>
+              </div>
             </div>
             @if (banner.link) {
               <small class="text-muted" dir="ltr">{{ banner.link }}</small>

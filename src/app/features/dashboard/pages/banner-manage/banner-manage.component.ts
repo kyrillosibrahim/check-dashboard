@@ -30,6 +30,10 @@ export class BannerManageComponent implements OnInit {
   isLoading = true;
   isSaving = false;
   error = '';
+  /** Banner being edited in the top form (null = add mode) */
+  editingBanner: IBanner | null = null;
+  dragIndex = -1;
+  dragOverIndex = -1;
 
   ngOnInit(): void {
     this.loadBanners();
@@ -91,7 +95,26 @@ export class BannerManageComponent implements OnInit {
     return text.includes('ANIM');
   }
 
+  onEdit(banner: IBanner): void {
+    this.editingBanner = banner;
+    this.bannerLink = banner.link || '';
+    this.bannerPage = banner.page;
+    this.selectedFile = null;
+    this.imagePreview = this.getImageUrl(banner);
+    this.compressionInfo = '';
+    this.cdr.markForCheck();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  cancelEdit(): void {
+    this.resetForm();
+  }
+
   onSave(): void {
+    if (this.editingBanner) {
+      this.saveEdit(this.editingBanner);
+      return;
+    }
     if (!this.selectedFile) return;
 
     this.isSaving = true;
@@ -110,6 +133,87 @@ export class BannerManageComponent implements OnInit {
         Swal.fire('خطأ', err?.error?.error || 'فشل الإضافة', 'error');
         this.isSaving = false;
         this.cdr.markForCheck();
+      }
+    });
+  }
+
+  private saveEdit(banner: IBanner): void {
+    this.isSaving = true;
+    const fd = new FormData();
+    if (this.selectedFile) fd.append('image', this.selectedFile);
+    fd.append('link', this.bannerLink.trim());
+    fd.append('page', this.bannerPage);
+
+    this.bannerService.update(banner.id, fd).subscribe({
+      next: () => {
+        Swal.fire({ title: 'تم تعديل البنر!', icon: 'success', timer: 1500, showConfirmButton: false });
+        this.resetForm();
+        this.loadBanners();
+      },
+      error: (err) => {
+        Swal.fire('خطأ', err?.error?.error || 'فشل التعديل', 'error');
+        this.isSaving = false;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  // ─── Drag & drop reorder ───
+
+  onDragStart(event: DragEvent, index: number): void {
+    this.dragIndex = index;
+    event.dataTransfer?.setData('text/plain', String(index));
+    if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
+  }
+
+  onDragOver(event: DragEvent, index: number): void {
+    event.preventDefault();
+    if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
+    if (this.dragOverIndex !== index) {
+      this.dragOverIndex = index;
+      this.cdr.markForCheck();
+    }
+  }
+
+  onDragLeave(index: number): void {
+    if (this.dragOverIndex === index) {
+      this.dragOverIndex = -1;
+      this.cdr.markForCheck();
+    }
+  }
+
+  onDrop(event: DragEvent, targetIndex: number): void {
+    event.preventDefault();
+    const from = this.dragIndex;
+    this.dragIndex = -1;
+    this.dragOverIndex = -1;
+    if (from === -1 || from === targetIndex) { this.cdr.markForCheck(); return; }
+    this.moveBanner(from, targetIndex);
+  }
+
+  onDragEnd(): void {
+    this.dragIndex = -1;
+    this.dragOverIndex = -1;
+    this.cdr.markForCheck();
+  }
+
+  /** Arrow buttons: same reorder without dragging */
+  moveBy(index: number, delta: number): void {
+    const target = index + delta;
+    if (target < 0 || target >= this.banners.length) return;
+    this.moveBanner(index, target);
+  }
+
+  private moveBanner(from: number, to: number): void {
+    const list = [...this.banners];
+    const [moved] = list.splice(from, 1);
+    list.splice(to, 0, moved);
+    this.banners = list;
+    this.cdr.markForCheck();
+    this.bannerService.reorder(list.map(b => b.id)).subscribe({
+      error: () => {
+        Swal.fire('خطأ', 'فشل حفظ الترتيب', 'error');
+        this.loadBanners();
       }
     });
   }
@@ -151,6 +255,7 @@ export class BannerManageComponent implements OnInit {
   }
 
   private resetForm(): void {
+    this.editingBanner = null;
     this.selectedFile = null;
     this.imagePreview = null;
     this.bannerLink = '';

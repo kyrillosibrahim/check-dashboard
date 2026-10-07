@@ -20,6 +20,10 @@ export class BannerService {
     return this.http.put<IBanner>(`${API_CONFIG.bannersUrl}/${id}`, fd);
   }
 
+  reorder(ids: number[]): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${API_CONFIG.bannersUrl}/reorder`, { ids });
+  }
+
   delete(id: number): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${API_CONFIG.bannersUrl}/${id}`);
   }

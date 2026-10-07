@@ -24,10 +24,59 @@
   cursor: pointer;
   padding: 0;
 
+  &:hover:not(:disabled) {
+    background: rgba(13, 110, 253, 0.12);
+    color: var(--sz-accent);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
   &.delete-btn:hover {
     background: rgba(239, 68, 68, 0.15);
     color: #ef4444;
   }
+}
+
+// ── Drag & drop reorder ──
+.banner-card {
+  position: relative;
+  cursor: grab;
+  transition: opacity 0.15s ease, box-shadow 0.15s ease;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.banner-order-badge {
+  position: absolute;
+  top: 8px;
+  inset-inline-start: 8px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 8px 2px 4px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.banner-dragging {
+  opacity: 0.4;
+}
+
+.banner-drag-over {
+  box-shadow: 0 0 0 3px var(--sz-accent) !important;
+}
+
+.banner-editing {
+  box-shadow: 0 0 0 2px var(--sz-accent) !important;
 }
 
 .pstyle{
