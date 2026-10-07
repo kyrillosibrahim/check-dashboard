@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
 import { NotificationService, SendNotificationPayload } from '../../../../core/services/notification.service';
 
@@ -17,7 +17,8 @@ export class CustomerNotificationsComponent {
   private notificationService = inject(NotificationService);
   private cdr = inject(ChangeDetectorRef);
 
-  type: 'general' | 'coupon' = 'general';
+  /** Fixed per route: /customer-notifications sends messages, /discount-codes sends coupons. */
+  readonly type: 'general' | 'coupon' = inject(ActivatedRoute).snapshot.data['type'] === 'coupon' ? 'coupon' : 'general';
   title = '';
   body = '';
   link = '';
@@ -35,10 +36,6 @@ export class CustomerNotificationsComponent {
     { value: 'shipped', label: 'تم الشحن' },
     { value: 'delivered', label: 'تم التوصيل' },
   ];
-
-  setType(t: 'general' | 'coupon'): void {
-    this.type = t;
-  }
 
   send(): void {
     if (!this.body.trim() && !this.title.trim()) {

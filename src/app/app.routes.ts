@@ -85,6 +85,14 @@ export const routes: Routes = [
     canActivate: [authGuard, adminGuard]
   },
   {
+    path: 'discount-codes',
+    loadComponent: () => import('./features/dashboard/pages/customer-notifications/customer-notifications.component')
+      .then(c => c.CustomerNotificationsComponent),
+    data: { type: 'coupon' },
+    title: 'Kaf - إرسال كود خصم',
+    canActivate: [authGuard, adminGuard]
+  },
+  {
     path: 'sent-notifications',
     loadComponent: () => import('./features/dashboard/pages/sent-notifications/sent-notifications.component')
       .then(c => c.SentNotificationsComponent),

@@ -143,6 +143,19 @@
         </div>
 
         <div class="nav-item-wrap">
+          <a routerLink="/discount-codes" routerLinkActive="active"
+             class="nav-item" (click)="closeSidebar()" title="إرسال كود خصم">
+            <i class="bi bi-ticket-perforated"></i>
+            <span>إرسال كود خصم</span>
+          </a>
+          <button class="nav-pin-btn" [class.pinned]="pinned.isPinned('/discount-codes')"
+                  (click)="togglePin($event, {path:'/discount-codes', icon:'bi-ticket-perforated', label:'إرسال كود خصم'})"
+                  title="تثبيت في الأعلى">
+            <i class="bi" [class.bi-pin-angle]="!pinned.isPinned('/discount-codes')" [class.bi-pin-angle-fill]="pinned.isPinned('/discount-codes')"></i>
+          </button>
+        </div>
+
+        <div class="nav-item-wrap">
           <a routerLink="/sent-notifications" routerLinkActive="active"
              class="nav-item" (click)="closeSidebar()" title="الإشعارات المُرسلة">
             <i class="bi bi-send"></i>
