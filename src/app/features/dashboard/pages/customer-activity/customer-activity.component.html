@@ -38,7 +38,7 @@
           حذف المحدد ({{ selectedCount() }})
         </button>
       }
-      <button type="button" class="btn btn-outline-danger" (click)="clearAll()">
+      <button type="button" class="btn btn-danger" (click)="clearAll()">
         <i class="bi bi-trash"></i>
         مسح السجل
       </button>
@@ -124,11 +124,13 @@
                 }
               </td>
               <td class="ca-device" [title]="r.deviceName + ' · ' + r.deviceId.slice(-6)">
-                <i class="bi" [class]="r.isPhone ? 'bi-phone-fill' : 'bi-pc-display'"></i>
-                {{ r.isPhone ? 'تليفون' : 'متصفح' }}
+                <span class="ca-device-inner">
+                  <i class="bi" [class.bi-phone-fill]="r.isPhone" [class.bi-pc-display]="!r.isPhone"></i>
+                  {{ r.isPhone ? 'تليفون' : 'متصفح' }}
+                </span>
               </td>
               <td>{{ r.dayName }}</td>
-              <td [title]="r.dateFull">{{ r.dateLabel }}</td>
+              <td class="ca-date" [title]="r.dateFull">{{ r.dateLabel }}</td>
               <td class="ca-time" [title]="r.dateFull">{{ r.timeLabel }}</td>
               <td>{{ r.title }}</td>
               <td>

@@ -121,15 +121,17 @@
 
   .ca-num { color: var(--bs-secondary-color); width: 3rem; }
 
+  // Flex lives on an inner span: display:flex on the <td> itself breaks the
+  // table-cell layout and misaligns the row's height and border.
   .ca-device {
-    display: flex;
-    align-items: center;
-    gap: .5rem;
     font-weight: 500;
     white-space: nowrap;
 
+    .ca-device-inner { display: inline-flex; align-items: center; gap: .5rem; }
     i { color: var(--sz-accent); font-size: 1.1rem; }
   }
+
+  .ca-date { white-space: nowrap; }
 
   .ca-count { text-align: center; }
 
