@@ -2,13 +2,15 @@ import { Component, inject, OnInit, ChangeDetectorRef, ChangeDetectionStrategy }
 import { FormsModule } from '@angular/forms';
 import { CustomerService } from '../../../../core/services/customer.service';
 import { ICustomer } from '../../../../core/models/customer.model';
-import { DatePipe } from '@angular/common';
+import { ArDatePipe } from '../../../../shared/pipes/ar-date.pipe';
+import { TimeAgoPipe } from '../../../../shared/pipes/time-ago.pipe';
+import { DateTimePipe } from '../../../../shared/pipes/date-time.pipe';
 import { BackupService } from '../../../../core/services/backup.service';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-customer-list',
-  imports: [FormsModule, DatePipe],
+  imports: [FormsModule, ArDatePipe, TimeAgoPipe, DateTimePipe],
   templateUrl: './customer-list.component.html',
   styleUrl: './customer-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

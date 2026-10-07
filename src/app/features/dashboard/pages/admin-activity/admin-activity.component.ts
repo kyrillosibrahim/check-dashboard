@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { environment } from '../../../../../environments/environment';
+import { formatArDate, formatDateTime, formatTimeAgo } from '../../../../shared/utils/date-format';
 
 interface ActivityLog {
   _id: string;
@@ -16,6 +17,7 @@ interface ActivityLog {
 interface DisplayLog extends ActivityLog {
   dayName: string;
   dateLabel: string;
+  dateFull: string;
   timeLabel: string;
   durationLabel: string;
 }
@@ -127,24 +129,15 @@ export class AdminActivityComponent implements OnInit {
 }
 
 const DAYS_AR = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-const dateFmt = new Intl.DateTimeFormat('ar-EG', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-});
-const timeFmt = new Intl.DateTimeFormat('ar-EG', {
-  hour: '2-digit',
-  minute: '2-digit',
-  second: '2-digit',
-});
 
 function decorate(log: ActivityLog): DisplayLog {
   const d = new Date(log.enteredAt);
   return {
     ...log,
     dayName: DAYS_AR[d.getDay()],
-    dateLabel: dateFmt.format(d),
-    timeLabel: timeFmt.format(d),
+    dateLabel: formatArDate(d),
+    dateFull: formatDateTime(d),
+    timeLabel: formatTimeAgo(d),
     durationLabel: formatDuration(log.durationSeconds || 0),
   };
 }

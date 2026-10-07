@@ -172,7 +172,7 @@
         </div>
         <div class="col-6">
           <label class="form-label">التاريخ</label>
-          <p class="mb-0">{{ (viewingReview.updatedAt || viewingReview.createdAt) | date:'yyyy/MM/dd HH:mm' }}</p>
+          <p class="mb-0">{{ (viewingReview.updatedAt || viewingReview.createdAt) | dateTime }}<br><small class="text-muted">{{ (viewingReview.updatedAt || viewingReview.createdAt) | timeAgo }}</small></p>
         </div>
         <div class="col-6">
           <label class="form-label">عدد "مفيد"</label>

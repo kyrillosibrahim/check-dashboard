@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, signal, OnInit } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { ArDatePipe } from '../../../../shared/pipes/ar-date.pipe';
+import { TimeAgoPipe } from '../../../../shared/pipes/time-ago.pipe';
+import { DateTimePipe } from '../../../../shared/pipes/date-time.pipe';
 import { RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import Swal from 'sweetalert2';
@@ -7,7 +9,7 @@ import { NotificationService, SentCampaign } from '../../../../core/services/not
 
 @Component({
   selector: 'app-sent-notifications',
-  imports: [DatePipe, RouterLink],
+  imports: [ArDatePipe, TimeAgoPipe, DateTimePipe, RouterLink],
   templateUrl: './sent-notifications.component.html',
   styleUrl: './sent-notifications.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

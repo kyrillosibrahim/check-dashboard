@@ -1,5 +1,4 @@
 import { Component, inject, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
-import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
@@ -11,6 +10,7 @@ import { IOrder } from '../../../../core/models/order.model';
 import { IProduct } from '../../../../core/models/product.model';
 import { IExpense } from '../../../../core/models/expense.model';
 import { EgpCurrencyPipe } from '../../../../shared/pipes/egp-currency.pipe';
+import { ArDatePipe } from '../../../../shared/pipes/ar-date.pipe';
 
 interface DailyProfit {
   date: string;
@@ -38,7 +38,7 @@ interface MerchantProfit {
 
 @Component({
   selector: 'app-profits',
-  imports: [EgpCurrencyPipe, DatePipe, FormsModule, RouterLink],
+  imports: [EgpCurrencyPipe, ArDatePipe, FormsModule, RouterLink],
   templateUrl: './profits.component.html',
   styleUrl: './profits.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -1,12 +1,15 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ArDatePipe } from '../../../../shared/pipes/ar-date.pipe';
+import { TimeAgoPipe } from '../../../../shared/pipes/time-ago.pipe';
+import { DateTimePipe } from '../../../../shared/pipes/date-time.pipe';
 import { SiteVisitService, ISiteVisit } from '../../../../core/services/site-visit.service';
 
 @Component({
   selector: 'app-customer-visits',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ArDatePipe, TimeAgoPipe, DateTimePipe],
   templateUrl: './customer-visits.component.html',
   styleUrl: './customer-visits.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -67,13 +70,5 @@ export class CustomerVisitsComponent implements OnInit {
 
   nextPage(): void {
     if (this.page() < this.totalPages) this.page.update(p => p + 1);
-  }
-
-  formatDate(dateStr: string): string {
-    if (!dateStr) return '-';
-    return new Date(dateStr).toLocaleDateString('ar-EG', {
-      year: 'numeric', month: 'short', day: 'numeric',
-      hour: '2-digit', minute: '2-digit',
-    });
   }
 }

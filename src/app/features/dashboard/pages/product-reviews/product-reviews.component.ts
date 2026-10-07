@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DatePipe } from '@angular/common';
+import { TimeAgoPipe } from '../../../../shared/pipes/time-ago.pipe';
+import { DateTimePipe } from '../../../../shared/pipes/date-time.pipe';
 import { ProductReviewService } from '../../../../core/services/product-review.service';
 import { IProductReview } from '../../../../core/models/product-review.model';
 import { environment } from '../../../../../environments/environment';
@@ -8,7 +9,7 @@ import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-product-reviews',
-  imports: [FormsModule, DatePipe],
+  imports: [FormsModule, TimeAgoPipe, DateTimePipe],
   templateUrl: './product-reviews.component.html',
   styleUrl: './product-reviews.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

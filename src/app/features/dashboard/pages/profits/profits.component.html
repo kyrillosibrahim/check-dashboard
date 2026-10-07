@@ -108,7 +108,7 @@
             @for (day of dailyProfits; track day.date; let idx = $index) {
               <tr>
                 <td class="row-num">{{ idx + 1 }}</td>
-                <td class="date-cell">{{ day.date | date:'yyyy/M/d' }}</td>
+                <td class="date-cell">{{ day.date | arDate }}</td>
                 <td>
                   <span class="badge bg-primary">{{ day.orderCount }} طلب</span>
                 </td>
@@ -164,7 +164,7 @@
                   <span class="return-tag">مرتجع</span>
                 </td>
                 <td>{{ ret.customerName }}</td>
-                <td class="date-cell">{{ ret.date | date:'yyyy/M/d' }}</td>
+                <td class="date-cell">{{ ret.date | arDate }}</td>
                 <td class="amount-cell">{{ ret.total | egpCurrency }}</td>
                 <td class="profit-cell text-danger">-{{ ret.shippingCost | egpCurrency }}</td>
               </tr>

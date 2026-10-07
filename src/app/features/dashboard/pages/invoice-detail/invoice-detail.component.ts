@@ -10,13 +10,14 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { GovernorateService } from '../../../../core/services/governorate.service';
 import { IOrder } from '../../../../core/models/order.model';
 import { IProduct } from '../../../../core/models/product.model';
-import { DatePipe } from '@angular/common';
+import { TimeAgoPipe } from '../../../../shared/pipes/time-ago.pipe';
+import { DateTimePipe } from '../../../../shared/pipes/date-time.pipe';
 import { EgpCurrencyPipe } from '../../../../shared/pipes/egp-currency.pipe';
 import { API_CONFIG } from '../../../../core/config/api.config';
 
 @Component({
   selector: 'app-invoice-detail',
-  imports: [FormsModule, EgpCurrencyPipe, DatePipe],
+  imports: [FormsModule, EgpCurrencyPipe, TimeAgoPipe, DateTimePipe],
   templateUrl: './invoice-detail.component.html',
   styleUrl: './invoice-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

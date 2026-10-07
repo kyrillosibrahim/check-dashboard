@@ -82,8 +82,8 @@
               <td class="cv-count">
                 <span class="badge-count">{{ v.visitCount }}</span>
               </td>
-              <td>{{ v.date }}</td>
-              <td class="cv-time">{{ formatDate(v.lastVisitAt) }}</td>
+              <td>{{ v.date | arDate }}</td>
+              <td class="cv-time" [title]="v.lastVisitAt | dateTime">{{ v.lastVisitAt | timeAgo }}</td>
             </tr>
           }
         </tbody>

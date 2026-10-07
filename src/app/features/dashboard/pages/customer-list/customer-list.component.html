@@ -94,7 +94,7 @@
                       {{ customer.role === 'admin' ? 'مدير' : 'عميل' }}
                     </span>
                   </td>
-                  <td class="text-secondary">{{ customer.createdAt | date:'yyyy/MM/dd' }}</td>
+                  <td class="text-secondary" [title]="customer.createdAt | dateTime">{{ customer.createdAt | arDate }}<br><small class="text-muted">{{ customer.createdAt | timeAgo }}</small></td>
                   <td class="text-center">
                     <button class="btn btn-sm btn-outline-primary me-1 btn-icon" (click)="openEdit(customer)" title="تعديل">
                       <i class="bi bi-pencil-square"></i>

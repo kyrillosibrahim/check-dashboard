@@ -143,7 +143,7 @@
               </td>
               <td>{{ r.dayName }}</td>
               <td [title]="r.dateFull">{{ r.dateLabel }}</td>
-              <td class="ca-time">{{ r.timeLabel }}</td>
+              <td class="ca-time" [title]="r.dateFull">{{ r.timeLabel }}</td>
               <td>{{ r.title }}</td>
               <td>
                 @if (r.path) {

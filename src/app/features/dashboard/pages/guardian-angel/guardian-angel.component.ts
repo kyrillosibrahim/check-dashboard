@@ -27,7 +27,7 @@ export class GuardianAngelComponent {
 
   readonly monthLabel = computed(() => {
     const { year, month } = this.viewMonth();
-    return new Date(year, month, 1).toLocaleDateString('ar-EG', { month: 'long', year: 'numeric' });
+    return new Date(year, month, 1).toLocaleDateString('ar-EG-u-nu-latn', { month: 'long', year: 'numeric' });
   });
 
   readonly weeks = computed<DayCell[][]>(() => {

@@ -259,7 +259,7 @@
             </div>
             <div class="info-item">
               <span class="info-label">التاريخ</span>
-              <span class="info-value">{{ order.date | date:'dd/MM/yyyy - hh:mm a' }}</span>
+              <span class="info-value">{{ order.date | dateTime }} <small class="text-muted">({{ order.date | timeAgo }})</small></span>
             </div>
             <div class="info-item">
               <span class="info-label">العميل</span>

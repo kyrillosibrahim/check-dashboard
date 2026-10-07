@@ -103,8 +103,8 @@
                 </span>
               </td>
               <td class="day-cell">{{ log.dayName }}</td>
-              <td class="date-cell">{{ log.dateLabel }}</td>
-              <td class="time-cell">{{ log.timeLabel }}</td>
+              <td class="date-cell" [title]="log.dateFull">{{ log.dateLabel }}</td>
+              <td class="time-cell" [title]="log.dateFull">{{ log.timeLabel }}</td>
               <td class="title-cell">{{ log.title || '—' }}</td>
               <td class="path-cell" dir="ltr">{{ log.path }}</td>
               <td class="duration-cell">

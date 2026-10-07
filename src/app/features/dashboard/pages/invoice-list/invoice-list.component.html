@@ -156,10 +156,9 @@
               </td>
 
               <!-- Date Column -->
-              <td class="date-col">
-                <div class="date-main">{{ order.date | date:'yyyy/M/d' }}</div>
-                <div class="date-time">{{ order.date | date:'h:mm a' }}</div>
-                <div class="date-ago">{{ getTimeAgo(order.date) }}</div>
+              <td class="date-col" [title]="order.date | dateTime">
+                <div class="date-main">{{ order.date | arDate }}</div>
+                <div class="date-ago">{{ order.date | timeAgo }}</div>
               </td>
 
               <!-- Status Column -->
