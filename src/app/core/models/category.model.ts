@@ -3,6 +3,7 @@ import { IBrand } from './brand.model';
 export interface ISubcategory {
   id: number;
   name: string;
+  nameEn?: string;
   slug: string;
   image: string;
 }
@@ -10,6 +11,7 @@ export interface ISubcategory {
 export interface ICategory {
   id: number;
   name: string;
+  nameEn?: string;
   slug: string;
   image?: string;
   subcategories?: ISubcategory[];

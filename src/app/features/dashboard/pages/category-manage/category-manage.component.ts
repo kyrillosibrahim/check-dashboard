@@ -30,6 +30,7 @@ export class CategoryManageComponent implements OnInit {
 
   // ─── Category form ───
   categoryName = '';
+  categoryNameEn = '';
   imagePreview: string | null = null;
   selectedImageUrl: string | null = null;
   isUploadingImage = false;
@@ -41,6 +42,7 @@ export class CategoryManageComponent implements OnInit {
 
   // ─── Subcategory form ───
   subName = '';
+  subNameEn = '';
   subImagePreview: string | null = null;
   selectedSubImageUrl: string | null = null;
   isUploadingSubImage = false;
@@ -172,7 +174,7 @@ export class CategoryManageComponent implements OnInit {
     this.isSaving = true;
 
     if (this.editingCategory) {
-      this.categoryService.update(this.editingCategory.id, name, this.selectedImageUrl || undefined).subscribe({
+      this.categoryService.update(this.editingCategory.id, name, this.selectedImageUrl || undefined, undefined, undefined, this.categoryNameEn.trim()).subscribe({
         next: () => {
           Swal.fire({ title: 'تم تحديث القسم!', icon: 'success', timer: 1500, showConfirmButton: false });
           this.resetForm();
@@ -185,7 +187,7 @@ export class CategoryManageComponent implements OnInit {
         }
       });
     } else {
-      this.categoryService.create(name, this.selectedImageUrl || undefined).subscribe({
+      this.categoryService.create(name, this.selectedImageUrl || undefined, this.categoryNameEn.trim()).subscribe({
         next: () => {
           Swal.fire({ title: 'تم إضافة القسم!', icon: 'success', timer: 1500, showConfirmButton: false });
           this.resetForm();
@@ -207,6 +209,7 @@ export class CategoryManageComponent implements OnInit {
   onEdit(cat: ICategory): void {
     this.editingCategory = cat;
     this.categoryName = cat.name;
+    this.categoryNameEn = cat.nameEn || '';
     this.selectedImageUrl = cat.image || null;
     this.imagePreview = cat.image || null;
     this.expandedCategoryId = cat.id;
@@ -244,6 +247,7 @@ export class CategoryManageComponent implements OnInit {
 
   private resetForm(): void {
     this.categoryName = '';
+    this.categoryNameEn = '';
     this.selectedImageUrl = null;
     this.imagePreview = null;
     this.editingCategory = null;
@@ -322,7 +326,7 @@ export class CategoryManageComponent implements OnInit {
       const subId = this.editingSub.id;
       const imageUrl = this.selectedSubImageUrl || undefined;
       this.categoryService.updateSubcategory(
-        this.expandedCategoryId, subId, name, imageUrl
+        this.expandedCategoryId, subId, name, imageUrl, this.subNameEn.trim()
       ).subscribe({
         next: (updatedCat) => {
           this.updateCategoryInList(updatedCat, subId, imageUrl);
@@ -338,7 +342,7 @@ export class CategoryManageComponent implements OnInit {
     } else {
       const imageUrl = this.selectedSubImageUrl || undefined;
       this.categoryService.addSubcategory(
-        this.expandedCategoryId, name, imageUrl
+        this.expandedCategoryId, name, imageUrl, this.subNameEn.trim()
       ).subscribe({
         next: (updatedCat) => {
           // For new subcategory, find it by name and patch the image
@@ -363,6 +367,7 @@ export class CategoryManageComponent implements OnInit {
   onEditSub(sub: ISubcategory): void {
     this.editingSub = sub;
     this.subName = sub.name;
+    this.subNameEn = sub.nameEn || '';
     this.selectedSubImageUrl = sub.image || null;
     this.subImagePreview = sub.image || null;
     this.cdr.markForCheck();
@@ -398,6 +403,7 @@ export class CategoryManageComponent implements OnInit {
 
   private resetSubForm(): void {
     this.subName = '';
+    this.subNameEn = '';
     this.selectedSubImageUrl = null;
     this.subImagePreview = null;
     this.editingSub = null;
@@ -639,10 +645,10 @@ export class CategoryManageComponent implements OnInit {
           const brandIds = (cat.famousBrands || []).map((b: any) => typeof b === 'object' ? b.id : b).filter((id: any) => id != null);
 
           await new Promise<void>((resolve) => {
-            this.categoryService.update(cat.id, cat.name, catImageUrl, brandIds.length ? brandIds : undefined, cat.filterTags?.length ? cat.filterTags : undefined).subscribe({
+            this.categoryService.update(cat.id, cat.name, catImageUrl, brandIds.length ? brandIds : undefined, cat.filterTags?.length ? cat.filterTags : undefined, cat.nameEn).subscribe({
               next: () => { success++; resolve(); },
               error: () => {
-                this.categoryService.create(cat.name, catImageUrl).subscribe({
+                this.categoryService.create(cat.name, catImageUrl, cat.nameEn).subscribe({
                   next: () => { success++; resolve(); },
                   error: () => { failed++; resolve(); }
                 });
@@ -659,10 +665,10 @@ export class CategoryManageComponent implements OnInit {
             }
             try {
               await new Promise<void>((resolve) => {
-                this.categoryService.updateSubcategory(cat.id, sub.id, sub.name, subImageUrl).subscribe({
+                this.categoryService.updateSubcategory(cat.id, sub.id, sub.name, subImageUrl, sub.nameEn).subscribe({
                   next: () => resolve(),
                   error: () => {
-                    this.categoryService.addSubcategory(cat.id, sub.name, subImageUrl).subscribe({
+                    this.categoryService.addSubcategory(cat.id, sub.name, subImageUrl, sub.nameEn).subscribe({
                       next: () => resolve(),
                       error: () => resolve()
                     });

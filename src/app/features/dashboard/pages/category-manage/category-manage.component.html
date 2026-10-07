@@ -25,12 +25,17 @@
     </h6>
     <form (ngSubmit)="onSave()">
       <div class="row g-3 align-items-end">
-        <div class="col-md-5">
+        <div class="col-md-3">
           <label class="form-label">اسم القسم *</label>
           <input type="text" class="form-control" [(ngModel)]="categoryName" name="categoryName"
                  placeholder="أدخل اسم القسم">
         </div>
-        <div class="col-md-5">
+        <div class="col-md-3">
+          <label class="form-label">الاسم بالإنجليزى</label>
+          <input type="text" class="form-control" [(ngModel)]="categoryNameEn" name="categoryNameEn"
+                 placeholder="Category name" dir="ltr">
+        </div>
+        <div class="col-md-4">
           <label class="form-label">صورة القسم <small class="text-secondary">(الصق Ctrl+V)</small></label>
           <div class="image-upload-area" (pasteImage)="onCategoryImagePasted($event)">
             @if (isUploadingImage) {
@@ -128,7 +133,12 @@
                     </div>
                   }
                 </td>
-                <td class="fw-semibold">{{ cat.name }}</td>
+                <td class="fw-semibold">
+                  {{ cat.name }}
+                  @if (cat.nameEn) {
+                    <small class="d-block text-secondary fw-normal" dir="ltr">{{ cat.nameEn }}</small>
+                  }
+                </td>
                 <td>
                   <span class="badge bg-info clickable-badge" (click)="toggleExpand(cat)">
                     <i class="bi bi-diagram-3 me-1"></i>{{ (cat.subcategories || []).length }}
@@ -176,13 +186,19 @@
                         <!-- Add/Edit subcategory form -->
                         <div class="sub-form mb-3">
                           <div class="row g-2 align-items-end">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                               <label class="form-label small">اسم القسم الفرعى *</label>
                               <input type="text" class="form-control form-control-sm"
                                      [(ngModel)]="subName" name="subName"
                                      placeholder="مثال: مكياج الشفاه">
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
+                              <label class="form-label small">الاسم بالإنجليزى</label>
+                              <input type="text" class="form-control form-control-sm"
+                                     [(ngModel)]="subNameEn" name="subNameEn"
+                                     placeholder="e.g. Lip Makeup" dir="ltr">
+                            </div>
+                            <div class="col-md-3">
                               <label class="form-label small">صورة القسم الفرعى <small class="text-secondary">(الصق Ctrl+V)</small></label>
                               <div class="image-upload-area small-upload" (pasteImage)="onSubImagePasted($event)">
                                 @if (isUploadingSubImage) {
@@ -207,7 +223,7 @@
                                        accept="image/*" (change)="onSubImageSelected($event)">
                               </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                               <div class="d-flex gap-2">
                                 <button class="btn btn-sm btn-primary px-3"
                                         (click)="onSaveSub()"
@@ -242,6 +258,9 @@
                                 }
                                 <div class="sub-card-info">
                                   <span class="sub-card-name">{{ sub.name }}</span>
+                                  @if (sub.nameEn) {
+                                    <small class="d-block text-secondary" dir="ltr">{{ sub.nameEn }}</small>
+                                  }
                                 </div>
                                 <div class="sub-card-actions">
                                   <button class="action-btn edit-btn" (click)="onEditSub(sub)" title="تعديل">
