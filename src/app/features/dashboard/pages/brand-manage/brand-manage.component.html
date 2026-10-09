@@ -34,6 +34,11 @@
         <input type="url" class="form-control" [(ngModel)]="brandLink" name="brandLink"
                placeholder="https://example.com" dir="ltr">
       </div>
+      <div class="form-check align-self-center" style="min-width: 200px;">
+        <input type="checkbox" class="form-check-input" id="brandPinned" [(ngModel)]="brandPinned" name="brandPinned">
+        <label class="form-check-label" for="brandPinned">يظهر أولًا فى صفحات الأقسام</label>
+        <small class="d-block text-secondary">منتجات الماركة دى تتعرض قبل باقى المنتجات فى صفحة القسم</small>
+      </div>
       <div style="min-width: 200px;"
            (pasteImage)="onPastedImage($event)"
            (dragActive)="isDragOver = $event">
@@ -107,7 +112,12 @@
                     </div>
                   }
                 </td>
-                <td class="fw-semibold">{{ brand.name }}</td>
+                <td class="fw-semibold">
+                  {{ brand.name }}
+                  @if (brand.pinned) {
+                    <span class="badge bg-warning text-dark ms-2"><i class="bi bi-pin-angle-fill me-1"></i>أولًا</span>
+                  }
+                </td>
                 <td >
                   @if (brand.link) {
                     <a [href]="brand.link" target="_blank" class="text-primary text-decoration-none">

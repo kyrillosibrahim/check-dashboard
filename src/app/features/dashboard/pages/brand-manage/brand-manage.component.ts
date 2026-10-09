@@ -25,6 +25,7 @@ export class BrandManageComponent implements OnInit {
   currentPage = 1;
   brandName = '';
   brandLink = '';
+  brandPinned = false;
   imagePreview: string | null = null;
   selectedImageUrl: string | null = null;
   isUploadingImage = false;
@@ -99,6 +100,7 @@ export class BrandManageComponent implements OnInit {
     const fd = new FormData();
     fd.append('name', name);
     fd.append('link', this.brandLink.trim());
+    fd.append('pinned', String(this.brandPinned));
     if (this.selectedImageUrl) {
       fd.append('imageUrl', this.selectedImageUrl);
     }
@@ -146,6 +148,7 @@ export class BrandManageComponent implements OnInit {
     this.editingBrand = brand;
     this.brandName = brand.name;
     this.brandLink = brand.link || '';
+    this.brandPinned = !!brand.pinned;
     this.selectedImageUrl = brand.image || null;
     this.imagePreview = brand.image || null;
     this.cdr.markForCheck();
@@ -216,6 +219,7 @@ export class BrandManageComponent implements OnInit {
   private resetForm(): void {
     this.brandName = '';
     this.brandLink = '';
+    this.brandPinned = false;
     this.selectedImageUrl = null;
     this.imagePreview = null;
     this.editingBrand = null;
@@ -261,6 +265,7 @@ export class BrandManageComponent implements OnInit {
           const fd = new FormData();
           fd.append('name', brand.name);
           if (brand.link) fd.append('link', brand.link);
+          if (brand.pinned !== undefined) fd.append('pinned', String(brand.pinned));
 
           // Upload to Cloudinary if base64, otherwise use existing URL
           if (brand.imageBase64) {
