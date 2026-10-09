@@ -54,6 +54,18 @@ td {
     max-height: 90px;
     object-fit: contain;
   }
+
+  .banner-preview {
+    width: 240px;
+    aspect-ratio: 1600 / 500;
+    object-fit: cover;
+  }
+}
+
+.banner-thumb {
+  width: 128px;
+  aspect-ratio: 1600 / 500;
+  object-fit: cover;
 }
 
 .brand-thumb {

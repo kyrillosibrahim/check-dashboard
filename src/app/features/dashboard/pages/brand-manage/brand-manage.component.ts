@@ -30,6 +30,10 @@ export class BrandManageComponent implements OnInit {
   selectedImageUrl: string | null = null;
   isUploadingImage = false;
   isDragOver = false;
+  /** Products-page banner ('' = none). */
+  selectedBannerUrl = '';
+  isUploadingBanner = false;
+  isBannerDragOver = false;
   editingBrand: IBrand | null = null;
   isLoading = true;
   isSaving = false;
@@ -92,6 +96,33 @@ export class BrandManageComponent implements OnInit {
     }
   }
 
+  async onBannerSelected(event: Event): Promise<void> {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) await this.processBannerFile(file);
+  }
+
+  async onPastedBanner(file: File): Promise<void> {
+    await this.processBannerFile(file);
+  }
+
+  private async processBannerFile(file: File): Promise<void> {
+    this.isUploadingBanner = true;
+    this.cdr.markForCheck();
+    try {
+      this.selectedBannerUrl = await this.cloudinaryService.uploadImage(file, 'brands/banners');
+    } catch {
+      Swal.fire('خطأ', 'فشل رفع البنر على Cloudinary', 'error');
+    } finally {
+      this.isUploadingBanner = false;
+      this.cdr.markForCheck();
+    }
+  }
+
+  removeBanner(): void {
+    this.selectedBannerUrl = '';
+    this.cdr.markForCheck();
+  }
+
   onSave(): void {
     const name = this.brandName.trim();
     if (!name) return;
@@ -101,6 +132,7 @@ export class BrandManageComponent implements OnInit {
     fd.append('name', name);
     fd.append('link', this.brandLink.trim());
     fd.append('pinned', String(this.brandPinned));
+    fd.append('bannerUrl', this.selectedBannerUrl);
     if (this.selectedImageUrl) {
       fd.append('imageUrl', this.selectedImageUrl);
     }
@@ -149,6 +181,7 @@ export class BrandManageComponent implements OnInit {
     this.brandName = brand.name;
     this.brandLink = brand.link || '';
     this.brandPinned = !!brand.pinned;
+    this.selectedBannerUrl = brand.banner || '';
     this.selectedImageUrl = brand.image || null;
     this.imagePreview = brand.image || null;
     this.cdr.markForCheck();
@@ -220,6 +253,7 @@ export class BrandManageComponent implements OnInit {
     this.brandName = '';
     this.brandLink = '';
     this.brandPinned = false;
+    this.selectedBannerUrl = '';
     this.selectedImageUrl = null;
     this.imagePreview = null;
     this.editingBrand = null;
@@ -266,6 +300,7 @@ export class BrandManageComponent implements OnInit {
           fd.append('name', brand.name);
           if (brand.link) fd.append('link', brand.link);
           if (brand.pinned !== undefined) fd.append('pinned', String(brand.pinned));
+          if (brand.banner) fd.append('bannerUrl', brand.banner);
 
           // Upload to Cloudinary if base64, otherwise use existing URL
           if (brand.imageBase64) {
