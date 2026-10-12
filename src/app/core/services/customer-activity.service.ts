@@ -75,6 +75,7 @@ export class CustomerActivityService {
     q?: string;
     deviceId?: string;
     onlyRegistered?: boolean;
+    device?: '' | 'mobile' | 'desktop';
     page?: number;
     limit?: number;
   }): Observable<ICustomerActivityPage> {
@@ -84,6 +85,7 @@ export class CustomerActivityService {
     if (opts.q) params = params.set('q', opts.q);
     if (opts.deviceId) params = params.set('deviceId', opts.deviceId);
     if (opts.onlyRegistered) params = params.set('onlyRegistered', 'true');
+    if (opts.device) params = params.set('device', opts.device);
     if (opts.page !== undefined) params = params.set('page', opts.page);
     if (opts.limit !== undefined) params = params.set('limit', opts.limit);
     return this.http.get<ICustomerActivityPage>(API_CONFIG.customerActivityUrl, { params });

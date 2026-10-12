@@ -38,6 +38,7 @@ export class CustomerActivityComponent implements OnInit {
   toDate = signal('');
   search = signal('');
   onlyRegistered = signal(false);
+  device = signal<'' | 'mobile' | 'desktop'>('');
   page = signal(1);
   selectedIds = signal<Set<string>>(new Set<string>());
 
@@ -85,6 +86,7 @@ export class CustomerActivityComponent implements OnInit {
       to: this.toDate(),
       q: this.search(),
       onlyRegistered: this.onlyRegistered(),
+      device: this.device(),
       page: this.page(),
       limit: this.pageSize,
     }).subscribe({

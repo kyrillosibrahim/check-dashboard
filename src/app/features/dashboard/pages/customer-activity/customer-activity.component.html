@@ -23,6 +23,15 @@
         <input type="text" name="search" class="form-control" placeholder="بحث بالاسم أو الرقم أو الجهاز"
                [ngModel]="search()" (ngModelChange)="search.set($event)" />
       </div>
+      <div class="filter-group">
+        <label>نوع الجهاز</label>
+        <select name="device" class="form-select"
+                [ngModel]="device()" (ngModelChange)="device.set($event); page.set(1); load()">
+          <option value="">الكل</option>
+          <option value="mobile">تليفون</option>
+          <option value="desktop">متصفح</option>
+        </select>
+      </div>
       <div class="form-check mb-2">
         <input type="checkbox" name="onlyRegistered" id="onlyRegistered" class="form-check-input"
                [ngModel]="onlyRegistered()" (ngModelChange)="onlyRegistered.set($event)" />
