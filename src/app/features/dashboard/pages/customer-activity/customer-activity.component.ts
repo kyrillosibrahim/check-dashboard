@@ -213,7 +213,8 @@ function decorate(row: ICustomerActivity): DisplayCustomerActivity {
   const d = new Date(row.enteredAt);
   return {
     ...row,
-    isPhone: /iPhone|iPad|iPod|Android|Mobile/i.test(row.deviceName || ''),
+    // isMobile comes from the raw user agent, so it also fixes old iPhone rows stored as "Mac".
+    isPhone: row.isMobile ?? /iPhone|iPad|iPod|Android|Mobile/i.test(row.deviceName || ''),
     dayName: DAYS_AR[d.getDay()],
     dateLabel: formatArDate(d),
     dateFull: formatDateTime(d),

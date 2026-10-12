@@ -7,6 +7,7 @@ export interface ICustomerActivity {
   _id: string;
   deviceId: string;
   deviceName: string;
+  isMobile?: boolean;
   userId: string | null;
   userName: string;
   userPhone: string;
